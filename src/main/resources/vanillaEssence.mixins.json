@@ -1,0 +1,17 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "net.vanillaEssence.mixin",
+  "compatibilityLevel": "JAVA_8",
+  "mixins": [
+    "SpawnHelperMixin",
+    "NameTagMixin"
+  ],
+  "client": [
+  ],
+  "server": [
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
