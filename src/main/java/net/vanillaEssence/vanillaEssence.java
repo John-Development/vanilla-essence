@@ -13,6 +13,7 @@ public class vanillaEssence implements ModInitializer {
   final public static String DEF_CRYSTAL_NAME = "";
   final public static String DEF_SCAFF_LIMIT = "";
   final public static String CONFIG_FILE = "essence.properties";
+  final public static String DEF_VILL_RESTOCK = "2";
   @Override
   public void onInitialize() {
     try {
@@ -38,6 +39,12 @@ public class vanillaEssence implements ModInitializer {
       }
       if (cache.getProperty("scaff-limit") == null){
         cache.setProperty("scaff-limit", DEF_SCAFF_LIMIT);
+      }
+      if (cache.getProperty("vill-enabled") == null){
+        cache.setProperty("vill-enabled", "true");
+      }
+      if (cache.getProperty("vill-restock") == null){
+        cache.setProperty("vill-restock", DEF_VILL_RESTOCK);
       }
       
       //Write to the file
