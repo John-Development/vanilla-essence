@@ -11,10 +11,8 @@ import net.minecraft.resource.ResourcePackManager;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.ReloadCommand;
 import net.minecraft.server.command.ServerCommandSource;
-// import net.minecraft.text.LiteralText;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.world.SaveProperties;
-// import net.vanillaEssence.sand.Sand;
 import net.vanillaEssence.util.PropertiesCache;
 
 import static net.minecraft.server.command.CommandManager.*;
@@ -36,46 +34,43 @@ public class GameRuleCustomCommand {
   }
 
   public void init() {
-    // doHuskDropSandInit();
+    doHuskDropSandInit();
     // dailyVillagerRestocksInit();
     doEndCrystalsLimitSpawnInit();
+    scaffoldingHangLimitInit();
   }
 
-  // private void doHuskDropSandInit() {
-  //   CommandRegistrationCallback.EVENT.register((dispatcher, dedicated) -> {
-  //     dispatcher.register(literal("gamerule")
-  //       .then(literal("doHusksDropSand")
-  //         .then(argument("value", BoolArgumentType.bool())
-  //           .requires(source -> source.hasPermissionLevel(4)).executes(context -> {
-  //             cache.setProperty("sand-enabled", ((Boolean) BoolArgumentType.getBool(context, "value")).toString());
+  private void doHuskDropSandInit() {
+    CommandRegistrationCallback.EVENT.register((dispatcher, dedicated) -> {
+      dispatcher.register(literal("gamerule")
+        .requires(source -> source.hasPermissionLevel(4))
+        .then(literal("doHusksDropSand")
+          .then(argument("value", BoolArgumentType.bool())
+            .executes(context -> {
+              cache.setProperty("sand-enabled", ((Boolean) BoolArgumentType.getBool(context, "value")).toString());
 
-  //             // Write to the file
-  //             try {
-  //               PropertiesCache.getInstance().flush();
-  //             } catch (IOException e) {
-  //               e.printStackTrace();
-  //             }
+              // Write to the file
+              try {
+                PropertiesCache.getInstance().flush();
+              } catch (IOException e) {
+                e.printStackTrace();
+              }
 
-  //             if (BoolArgumentType.getBool(context, "value")) {
-  //               Sand.getInstance().init();
-  //             }
-
-  //             reload(context);
-
-  //             return 1;
-  //           })
-  //         )
-  //       )
-  //     );
-  //   });
-  // }
+              return reload(context);
+            })
+          )
+        )
+      );
+    });
+  }
 
   // private void dailyVillagerRestocksInit() {
   //   CommandRegistrationCallback.EVENT.register((dispatcher, dedicated) -> {
   //     dispatcher.register(literal("gamerule")
+  //       .requires(source -> source.hasPermissionLevel(4))
   //       .then(literal("dailyVillagerRestocks")
   //         .then(argument("value", IntegerArgumentType.integer())
-  //           .requires(source -> source.hasPermissionLevel(4)).executes(context -> {
+  //           .executes(context -> {
   //             // cache.setProperty("vill-enabled", ((Boolean) BoolArgumentType.getBool(context, "value")).toString());
 
   //             // Write to the file
@@ -169,12 +164,38 @@ public class GameRuleCustomCommand {
       e.printStackTrace();
     }
 
-    reload(context);
-
-    return 1;
+    return reload(context);
   }
 
-  private static void reload(CommandContext<ServerCommandSource> context) {
+  // Command example: /gamerule scaffoldingHangLimit <length>
+  private void scaffoldingHangLimitInit() {
+    CommandRegistrationCallback.EVENT.register((dispatcher, dedicated) -> {
+      dispatcher.register(literal("gamerule")
+      .requires(source -> source.hasPermissionLevel(4))
+        .then(literal("scaffoldingHangLimit")
+          .then(argument("length", IntegerArgumentType.integer())
+            .executes(context -> {
+              Integer length = IntegerArgumentType.getInteger(context, "length");
+
+              cache.setProperty("scaff-enabled", ((Boolean)!(length == 7)).toString());
+              cache.setProperty("scaff-limit", length.toString());
+              
+              try {
+                PropertiesCache.getInstance().flush();
+              } catch (IOException e) {
+                e.printStackTrace();
+              }
+
+              return reload(context);
+            })
+          )
+        )
+      );
+    });
+  }
+
+
+  private static int reload(CommandContext<ServerCommandSource> context) {
     ServerCommandSource serverCommandSource = (ServerCommandSource) context.getSource();
     MinecraftServer minecraftServer = serverCommandSource.getMinecraftServer();
     ResourcePackManager resourcePackManager = minecraftServer.getDataPackManager();
@@ -183,6 +204,7 @@ public class GameRuleCustomCommand {
     Collection<String> collection2 = getResourcePacks(resourcePackManager, saveProperties, collection);
     serverCommandSource.sendFeedback(new TranslatableText("commands.custom.reload.success"), true);
     ReloadCommand.method_29480(collection2, serverCommandSource);
+    return 1;
   }
 
   private static Collection<String> getResourcePacks(ResourcePackManager resourcePackManager, SaveProperties saveProperties, Collection<String> collection) {

@@ -1,4 +1,4 @@
-package net.vanillaEssence.sand;
+package net.vanillaEssence.loot;
 
 import net.fabricmc.fabric.api.loot.v1.FabricLootPoolBuilder;
 import net.fabricmc.fabric.api.loot.v1.event.LootTableLoadingCallback;
