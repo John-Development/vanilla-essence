@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.IOException;
 
 import net.fabricmc.api.ModInitializer;
-import net.vanillaEssence.Sand.Sand;
+import net.vanillaEssence.sand.Sand;
 import net.vanillaEssence.util.PropertiesCache;
 
 public class vanillaEssence implements ModInitializer {
@@ -14,6 +14,7 @@ public class vanillaEssence implements ModInitializer {
   final public static String DEF_CRYSTAL_NAME = "";
   final public static String DEF_SCAFF_LIMIT = "";
   final public static String CONFIG_FILE = "essence.properties";
+
   @Override
   public void onInitialize() {
     try {
@@ -48,9 +49,7 @@ public class vanillaEssence implements ModInitializer {
       PropertiesCache.getInstance().flush();
 
       // Loot table for sand
-      if (Boolean.parseBoolean(cache.getProperty("sand-enabled"))) {
-        Sand.init();
-      }
+      Sand.getInstance().init();
 
     } catch (IOException e) {
       e.printStackTrace();
