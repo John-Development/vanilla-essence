@@ -20,6 +20,9 @@
   "entrypoints": {
     "main": [
       "net.vanillaEssence.vanillaEssence"
+    ],
+    "client": [
+      "net.vanillaEssence.vanillaEssenceClient"
     ]
   },
   "mixins": [
