@@ -35,7 +35,7 @@ public class GameRuleCustomCommand {
 
   public void init() {
     doHuskDropSandInit();
-    // dailyVillagerRestocksInit();
+    dailyVillagerRestocksInit();
     doEndCrystalsLimitSpawnInit();
     scaffoldingHangLimitInit();
   }
@@ -64,35 +64,31 @@ public class GameRuleCustomCommand {
     });
   }
 
-  // private void dailyVillagerRestocksInit() {
-  //   CommandRegistrationCallback.EVENT.register((dispatcher, dedicated) -> {
-  //     dispatcher.register(literal("gamerule")
-  //       .requires(source -> source.hasPermissionLevel(4))
-  //       .then(literal("dailyVillagerRestocks")
-  //         .then(argument("value", IntegerArgumentType.integer())
-  //           .executes(context -> {
-  //             // cache.setProperty("vill-enabled", ((Boolean) BoolArgumentType.getBool(context, "value")).toString());
+  private void dailyVillagerRestocksInit() {
+    CommandRegistrationCallback.EVENT.register((dispatcher, dedicated) -> {
+      dispatcher.register(literal("gamerule")
+        .requires(source -> source.hasPermissionLevel(4))
+        .then(literal("dailyVillagerRestocks")
+          .then(argument("dailyRestocks", IntegerArgumentType.integer(0, 20))
+            .executes(context -> {
+              Integer restocks = IntegerArgumentType.getInteger(context, "length");
 
-  //             // Write to the file
-  //             try {
-  //               PropertiesCache.getInstance().flush();
-  //             } catch (IOException e) {
-  //               e.printStackTrace();
-  //             }
+              cache.setProperty("vill-enabled", ((Boolean)!(restocks == 2)).toString());
+              cache.setProperty("vill-restock", restocks.toString());
 
-  //             // if (IntegerArgumentType.getInteger(context, "value")) {
-  //             //   Sand.getInstance().init();
-  //             // }
+              try {
+                PropertiesCache.getInstance().flush();
+              } catch (IOException e) {
+                e.printStackTrace();
+              }
 
-  //             reload(context);
-
-  //             return 1;
-  //           })
-  //         )
-  //       )
-  //     );
-  //   });
-  // }
+              return reload(context);
+            })
+          )
+        )
+      );
+    });
+  }
 
   // Command example: /gamerule doEndCrystalsLimitSpawn <value> <radius> <lowDistance> <name>
   private void doEndCrystalsLimitSpawnInit() {
