@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.IOException;
 
 import net.fabricmc.api.ModInitializer;
-import net.vanillaEssence.sand.Sand;
+import net.vanillaEssence.loot.Sand;
 import net.vanillaEssence.util.PropertiesCache;
 
 public class vanillaEssence implements ModInitializer {
