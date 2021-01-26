@@ -6,7 +6,8 @@
   "mixins": [
     "SpawnHelperMixin",
     "NameTagMixin",
-    "VillagerTradeMixin"
+    "VillagerTradeMixin",
+    "ScaffoldingMixin"
   ],
   "client": [
   ],

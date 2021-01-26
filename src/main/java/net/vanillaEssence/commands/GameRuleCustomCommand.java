@@ -140,7 +140,7 @@ public class GameRuleCustomCommand {
             .executes(context -> {
               Integer length = IntegerArgumentType.getInteger(context, "length");
 
-              cache.setProperty("scaff-enabled", ((Boolean)!(length == 7)).toString());
+              cache.setProperty("scaff-enabled", ((Boolean)(length != 7)).toString());
               cache.setProperty("scaff-limit", length.toString());
               
               try {
