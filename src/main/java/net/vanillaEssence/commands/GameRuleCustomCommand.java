@@ -64,27 +64,31 @@ public class GameRuleCustomCommand {
     });
   }
 
-  // Command example: /gamerule dailyVillagerRestocks <dailyRestocks>
+  // Command example: /gamerule dailyVillagerRestocks <dailyRestocks> <timeBetweenRestocks>
   private void dailyVillagerRestocksInit() {
     CommandRegistrationCallback.EVENT.register((dispatcher, dedicated) -> {
       dispatcher.register(literal("gamerule")
         .requires(source -> source.hasPermissionLevel(4))
         .then(literal("dailyVillagerRestocks")
-          .then(argument("dailyRestocks", IntegerArgumentType.integer(0, 20))
-            .executes(context -> {
-              Integer restocks = IntegerArgumentType.getInteger(context, "dailyRestocks");
+          .then(argument("dailyRestocks", IntegerArgumentType.integer(0, 999))
+            .then(argument("timeBetweenRestocks", IntegerArgumentType.integer(20, 2400))
+              .executes(context -> {
+                Integer restocks = IntegerArgumentType.getInteger(context, "dailyRestocks");
+                Integer cooldown = IntegerArgumentType.getInteger(context, "timeBetweenRestocks");
 
-              cache.setProperty("vill-enabled", ((Boolean)(restocks != 2)).toString());
-              cache.setProperty("vill-restock", restocks.toString());
+                cache.setProperty("vill-enabled", ((Boolean)(restocks != 2)).toString());
+                cache.setProperty("vill-daily-restocks", restocks.toString());
+                cache.setProperty("vill-time-between-restocks", cooldown.toString());
 
-              try {
-                PropertiesCache.getInstance().flush();
-              } catch (IOException e) {
-                e.printStackTrace();
-              }
+                try {
+                  PropertiesCache.getInstance().flush();
+                } catch (IOException e) {
+                  e.printStackTrace();
+                }
 
-              return reload(context);
-            })
+                return reload(context);
+              })
+            )
           )
         )
       );

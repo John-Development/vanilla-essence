@@ -28,14 +28,18 @@ public abstract class VillagerTradeMixin {
   ) {
     PropertiesCache cache = PropertiesCache.getInstance();
     if (Boolean.parseBoolean(cache.getProperty("vill-enabled"))) {
-      if (Integer.parseInt(cache.getProperty("vill-restock")) == 0) {
-        cir.setReturnValue(this.restocksToday == 0 || ((VillagerEntity) (Object) this).world.getTime() > (this.lastRestockTime + 2400L));
+
+      Integer restocks = Integer.parseInt(cache.getProperty("vill-daily-restocks"));
+      Long cooldown = Long.parseLong(cache.getProperty("vill-time-between-restocks"));
+
+      if (restocks == 0) {
+        cir.setReturnValue(this.restocksToday == 0 || ((VillagerEntity) (Object) this).world.getTime() > (this.lastRestockTime + cooldown));
       }
       else {
         cir.setReturnValue(
           this.restocksToday == 0
-          || this.restocksToday < Integer.parseInt(cache.getProperty("vill-restock"))
-          && ((VillagerEntity) (Object) this).world.getTime() > this.lastRestockTime + 2400L
+          || this.restocksToday < restocks
+          && ((VillagerEntity) (Object) this).world.getTime() > this.lastRestockTime + cooldown
         );
       }
     }

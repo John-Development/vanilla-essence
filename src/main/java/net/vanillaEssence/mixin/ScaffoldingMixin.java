@@ -56,7 +56,7 @@ public class ScaffoldingMixin {
         world.breakBlock(pos, true);
       }
     } else if (state != blockState) {
-      System.out.println("patata At " + pos.getX() + " " + pos.getY() + " " + state.get(DISTANCE) + " " + blockState.get(DISTANCE));
+      // System.out.println("patata At " + pos.getX() + " " + pos.getY() + " " + state.get(DISTANCE) + " " + blockState.get(DISTANCE));
       world.setBlockState(pos, blockState, 3);
     }
   }
@@ -83,7 +83,7 @@ public class ScaffoldingMixin {
       int i = SCAFF_LIMIT;
       if (blockState.isOf(Blocks.SCAFFOLDING)) {
         i = (Integer)blockState.get(DISTANCE);
-        System.out.println("patata Di " + pos.getX() + i);
+        // System.out.println("patata Di " + pos.getX() + i);
       } else if (blockState.isSideSolidFullSquare(world, mutable, Direction.UP)) {
         cir.setReturnValue(0);
         return;
@@ -96,7 +96,7 @@ public class ScaffoldingMixin {
         BlockState blockState2 = world.getBlockState(mutable.set(pos, direction));
         if (blockState2.isOf(Blocks.SCAFFOLDING)) {
           i = Math.min(i, (Integer)blockState2.get(DISTANCE) + 1);
-          System.out.println("patata Wh " + pos.getX() + " " + pos.getY() + " " + blockState2.get(DISTANCE) + "    " + direction.asString());
+          // System.out.println("patata Wh " + pos.getX() + " " + pos.getY() + " " + blockState2.get(DISTANCE) + "    " + direction.asString());
           if (i == 1) {
             break;
           }

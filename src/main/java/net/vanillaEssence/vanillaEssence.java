@@ -16,6 +16,7 @@ public class vanillaEssence implements ModInitializer {
   final public static String DEF_SCAFF_LIMIT = "";
   final public static String CONFIG_FILE = "essence.properties";
   final public static String DEF_VILL_RESTOCK = "2";
+  final public static String DEF_VILL_RESTOCK_COOLDOWN = "2400";
 
   @Override
   public void onInitialize() {
@@ -49,8 +50,11 @@ public class vanillaEssence implements ModInitializer {
       if (cache.getProperty("vill-enabled") == null){
         cache.setProperty("vill-enabled", "true");
       }
-      if (cache.getProperty("vill-restock") == null){
-        cache.setProperty("vill-restock", DEF_VILL_RESTOCK);
+      if (cache.getProperty("vill-daily-restocks") == null){
+        cache.setProperty("vill-daily-restocks", DEF_VILL_RESTOCK);
+      }
+      if (cache.getProperty("vill-time-between-restocks") == null){
+        cache.setProperty("vill-time-between-restocks", DEF_VILL_RESTOCK_COOLDOWN);
       }
       
       //Write to the file
