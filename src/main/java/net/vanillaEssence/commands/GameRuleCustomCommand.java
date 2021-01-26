@@ -64,6 +64,7 @@ public class GameRuleCustomCommand {
     });
   }
 
+  // Command example: /gamerule dailyVillagerRestocks <dailyRestocks>
   private void dailyVillagerRestocksInit() {
     CommandRegistrationCallback.EVENT.register((dispatcher, dedicated) -> {
       dispatcher.register(literal("gamerule")
@@ -71,9 +72,9 @@ public class GameRuleCustomCommand {
         .then(literal("dailyVillagerRestocks")
           .then(argument("dailyRestocks", IntegerArgumentType.integer(0, 20))
             .executes(context -> {
-              Integer restocks = IntegerArgumentType.getInteger(context, "length");
+              Integer restocks = IntegerArgumentType.getInteger(context, "dailyRestocks");
 
-              cache.setProperty("vill-enabled", ((Boolean)!(restocks == 2)).toString());
+              cache.setProperty("vill-enabled", ((Boolean)(restocks != 2)).toString());
               cache.setProperty("vill-restock", restocks.toString());
 
               try {
