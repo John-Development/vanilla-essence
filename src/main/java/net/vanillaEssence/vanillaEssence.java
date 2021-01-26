@@ -13,6 +13,7 @@ public class vanillaEssence implements ModInitializer {
   final public static String DEF_CRYSTAL_NAME = "";
   final public static String DEF_SCAFF_LIMIT = "";
   final public static String CONFIG_FILE = "essence.properties";
+
   @Override
   public void onInitialize() {
     try {
