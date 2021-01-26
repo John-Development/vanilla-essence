@@ -40,6 +40,7 @@ public class GameRuleCustomCommand {
     scaffoldingHangLimitInit();
   }
 
+  // Command example: /gamerule doHusksDropSand <value>
   private void doHuskDropSandInit() {
     CommandRegistrationCallback.EVENT.register((dispatcher, dedicated) -> {
       dispatcher.register(literal("gamerule")
@@ -49,7 +50,6 @@ public class GameRuleCustomCommand {
             .executes(context -> {
               cache.setProperty("sand-enabled", ((Boolean) BoolArgumentType.getBool(context, "value")).toString());
 
-              // Write to the file
               try {
                 PropertiesCache.getInstance().flush();
               } catch (IOException e) {
@@ -129,6 +129,33 @@ public class GameRuleCustomCommand {
     });
   }
 
+  // Command example: /gamerule scaffoldingHangLimit <length>
+  private void scaffoldingHangLimitInit() {
+    CommandRegistrationCallback.EVENT.register((dispatcher, dedicated) -> {
+      dispatcher.register(literal("gamerule")
+      .requires(source -> source.hasPermissionLevel(4))
+        .then(literal("scaffoldingHangLimit")
+          .then(argument("length", IntegerArgumentType.integer(7, 64))
+            .executes(context -> {
+              Integer length = IntegerArgumentType.getInteger(context, "length");
+
+              cache.setProperty("scaff-enabled", ((Boolean)!(length == 7)).toString());
+              cache.setProperty("scaff-limit", length.toString());
+              
+              try {
+                PropertiesCache.getInstance().flush();
+              } catch (IOException e) {
+                e.printStackTrace();
+              }
+
+              return reload(context);
+            })
+          )
+        )
+      );
+    });
+  }
+
   private int executeCrystal(CommandContext<ServerCommandSource> context) {
 
     Boolean value = BoolArgumentType.getBool(context, "value");
@@ -162,34 +189,6 @@ public class GameRuleCustomCommand {
 
     return reload(context);
   }
-
-  // Command example: /gamerule scaffoldingHangLimit <length>
-  private void scaffoldingHangLimitInit() {
-    CommandRegistrationCallback.EVENT.register((dispatcher, dedicated) -> {
-      dispatcher.register(literal("gamerule")
-      .requires(source -> source.hasPermissionLevel(4))
-        .then(literal("scaffoldingHangLimit")
-          .then(argument("length", IntegerArgumentType.integer())
-            .executes(context -> {
-              Integer length = IntegerArgumentType.getInteger(context, "length");
-
-              cache.setProperty("scaff-enabled", ((Boolean)!(length == 7)).toString());
-              cache.setProperty("scaff-limit", length.toString());
-              
-              try {
-                PropertiesCache.getInstance().flush();
-              } catch (IOException e) {
-                e.printStackTrace();
-              }
-
-              return reload(context);
-            })
-          )
-        )
-      );
-    });
-  }
-
 
   private static int reload(CommandContext<ServerCommandSource> context) {
     ServerCommandSource serverCommandSource = (ServerCommandSource) context.getSource();
