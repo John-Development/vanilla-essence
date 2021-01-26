@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 
 import net.fabricmc.api.ModInitializer;
+import net.vanillaEssence.commands.GameRuleCustomCommand;
 import net.vanillaEssence.loot.Sand;
 import net.vanillaEssence.util.PropertiesCache;
 
@@ -51,6 +52,8 @@ public class vanillaEssence implements ModInitializer {
       // Loot table for sand
       Sand.getInstance().init();
 
+      // Init commands
+      GameRuleCustomCommand.getInstance().init();
     } catch (IOException e) {
       e.printStackTrace();
     }
