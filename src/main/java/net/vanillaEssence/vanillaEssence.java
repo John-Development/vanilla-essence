@@ -10,13 +10,13 @@ import net.vanillaEssence.util.PropertiesCache;
 
 public class vanillaEssence implements ModInitializer {
 
-  final public static String DEF_CRYSTAL_RAD = "32";
-  final public static String DEF_CRYSTAL_LIM_DISTANCE = "1";
-  final public static String DEF_CRYSTAL_NAME = "";
-  final public static String DEF_SCAFF_LIMIT = "";
-  final public static String CONFIG_FILE = "essence.properties";
-  final public static String DEF_VILL_RESTOCK = "2";
-  final public static String DEF_VILL_RESTOCK_COOLDOWN = "2400";
+  public static final String DEF_CRYSTAL_RAD = "32";
+  public static final String DEF_CRYSTAL_LIM_DISTANCE = "1";
+  public static final String DEF_CRYSTAL_NAME = "";
+  public static final String DEF_SCAFF_LIMIT = "";
+  public static final String CONFIG_FILE = "essence.properties";
+  public static final String DEF_VILL_RESTOCK = "2";
+  public static final String DEF_VILL_RESTOCK_COOLDOWN = "2400";
 
   @Override
   public void onInitialize() {
