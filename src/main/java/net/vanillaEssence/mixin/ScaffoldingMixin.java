@@ -32,7 +32,7 @@ public class ScaffoldingMixin {
     && !PropertiesCache.getInstance().getProperty("scaff-limit").isEmpty()
   )
     ? PropertiesCache.getInstance().getProperty("scaff-limit")
-    : "14");
+    : "7");
   private static int SCAFF_LIMIT = SCAFF_ENABLED
     ? SCAFF_LIMIT_CONFIG
     : 7;
@@ -48,6 +48,7 @@ public class ScaffoldingMixin {
   public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
     int i = ScaffoldingBlock.calculateDistance(world, pos);
     BlockState blockState = (BlockState)((BlockState)state.with(DISTANCE, i)).with(BOTTOM, this.shouldBeBottom(world, pos, i));
+    // System.out.println("patata Tk " + SCAFF_LIMIT);
     // System.out.println("patata Tk " + pos.getX() + " " + pos.getY() + " " + state.get(DISTANCE) + " " + blockState.get(DISTANCE) + " ");
     if ((Integer)blockState.get(DISTANCE) == SCAFF_LIMIT) {
       if ((Integer)state.get(DISTANCE) == SCAFF_LIMIT) {
@@ -76,8 +77,7 @@ public class ScaffoldingMixin {
     BlockPos pos,
     CallbackInfoReturnable<Integer> cir
   ) {
-    PropertiesCache cache = PropertiesCache.getInstance();
-    if (Boolean.parseBoolean(cache.getProperty("scaff-enabled"))) {
+    if (Boolean.parseBoolean(PropertiesCache.getInstance().getProperty("scaff-enabled"))) {
       BlockPos.Mutable mutable = pos.mutableCopy().move(Direction.DOWN);
       BlockState blockState = world.getBlockState(mutable);
       int i = SCAFF_LIMIT;
