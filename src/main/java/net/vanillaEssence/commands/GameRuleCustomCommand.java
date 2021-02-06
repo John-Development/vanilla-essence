@@ -35,6 +35,7 @@ public class GameRuleCustomCommand {
 
   public void init() {
     doHuskDropSandInit();
+    dailyVillagerRestocksInit();
     doEndCrystalsLimitSpawnInit();
     scaffoldingHangLimitInit();
   }
@@ -57,6 +58,37 @@ public class GameRuleCustomCommand {
 
               return reload(context);
             })
+          )
+        )
+      );
+    });
+  }
+
+  // Command example: /gamerule dailyVillagerRestocks <dailyRestocks> <timeBetweenRestocks>
+  private void dailyVillagerRestocksInit() {
+    CommandRegistrationCallback.EVENT.register((dispatcher, dedicated) -> {
+      dispatcher.register(literal("gamerule")
+        .requires(source -> source.hasPermissionLevel(4))
+        .then(literal("dailyVillagerRestocks")
+          .then(argument("dailyRestocks", IntegerArgumentType.integer(0, 999))
+            .then(argument("timeBetweenRestocks", IntegerArgumentType.integer(20, 2400))
+              .executes(context -> {
+                Integer restocks = IntegerArgumentType.getInteger(context, "dailyRestocks");
+                Integer cooldown = IntegerArgumentType.getInteger(context, "timeBetweenRestocks");
+
+                cache.setProperty("vill-enabled", ((Boolean)(restocks != 2)).toString());
+                cache.setProperty("vill-daily-restocks", restocks.toString());
+                cache.setProperty("vill-time-between-restocks", cooldown.toString());
+
+                try {
+                  PropertiesCache.getInstance().flush();
+                } catch (IOException e) {
+                  e.printStackTrace();
+                }
+
+                return reload(context);
+              })
+            )
           )
         )
       );
@@ -112,7 +144,7 @@ public class GameRuleCustomCommand {
             .executes(context -> {
               Integer length = IntegerArgumentType.getInteger(context, "length");
 
-              cache.setProperty("scaff-enabled", ((Boolean)!(length == 7)).toString());
+              cache.setProperty("scaff-enabled", ((Boolean)(length != 7)).toString());
               cache.setProperty("scaff-limit", length.toString());
               
               try {

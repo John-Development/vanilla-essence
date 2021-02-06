@@ -10,11 +10,13 @@ import net.vanillaEssence.util.PropertiesCache;
 
 public class vanillaEssence implements ModInitializer {
 
-  final public static String DEF_CRYSTAL_RAD = "32";
-  final public static String DEF_CRYSTAL_LIM_DISTANCE = "1";
-  final public static String DEF_CRYSTAL_NAME = "";
-  final public static String DEF_SCAFF_LIMIT = "";
-  final public static String CONFIG_FILE = "essence.properties";
+  public static final String DEF_CRYSTAL_RAD = "32";
+  public static final String DEF_CRYSTAL_LIM_DISTANCE = "1";
+  public static final String DEF_CRYSTAL_NAME = "";
+  public static final String DEF_SCAFF_LIMIT = "";
+  public static final String CONFIG_FILE = "essence.properties";
+  public static final String DEF_VILL_RESTOCK = "2";
+  public static final String DEF_VILL_RESTOCK_COOLDOWN = "2400";
 
   @Override
   public void onInitialize() {
@@ -44,6 +46,15 @@ public class vanillaEssence implements ModInitializer {
       }
       if (cache.getProperty("sand-enabled") == null) {
         cache.setProperty("sand-enabled", "false");
+      }
+      if (cache.getProperty("vill-enabled") == null){
+        cache.setProperty("vill-enabled", "true");
+      }
+      if (cache.getProperty("vill-daily-restocks") == null){
+        cache.setProperty("vill-daily-restocks", DEF_VILL_RESTOCK);
+      }
+      if (cache.getProperty("vill-time-between-restocks") == null){
+        cache.setProperty("vill-time-between-restocks", DEF_VILL_RESTOCK_COOLDOWN);
       }
       
       //Write to the file

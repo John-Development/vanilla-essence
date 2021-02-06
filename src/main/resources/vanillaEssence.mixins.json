@@ -5,7 +5,9 @@
   "compatibilityLevel": "JAVA_8",
   "mixins": [
     "SpawnHelperMixin",
-    "NameTagMixin"
+    "NameTagMixin",
+    "VillagerTradeMixin",
+    "ScaffoldingMixin"
   ],
   "client": [
   ],
