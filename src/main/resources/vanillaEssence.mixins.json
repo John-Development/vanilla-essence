@@ -8,6 +8,7 @@
     "NameTagMixin",
     "ScaffoldingMixin",
     "BeaconMixin",
+    "VillagerTradeMixin",
     "BeaconScreenMixin"
   ],
   "client": [
