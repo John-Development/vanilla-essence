@@ -211,13 +211,17 @@ public abstract class BeaconMixin extends BlockEntity {
 
       int blocks = this.totalBlocks(this.level);
 
-      this.range = floorDouble((double)this.ironBlocks * floorDouble(((double)this.level * 10 + 10)/blocks)
-      + (double)this.goldBlocks * floorDouble(((double)this.level * 15 + 15)/blocks)
-      + (double)this.emeraldBlocks * floorDouble(((double)this.level * 25 + 25)/blocks)
-      + (double)this.diamondBlocks * floorDouble(((double)this.level * 30 + 30)/blocks)
-      + (double)this.netheriteBlocks * floorDouble(((double)this.level * 40 + 40)/blocks));
-
+      this.range = floorDouble(
+        (double)this.ironBlocks * floorDouble(((double)this.level * 10 + 10)/blocks)
+        + (double)this.goldBlocks * floorDouble(((double)this.level * 15 + 15)/blocks)
+        + (double)this.emeraldBlocks * floorDouble(((double)this.level * 25 + 25)/blocks)
+        + (double)this.diamondBlocks * floorDouble(((double)this.level * 30 + 30)/blocks)
+        + (double)this.netheriteBlocks * floorDouble(((double)this.level * 40 + 40)/blocks)
+      );
+      
+      double d = this.range;
       int i = 0;
+
       if (this.level >= 4 && this.primary == this.secondary) {
         i = 1;
       }
@@ -238,9 +242,6 @@ public abstract class BeaconMixin extends BlockEntity {
           j += j * 25/100;
         }
       }
-
-      double d = this.range;
-      System.out.println("d " + d);
 
       Box box = (new Box(this.pos)).expand(d).stretch(0.0D, (double)this.world.getHeight(), 0.0D);
       List<PlayerEntity> list = this.world.getNonSpectatingEntities(PlayerEntity.class, box);
