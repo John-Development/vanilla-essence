@@ -1,6 +1,5 @@
 package net.vanillaEssence;
 
-import java.io.File;
 import java.io.IOException;
 
 import net.fabricmc.api.ModInitializer;
@@ -14,17 +13,12 @@ public class vanillaEssence implements ModInitializer {
   public static final String DEF_CRYSTAL_LIM_DISTANCE = "1";
   public static final String DEF_CRYSTAL_NAME = "";
   public static final String DEF_SCAFF_LIMIT = "";
-  public static final String CONFIG_FILE = "essence.properties";
   public static final String DEF_VILL_RESTOCK = "2";
   public static final String DEF_VILL_RESTOCK_COOLDOWN = "2400";
 
   @Override
   public void onInitialize() {
     try {
-      File configFile = new File(CONFIG_FILE);
-      // If config file does not exists creates a new one with the default values
-      configFile.createNewFile();
-
       PropertiesCache cache = PropertiesCache.getInstance();
       if (cache.getProperty("crystal-enabled") == null) {
         cache.setProperty("crystal-enabled", "false");
@@ -58,7 +52,7 @@ public class vanillaEssence implements ModInitializer {
       }
       
       //Write to the file
-      PropertiesCache.getInstance().flush();
+      cache.flush();
 
       // Loot table for sand
       Sand.getInstance().init();

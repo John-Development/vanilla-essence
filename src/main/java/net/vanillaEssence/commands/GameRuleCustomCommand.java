@@ -23,7 +23,7 @@ import java.util.Iterator;
 
 public class GameRuleCustomCommand {
 
-  PropertiesCache cache = PropertiesCache.getInstance();
+  private PropertiesCache cache = PropertiesCache.getInstance();
 
   private static class LazyHolder {
     private static final GameRuleCustomCommand INSTANCE = new GameRuleCustomCommand();
@@ -51,7 +51,7 @@ public class GameRuleCustomCommand {
               cache.setProperty("sand-enabled", ((Boolean) BoolArgumentType.getBool(context, "value")).toString());
 
               try {
-                PropertiesCache.getInstance().flush();
+                cache.flush();
               } catch (IOException e) {
                 e.printStackTrace();
               }
@@ -81,7 +81,7 @@ public class GameRuleCustomCommand {
                 cache.setProperty("vill-time-between-restocks", cooldown.toString());
 
                 try {
-                  PropertiesCache.getInstance().flush();
+                  cache.flush();
                 } catch (IOException e) {
                   e.printStackTrace();
                 }
@@ -148,7 +148,7 @@ public class GameRuleCustomCommand {
               cache.setProperty("scaff-limit", length.toString());
               
               try {
-                PropertiesCache.getInstance().flush();
+                cache.flush();
               } catch (IOException e) {
                 e.printStackTrace();
               }
@@ -187,7 +187,7 @@ public class GameRuleCustomCommand {
     } catch (Exception e) {}
     
     try {
-      PropertiesCache.getInstance().flush();
+      cache.flush();
     } catch (IOException e) {
       e.printStackTrace();
     }

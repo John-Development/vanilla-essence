@@ -13,8 +13,6 @@ import net.vanillaEssence.util.PropertiesCache;
 public class Sand {
   private static final Identifier HUSK_LOOT_TABLE_ID = new Identifier("minecraft", "entities/husk");
   
-  private PropertiesCache cache = PropertiesCache.getInstance();
-  
   private static class LazyHolder {
     private static final Sand INSTANCE = new Sand();
   }
@@ -24,6 +22,8 @@ public class Sand {
   }
 
   public void init() {
+    PropertiesCache cache = PropertiesCache.getInstance();
+
     LootTableLoadingCallback.EVENT.register((resourceManager, lootManager, id, supplier, setter) -> {
       if (HUSK_LOOT_TABLE_ID.equals(id) && Boolean.parseBoolean(cache.getProperty("sand-enabled"))) {
         FabricLootPoolBuilder poolBuilder = FabricLootPoolBuilder.builder()
