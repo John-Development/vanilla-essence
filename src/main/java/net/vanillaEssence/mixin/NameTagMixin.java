@@ -9,7 +9,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.decoration.EndCrystalEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.NameTagItem;
+import net.minecraft.item.Items;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.vanillaEssence.util.PropertiesCache;
@@ -31,7 +31,7 @@ public abstract class NameTagMixin {
     if (Boolean.parseBoolean(cache.getProperty("crystal-enabled"))) {
       ItemStack itemStack = ((PlayerEntity) (Object) this).getStackInHand(hand);
 
-      if (itemStack.getItem().getClass().equals(NameTagItem.class)
+      if (itemStack.getItem().equals(Items.NAME_TAG)
       && itemStack.hasCustomName()
       && entity instanceof EndCrystalEntity
       && !((EndCrystalEntity) entity).getShowBottom()
