@@ -240,13 +240,12 @@ public abstract class BeaconMixin extends BlockEntity {
           + (double)this.netheriteBlocks * floorDouble(((double)this.level * 40 + 40)/blocks)
         );
 
-        d = this.range;
         i = 0;
 
         if (this.level >= 4 && this.primary == this.secondary) {
           i = 1;
         }
-        
+
         j = (9 + this.level * 2) * 20;
         if (this.payment != null) {
           if (this.payment.equals(Items.IRON_INGOT)) {
@@ -256,12 +255,14 @@ public abstract class BeaconMixin extends BlockEntity {
           } else if (this.payment.equals(Items.EMERALD)) {
             this.bonus = this.range * 5/100;
           } else if (this.payment.equals(Items.DIAMOND)) {
-            this.bonus = this.range * 10/100;
-          } else if (this.payment.equals(Items.NETHERITE_INGOT)) {
-            this.bonus = this.range * 10/100;
+            this.bonus = this.range * 20/100;
+          } else if (this.payment.equals(Items.NETHERITE_INGOT)) { 
+            this.bonus = this.range * 20/100;
             j += j * 25/100;
           }
         }
+
+        d = this.range + this.bonus;
 
         Box box = (new Box(this.pos)).expand(d).stretch(0.0D, (double)this.world.getHeight(), 0.0D);
         List<PlayerEntity> list = this.world.getNonSpectatingEntities(PlayerEntity.class, box);
