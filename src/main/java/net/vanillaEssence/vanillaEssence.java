@@ -20,6 +20,9 @@ public class vanillaEssence implements ModInitializer {
   public void onInitialize() {
     try {
       PropertiesCache cache = PropertiesCache.getInstance();
+      if (cache.getProperty("beacons-enabled") == null) {
+        cache.setProperty("beacons-enabled", "false");
+      }
       if (cache.getProperty("crystal-enabled") == null) {
         cache.setProperty("crystal-enabled", "false");
       }
