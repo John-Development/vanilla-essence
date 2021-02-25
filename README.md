@@ -7,3 +7,5 @@ It includes:
  - Husks can drop sand
  - Beacons varies boosts depending on which block they are made and which pay they receive
  - (WIP) Scaffoldings with no placing limit in the air.
+
+More information in the [wiki](https://github.com/John-Development/vanilla-essence/wiki)
