@@ -38,7 +38,7 @@ public class GameRuleCustomCommand {
     dailyVillagerRestocksInit();
     doEndCrystalsLimitSpawnInit();
     scaffoldingHangLimitInit();
-    modifiedBeaconsInit();
+    betterBeaconsInit();
   }
 
   // Command example: /gamerule doHusksDropSand <value>
@@ -96,12 +96,12 @@ public class GameRuleCustomCommand {
     });
   }
 
-  // Command example: /gamerule modifiedBeacons <value>
-  private void modifiedBeaconsInit() {
+  // Command example: /gamerule betterBeacons <value>
+  private void betterBeaconsInit() {
     CommandRegistrationCallback.EVENT.register((dispatcher, dedicated) -> {
       dispatcher.register(literal("gamerule")
         .requires(source -> source.hasPermissionLevel(4))
-        .then(literal("modifiedBeacons")
+        .then(literal("betterBeacons")
           .then(argument("value", BoolArgumentType.bool())
             .executes(context -> {
               cache.setProperty("beacons-enabled", ((Boolean) BoolArgumentType.getBool(context, "value")).toString());
