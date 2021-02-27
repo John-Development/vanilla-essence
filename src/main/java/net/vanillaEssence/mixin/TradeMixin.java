@@ -17,7 +17,7 @@ public class TradeMixin {
   private int demandBonus;
 
   @Inject(
-    method = "<init>(Lnet/minecraft/nbt/CompoundTag;Lorg/spongepowered/asm/mixin/injection/callback/CallbackInfo;)V",
+    method = "<init>(Lnet/minecraft/nbt/CompoundTag;)V",
     at = @At("TAIL")
   )
   private void init(

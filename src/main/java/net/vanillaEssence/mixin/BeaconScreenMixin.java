@@ -30,7 +30,6 @@ public abstract class BeaconScreenMixin {
     CallbackInfo cir
   ) {
     if (this.payment != null) {
-      System.out.println("patata " + Item.getRawId(this.payment.getStack(0).getItem()));
       this.propertyDelegate.set(3, Item.getRawId(this.payment.getStack(0).getItem()));
     }
   }
