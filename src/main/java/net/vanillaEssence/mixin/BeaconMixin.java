@@ -26,19 +26,21 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.screen.PropertyDelegate;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.ItemTags;
+import net.minecraft.util.Tickable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 
 import net.vanillaEssence.util.PropertiesCache;
 
 @Mixin(BeaconBlockEntity.class)
-public abstract class BeaconMixin extends BlockEntity {
+public abstract class BeaconMixin extends BlockEntity implements NamedScreenHandlerFactory, Tickable {
 
   public BeaconMixin(BlockEntityType<?> type) {
 		super(type);
@@ -68,7 +70,7 @@ public abstract class BeaconMixin extends BlockEntity {
   int netheriteBlocks = 0;
 
   @Inject(
-    method = "<init>(Lorg/spongepowered/asm/mixin/injection/callback/CallbackInfo;)V",
+    method = "<init>()V",
     at = @At("TAIL")
   )
   private void init(CallbackInfo cir) {
