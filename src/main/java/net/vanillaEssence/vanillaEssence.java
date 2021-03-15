@@ -26,6 +26,9 @@ public class vanillaEssence implements ModInitializer {
       configFile.createNewFile();
 
       PropertiesCache cache = PropertiesCache.getInstance();
+      if (cache.getProperty("beacons-enabled") == null) {
+        cache.setProperty("beacons-enabled", "false");
+      }
       if (cache.getProperty("crystal-enabled") == null) {
         cache.setProperty("crystal-enabled", "false");
       }
@@ -48,7 +51,7 @@ public class vanillaEssence implements ModInitializer {
         cache.setProperty("sand-enabled", "false");
       }
       if (cache.getProperty("vill-enabled") == null){
-        cache.setProperty("vill-enabled", "true");
+        cache.setProperty("vill-enabled", "false");
       }
       if (cache.getProperty("vill-daily-restocks") == null){
         cache.setProperty("vill-daily-restocks", DEF_VILL_RESTOCK);

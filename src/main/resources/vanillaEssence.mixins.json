@@ -6,8 +6,10 @@
   "mixins": [
     "SpawnHelperMixin",
     "NameTagMixin",
+    "ScaffoldingMixin",
+    "BeaconMixin",
     "VillagerTradeMixin",
-    "ScaffoldingMixin"
+    "BeaconScreenMixin"
   ],
   "client": [
   ],

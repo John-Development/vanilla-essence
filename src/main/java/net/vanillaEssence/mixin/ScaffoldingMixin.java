@@ -4,10 +4,10 @@ import java.util.Iterator;
 import java.util.Random;
 
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import net.minecraft.block.BlockState;
@@ -44,8 +44,12 @@ public class ScaffoldingMixin {
   @Shadow
   public static final BooleanProperty BOTTOM = net.minecraft.state.property.Properties.BOTTOM;
 
-  @Overwrite
-  public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+  @Inject(
+    method = "scheduledTick",
+    at = @At("HEAD"),
+    cancellable = true
+  )
+  public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random, CallbackInfo ci) {
     int i = ScaffoldingBlock.calculateDistance(world, pos);
     BlockState blockState = (BlockState)((BlockState)state.with(DISTANCE, i)).with(BOTTOM, this.shouldBeBottom(world, pos, i));
     // System.out.println("patata Tk " + SCAFF_LIMIT);
@@ -60,11 +64,16 @@ public class ScaffoldingMixin {
       // System.out.println("patata At " + pos.getX() + " " + pos.getY() + " " + state.get(DISTANCE) + " " + blockState.get(DISTANCE));
       world.setBlockState(pos, blockState, 3);
     }
+    ci.cancel();
   }
 
-  @Overwrite
-  public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
-    return ScaffoldingBlock.calculateDistance(world, pos) < SCAFF_LIMIT;
+  @Inject(
+    method = "canPlaceAt",
+    at = @At("HEAD"),
+    cancellable = true
+  )
+  public void canPlaceAt(BlockState state, WorldView world, BlockPos pos, CallbackInfoReturnable<Boolean> cir) {
+    cir.setReturnValue(ScaffoldingBlock.calculateDistance(world, pos) < SCAFF_LIMIT);
   }
 
   @Inject(
