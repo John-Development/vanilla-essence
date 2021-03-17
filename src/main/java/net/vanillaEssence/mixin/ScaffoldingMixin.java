@@ -16,13 +16,19 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.ScaffoldingBlock;
 import net.minecraft.entity.FallingBlockEntity;
+// import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
+// import net.minecraft.text.LiteralText;
+// import net.minecraft.util.ActionResult;
+// import net.minecraft.util.Hand;
+// import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.BlockView;
+// import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 import net.vanillaEssence.util.PropertiesCache;
 
@@ -51,11 +57,25 @@ public class ScaffoldingMixin extends Block {
   @Shadow
   public static final BooleanProperty BOTTOM = Properties.BOTTOM;
 
+  // @Override
+  // public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+  //   if (!world.isClient) {
+  //     player.sendMessage(new LiteralText("Hello, world!"), false);
+  //     System.out.println("server " + SCAFF_LIMIT);
+  //     scheduledTick(state, (ServerWorld) world, pos, world.random);
+  //   }
+  //   // getserverworld
+
+
+  //   return ActionResult.SUCCESS;
+  // }
+
   @Inject(
     method = "<init>()V",
     at = @At("TAIL")
   )
   private void init(CallbackInfo cir) {
+    // System.out.println("init " + SCAFF_LIMIT);
     this.setDefaultState((BlockState)((BlockState)((BlockState)((BlockState)this.stateManager.getDefaultState()).with(DISTANCE, SCAFF_LIMIT)).with(WATERLOGGED, false)).with(BOTTOM, false));
   }
 
@@ -67,6 +87,8 @@ public class ScaffoldingMixin extends Block {
   public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random, CallbackInfo ci) {
     int i = ScaffoldingBlock.calculateDistance(world, pos);
     BlockState blockState = (BlockState)((BlockState)state.with(DISTANCE, i)).with(BOTTOM, this.shouldBeBottom(world, pos, i));
+    // System.out.println("patata Tk " + i);
+    // System.out.println("patata Tk " + pos.getX() + " " + pos.getY() + " " + state.get(DISTANCE) + " " + blockState.get(DISTANCE) + " ");
     if ((Integer)blockState.get(DISTANCE) == SCAFF_LIMIT) {
       if ((Integer)state.get(DISTANCE) == SCAFF_LIMIT) {
         world.spawnEntity(new FallingBlockEntity(world, (double)pos.getX() + 0.5D, (double)pos.getY(), (double)pos.getZ() + 0.5D, (BlockState)blockState.with(WATERLOGGED, false)));
@@ -74,6 +96,7 @@ public class ScaffoldingMixin extends Block {
         world.breakBlock(pos, true);
       }
     } else if (state != blockState) {
+      // System.out.println("patata At " + pos.getX() + " " + pos.getY() + " " + state.get(DISTANCE) + " " + blockState.get(DISTANCE));
       world.setBlockState(pos, blockState, 3);
     }
     ci.cancel();
@@ -104,6 +127,7 @@ public class ScaffoldingMixin extends Block {
       int i = SCAFF_LIMIT;
       if (blockState.isOf(Blocks.SCAFFOLDING)) {
         i = (Integer)blockState.get(DISTANCE);
+        // System.out.println("patata Di " + pos.getX() + i);
       } else if (blockState.isSideSolidFullSquare(world, mutable, Direction.UP)) {
         cir.setReturnValue(0);
         return;
@@ -116,6 +140,7 @@ public class ScaffoldingMixin extends Block {
         BlockState blockState2 = world.getBlockState(mutable.set(pos, direction));
         if (blockState2.isOf(Blocks.SCAFFOLDING)) {
           i = Math.min(i, (Integer)blockState2.get(DISTANCE) + 1);
+          // System.out.println("patata Wh " + pos.getX() + " " + pos.getY() + " " + blockState2.get(DISTANCE) + "    " + direction.asString());
           if (i == 1) {
             break;
           }
