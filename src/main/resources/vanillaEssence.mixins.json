@@ -6,7 +6,6 @@
   "mixins": [
     "SpawnHelperMixin",
     "NameTagMixin",
-    "ScaffoldingMixin",
     "BeaconMixin",
     "VillagerTradeMixin",
     "BeaconScreenMixin"
