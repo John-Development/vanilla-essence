@@ -35,12 +35,12 @@ public class vanillaEssence implements ModInitializer {
       if (cache.getProperty("crystal-name") == null) {
         cache.setProperty("crystal-name", DEF_CRYSTAL_NAME);
       }
-      if (cache.getProperty("scaff-enabled") == null) {
-        cache.setProperty("scaff-enabled", "false");
-      }
-      if (cache.getProperty("scaff-limit") == null) {
-        cache.setProperty("scaff-limit", DEF_SCAFF_LIMIT);
-      }
+      // if (cache.getProperty("scaff-enabled") == null) {
+      //   cache.setProperty("scaff-enabled", "false");
+      // }
+      // if (cache.getProperty("scaff-limit") == null) {
+      //   cache.setProperty("scaff-limit", DEF_SCAFF_LIMIT);
+      // }
       if (cache.getProperty("sand-enabled") == null) {
         cache.setProperty("sand-enabled", "false");
       }

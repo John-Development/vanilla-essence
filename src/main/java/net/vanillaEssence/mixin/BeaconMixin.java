@@ -42,8 +42,8 @@ import net.vanillaEssence.util.PropertiesCache;
 @Mixin(BeaconBlockEntity.class)
 public abstract class BeaconMixin extends BlockEntity implements NamedScreenHandlerFactory, Tickable {
 
-  public BeaconMixin(BlockEntityType<?> type) {
-		super(type);
+  public BeaconMixin() {
+		super(BlockEntityType.BEACON);
 	}
 
   @Shadow

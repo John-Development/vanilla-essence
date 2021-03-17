@@ -26,17 +26,4 @@ public class TradeMixin {
   ) {
     this.demandBonus = compoundTag.getInt("demand") - 15 * Integer.parseInt(PropertiesCache.getInstance().getProperty("vill-daily-restocks"));
   }
-
-  // @Inject(
-  //   method = "updatePriceOnDemand",
-  //   at = @At("HEAD"),
-  //   cancellable = true
-    
-  // )
-  // private void handleCustomRestockRate(
-  //   CallbackInfo cir
-  // ) {
-  //   System.out.println("patatita cosa " + this.maxUses + " " + this.uses + " " + this.demandBonus);
-  //   this.demandBonus = this.demandBonus + this.uses - (this.maxUses - this.uses);
-  // }
 }

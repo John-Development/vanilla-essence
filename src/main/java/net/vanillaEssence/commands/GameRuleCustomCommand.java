@@ -37,7 +37,6 @@ public class GameRuleCustomCommand {
     doHuskDropSandInit();
     dailyVillagerRestocksInit();
     doEndCrystalsLimitSpawnInit();
-    scaffoldingHangLimitInit();
     betterBeaconsInit();
   }
 
