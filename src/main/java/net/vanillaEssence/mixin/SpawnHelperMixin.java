@@ -17,6 +17,7 @@ import net.minecraft.world.SpawnHelper;
 import net.minecraft.world.biome.SpawnSettings;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
+
 import net.vanillaEssence.util.PropertiesCache;
 
 @Mixin(SpawnHelper.class)

@@ -159,31 +159,31 @@ public class GameRuleCustomCommand {
   }
 
   // Command example: /gamerule scaffoldingHangLimit <length>
-  private void scaffoldingHangLimitInit() {
-    CommandRegistrationCallback.EVENT.register((dispatcher, dedicated) -> {
-      dispatcher.register(literal("gamerule")
-      .requires(source -> source.hasPermissionLevel(4))
-        .then(literal("scaffoldingHangLimit")
-          .then(argument("length", IntegerArgumentType.integer(7, 64))
-            .executes(context -> {
-              Integer length = IntegerArgumentType.getInteger(context, "length");
+  // private void scaffoldingHangLimitInit() {
+  //   CommandRegistrationCallback.EVENT.register((dispatcher, dedicated) -> {
+  //     dispatcher.register(literal("gamerule")
+  //     .requires(source -> source.hasPermissionLevel(4))
+  //       .then(literal("scaffoldingHangLimit")
+  //         .then(argument("length", IntegerArgumentType.integer(7, 64))
+  //           .executes(context -> {
+  //             Integer length = IntegerArgumentType.getInteger(context, "length");
 
-              cache.setProperty("scaff-enabled", ((Boolean)(length != 7)).toString());
-              cache.setProperty("scaff-limit", length.toString());
+  //             cache.setProperty("scaff-enabled", ((Boolean)(length != 7)).toString());
+  //             cache.setProperty("scaff-limit", length.toString());
               
-              try {
-                cache.flush();
-              } catch (IOException e) {
-                e.printStackTrace();
-              }
+  //             try {
+  //               cache.flush();
+  //             } catch (IOException e) {
+  //               e.printStackTrace();
+  //             }
 
-              return reload(context);
-            })
-          )
-        )
-      );
-    });
-  }
+  //             return reload(context);
+  //           })
+  //         )
+  //       )
+  //     );
+  //   });
+  // }
 
   private int executeCrystal(CommandContext<ServerCommandSource> context) {
 
