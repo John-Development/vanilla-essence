@@ -1,9 +1,8 @@
-package net.vanillaEssence.mixin;
+package net.vanillaEssence.mixin.entity;
 
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import net.minecraft.entity.Entity;
@@ -11,15 +10,12 @@ import net.minecraft.entity.decoration.EndCrystalEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.vanillaEssence.util.PropertiesCache;
 
-// TODO: rename file
 @Mixin(PlayerEntity.class)
-public abstract class NameTagMixin {
+public abstract class PlayerEntityMixin {
 
   @Inject(
     method = "interact",
@@ -50,25 +46,5 @@ public abstract class NameTagMixin {
       }
     }
     return;
-  }
-
-  @Inject(
-    method = "tick",
-    at = @At("TAIL")
-  )
-  public void tick(
-    CallbackInfo cir
-  ) {
-    System.out.println("holas");
-    Iterable<ItemStack> armor = ((PlayerEntity) (Object) this).getArmorItems();
-    for (ItemStack itemStack : armor) {
-      ListTag listTag = itemStack.getEnchantments();
-      for (Tag tag : listTag) {
-        System.out.println(tag.toString());
-        if (tag.toString().equals("Lure")) {
-          System.out.println("luresito mio");
-        }
-      }
-    }
   }
 }

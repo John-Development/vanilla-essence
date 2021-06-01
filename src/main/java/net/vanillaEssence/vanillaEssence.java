@@ -53,6 +53,9 @@ public class vanillaEssence implements ModInitializer {
       if (cache.getProperty("vill-time-between-restocks") == null){
         cache.setProperty("vill-time-between-restocks", DEF_VILL_RESTOCK_COOLDOWN);
       }
+      if (cache.getProperty("magnetic-lure-enabled") == null){
+        cache.setProperty("magnetic-lure-enabled", "false");
+      }
       
       //Write to the file
       cache.flush();

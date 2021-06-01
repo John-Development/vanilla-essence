@@ -1,4 +1,4 @@
-package net.vanillaEssence.mixin;
+package net.vanillaEssence.mixin.screen;
 
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -12,7 +12,7 @@ import net.minecraft.screen.BeaconScreenHandler;
 import net.minecraft.screen.PropertyDelegate;
 
 @Mixin(BeaconScreenHandler.class)
-public abstract class BeaconScreenMixin {
+public abstract class BeaconScreenHandlerMixin {
 
   @Shadow
   Inventory payment;

@@ -1,4 +1,4 @@
-package net.vanillaEssence.mixin;
+package net.vanillaEssence.mixin.world;
 
 import java.util.List;
 import java.util.function.Predicate;
@@ -78,5 +78,4 @@ public abstract class SpawnHelperMixin {
     }
     return;
   }
-  
 }

@@ -38,30 +38,22 @@ public class GameRuleCustomCommand {
     dailyVillagerRestocksInit();
     doEndCrystalsLimitSpawnInit();
     betterBeaconsInit();
+    magneticLureInit();
   }
 
   // Command example: /gamerule doHusksDropSand <value>
   private void doHuskDropSandInit() {
-    CommandRegistrationCallback.EVENT.register((dispatcher, dedicated) -> {
-      dispatcher.register(literal("gamerule")
-        .requires(source -> source.hasPermissionLevel(4))
-        .then(literal("doHusksDropSand")
-          .then(argument("value", BoolArgumentType.bool())
-            .executes(context -> {
-              cache.setProperty("sand-enabled", ((Boolean) BoolArgumentType.getBool(context, "value")).toString());
+    commandHelper("doHusksDropSand", "sand-enabled");
+  }
 
-              try {
-                cache.flush();
-              } catch (IOException e) {
-                e.printStackTrace();
-              }
+  // Command example: /gamerule betterBeacons <value>
+  private void betterBeaconsInit() {
+    commandHelper("betterBeacons", "beacons-enabled");
+  }
 
-              return reload(context);
-            })
-          )
-        )
-      );
-    });
+  // Command example: /gamerule magneticLure <value>
+  private void magneticLureInit() {
+    commandHelper("magneticLure", "magnetic-lure-enabled");
   }
 
   // Command example: /gamerule dailyVillagerRestocks <dailyRestocks> <timeBetweenRestocks>
@@ -89,30 +81,6 @@ public class GameRuleCustomCommand {
                 return reload(context);
               })
             )
-          )
-        )
-      );
-    });
-  }
-
-  // Command example: /gamerule betterBeacons <value>
-  private void betterBeaconsInit() {
-    CommandRegistrationCallback.EVENT.register((dispatcher, dedicated) -> {
-      dispatcher.register(literal("gamerule")
-        .requires(source -> source.hasPermissionLevel(4))
-        .then(literal("betterBeacons")
-          .then(argument("value", BoolArgumentType.bool())
-            .executes(context -> {
-              cache.setProperty("beacons-enabled", ((Boolean) BoolArgumentType.getBool(context, "value")).toString());
-
-              try {
-                cache.flush();
-              } catch (IOException e) {
-                e.printStackTrace();
-              }
-
-              return reload(context);
-            })
           )
         )
       );
@@ -185,6 +153,29 @@ public class GameRuleCustomCommand {
   //   });
   // }
 
+  private void commandHelper(String rule, String configValue) {
+    CommandRegistrationCallback.EVENT.register((dispatcher, dedicated) -> {
+      dispatcher.register(literal("gamerule")
+        .requires(source -> source.hasPermissionLevel(4))
+        .then(literal(rule)
+          .then(argument("value", BoolArgumentType.bool())
+            .executes(context -> {
+              cache.setProperty(configValue, ((Boolean) BoolArgumentType.getBool(context, "value")).toString());
+
+              try {
+                cache.flush();
+              } catch (IOException e) {
+                e.printStackTrace();
+              }
+
+              return reload(context);
+            })
+          )
+        )
+      );
+    });
+  }  
+  
   private int executeCrystal(CommandContext<ServerCommandSource> context) {
 
     Boolean value = BoolArgumentType.getBool(context, "value");
