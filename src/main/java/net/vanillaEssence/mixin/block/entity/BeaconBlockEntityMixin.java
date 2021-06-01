@@ -1,4 +1,4 @@
-package net.vanillaEssence.mixin;
+package net.vanillaEssence.mixin.block.entity;
 
 import java.util.Iterator;
 import java.util.List;
@@ -40,9 +40,9 @@ import net.minecraft.util.math.Box;
 import net.vanillaEssence.util.PropertiesCache;
 
 @Mixin(BeaconBlockEntity.class)
-public abstract class BeaconMixin extends BlockEntity implements NamedScreenHandlerFactory, Tickable {
+public abstract class BeaconBlockEntityMixin extends BlockEntity implements NamedScreenHandlerFactory, Tickable {
 
-  public BeaconMixin() {
+  public BeaconBlockEntityMixin() {
 		super(BlockEntityType.BEACON);
 	}
 
@@ -79,13 +79,13 @@ public abstract class BeaconMixin extends BlockEntity implements NamedScreenHand
         public int get(int index) {
           switch (index) {
             case 0:
-              return BeaconMixin.this.level;
+              return BeaconBlockEntityMixin.this.level;
             case 1:
-              return StatusEffect.getRawId(BeaconMixin.this.primary);
+              return StatusEffect.getRawId(BeaconBlockEntityMixin.this.primary);
             case 2:
-              return StatusEffect.getRawId(BeaconMixin.this.secondary);
+              return StatusEffect.getRawId(BeaconBlockEntityMixin.this.secondary);
             case 3:
-              return Item.getRawId(BeaconMixin.this.payment);
+              return Item.getRawId(BeaconBlockEntityMixin.this.payment);
             default:
               return 0;
           }
@@ -94,19 +94,19 @@ public abstract class BeaconMixin extends BlockEntity implements NamedScreenHand
         public void set(int index, int value) {
           switch (index) {
             case 0:
-              BeaconMixin.this.level = value;
+              BeaconBlockEntityMixin.this.level = value;
               break;
             case 1:
-              if (!BeaconMixin.this.world.isClient && !BeaconMixin.this.beamSegments.isEmpty()) {
-                BeaconMixin.this.playSound(SoundEvents.BLOCK_BEACON_POWER_SELECT);
+              if (!BeaconBlockEntityMixin.this.world.isClient && !BeaconBlockEntityMixin.this.beamSegments.isEmpty()) {
+                BeaconBlockEntityMixin.this.playSound(SoundEvents.BLOCK_BEACON_POWER_SELECT);
               }
-              BeaconMixin.this.primary = BeaconMixin.getPotionEffectById(value);
+              BeaconBlockEntityMixin.this.primary = BeaconBlockEntityMixin.getPotionEffectById(value);
               break;
             case 2:
-              BeaconMixin.this.secondary = BeaconMixin.getPotionEffectById(value);
+              BeaconBlockEntityMixin.this.secondary = BeaconBlockEntityMixin.getPotionEffectById(value);
             case 3:
               if (Item.byRawId(value).isIn(ItemTags.BEACON_PAYMENT_ITEMS)) {
-                BeaconMixin.this.payment = Item.byRawId(value);
+                BeaconBlockEntityMixin.this.payment = Item.byRawId(value);
               }
           }
         }

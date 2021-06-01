@@ -1,4 +1,4 @@
-package net.vanillaEssence.mixin;
+package net.vanillaEssence.mixin.village;
 
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -11,7 +11,7 @@ import net.minecraft.village.TradeOffer;
 import net.vanillaEssence.util.PropertiesCache;
 
 @Mixin(TradeOffer.class)
-public class TradeMixin {
+public class TradeOfferMixin {
 
   @Shadow
   private int demandBonus;

@@ -1,4 +1,4 @@
-package net.vanillaEssence.mixin;
+package net.vanillaEssence.mixin.block;
 
 import java.util.Iterator;
 import java.util.Random;
@@ -10,7 +10,6 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -27,9 +26,9 @@ import net.minecraft.world.WorldView;
 import net.vanillaEssence.util.PropertiesCache;
 
 @Mixin(ScaffoldingBlock.class)
-public class ScaffoldingMixin extends Block {
+public class ScaffoldingBlockMixin extends Block {
 
-  public ScaffoldingMixin(AbstractBlock.Settings settings) {
+  public ScaffoldingBlockMixin(Settings settings) {
 		super(settings);
 	}
 

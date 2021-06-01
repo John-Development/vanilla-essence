@@ -1,4 +1,4 @@
-package net.vanillaEssence.mixin;
+package net.vanillaEssence.mixin.world;
 
 import java.util.List;
 import java.util.function.Predicate;
@@ -17,6 +17,7 @@ import net.minecraft.world.SpawnHelper;
 import net.minecraft.world.biome.SpawnSettings;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
+
 import net.vanillaEssence.util.PropertiesCache;
 
 @Mixin(SpawnHelper.class)
@@ -77,5 +78,4 @@ public abstract class SpawnHelperMixin {
     }
     return;
   }
-  
 }

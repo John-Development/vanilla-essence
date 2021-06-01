@@ -4,11 +4,12 @@
   "package": "net.vanillaEssence.mixin",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
-    "SpawnHelperMixin",
-    "NameTagMixin",
-    "BeaconMixin",
-    "VillagerTradeMixin",
-    "BeaconScreenMixin"
+    "world.SpawnHelperMixin",
+    "entity.PlayerEntityMixin",
+    "block.entity.BeaconBlockEntityMixin",
+    "entity.VillagerEntityMixin",
+    "screen.BeaconScreenHandlerMixin",
+    "entity.ItemEntityMixin"
   ],
   "client": [
   ],

@@ -1,4 +1,4 @@
-package net.vanillaEssence.mixin;
+package net.vanillaEssence.mixin.entity;
 
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -15,7 +15,7 @@ import net.minecraft.util.Hand;
 import net.vanillaEssence.util.PropertiesCache;
 
 @Mixin(PlayerEntity.class)
-public abstract class NameTagMixin {
+public abstract class PlayerEntityMixin {
 
   @Inject(
     method = "interact",
@@ -32,10 +32,11 @@ public abstract class NameTagMixin {
       ItemStack itemStack = ((PlayerEntity) (Object) this).getStackInHand(hand);
 
       if (itemStack.getItem().equals(Items.NAME_TAG)
-      && itemStack.hasCustomName()
-      && entity instanceof EndCrystalEntity
-      && !((EndCrystalEntity) entity).getShowBottom()
-      && cache.getProperty("crystal-name").equals(itemStack.getName().asString())) {
+        && itemStack.hasCustomName()
+        && entity instanceof EndCrystalEntity
+        && !((EndCrystalEntity) entity).getShowBottom()
+        && cache.getProperty("crystal-name").equals(itemStack.getName().asString())
+      ) {
         entity.setCustomName(itemStack.getName());
 
         itemStack.decrement(1);
