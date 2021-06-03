@@ -32,3 +32,5 @@ bin/
 
 runClient/
 runServer/
+
+*.7z
