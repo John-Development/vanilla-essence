@@ -34,7 +34,7 @@ public abstract class PlayerEntityMixin {
       if (itemStack.getItem().equals(Items.NAME_TAG)
         && itemStack.hasCustomName()
         && entity instanceof EndCrystalEntity
-        && !((EndCrystalEntity) entity).getShowBottom()
+        && !((EndCrystalEntity) entity).shouldShowBottom()
         && cache.getProperty("crystal-name").equals(itemStack.getName().asString())
       ) {
         entity.setCustomName(itemStack.getName());

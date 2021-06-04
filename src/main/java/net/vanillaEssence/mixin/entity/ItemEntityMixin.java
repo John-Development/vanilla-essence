@@ -12,8 +12,8 @@ import net.minecraft.entity.MovementType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
+import net.minecraft.nbt.NbtList;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
@@ -71,7 +71,7 @@ public abstract class ItemEntityMixin extends Entity {
           this.pushOutOfBlocks(this.getX(), (this.getBoundingBox().minY + this.getBoundingBox().maxY) / 2.0D, this.getZ());
       }
 
-      if (this.lastTargetUpdateTick < this.renderTicks - 20 + this.getEntityId() % 100) {
+      if (this.lastTargetUpdateTick < this.renderTicks - 20 + this.getId() % 100) {
           if (this.target == null || this.target.squaredDistanceTo(this) > 64.0D) {
             this.target = this.world.getClosestPlayer(this, 8.0D);
           }
@@ -86,9 +86,9 @@ public abstract class ItemEntityMixin extends Entity {
       if (this.target != null) {
         Iterable<ItemStack> equipped = target.getItemsEquipped();
         for (ItemStack itemStack : equipped) {
-          ListTag listTag = itemStack.getEnchantments();
+          NbtList listTag = itemStack.getEnchantments();
           if (!itemStack.getItem().equals(Items.FISHING_ROD)) {
-            for (Tag tag : listTag) {
+            for (NbtElement tag : listTag) {
               
               // Example: {lvl:1s,id:"minecraft:protection"};
               Boolean hasLure = tag.toString().contains("id:\"minecraft:lure\"");
@@ -118,7 +118,7 @@ public abstract class ItemEntityMixin extends Entity {
                 ++this.renderTicks;
                 ++this.orbAge;
                 if (this.orbAge >= 6000) {
-                    this.remove();
+                    this.remove(RemovalReason.UNLOADED_WITH_PLAYER);
                 }
               }
             }

@@ -6,7 +6,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.village.TradeOffer;
 import net.vanillaEssence.util.PropertiesCache;
 
@@ -21,9 +21,9 @@ public class TradeOfferMixin {
     at = @At("TAIL")
   )
   private void init(
-    CompoundTag compoundTag,
+    NbtCompound nbt,
     CallbackInfo cir
   ) {
-    this.demandBonus = compoundTag.getInt("demand") - 15 * Integer.parseInt(PropertiesCache.getInstance().getProperty("vill-daily-restocks"));
+    this.demandBonus = nbt.getInt("demand") - 15 * Integer.parseInt(PropertiesCache.getInstance().getProperty("vill-daily-restocks"));
   }
 }

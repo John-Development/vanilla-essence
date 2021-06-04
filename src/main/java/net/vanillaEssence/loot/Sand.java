@@ -3,7 +3,7 @@ package net.vanillaEssence.loot;
 import net.fabricmc.fabric.api.loot.v1.FabricLootPoolBuilder;
 import net.fabricmc.fabric.api.loot.v1.event.LootTableLoadingCallback;
 import net.minecraft.item.Items;
-import net.minecraft.loot.UniformLootTableRange;
+import net.minecraft.loot.provider.number.UniformLootNumberProvider;
 import net.minecraft.loot.condition.KilledByPlayerLootCondition;
 import net.minecraft.loot.entry.ItemEntry;
 import net.minecraft.loot.function.LootingEnchantLootFunction;
@@ -27,7 +27,7 @@ public class Sand {
     LootTableLoadingCallback.EVENT.register((resourceManager, lootManager, id, supplier, setter) -> {
       if (HUSK_LOOT_TABLE_ID.equals(id) && Boolean.parseBoolean(cache.getProperty("sand-enabled"))) {
         FabricLootPoolBuilder poolBuilder = FabricLootPoolBuilder.builder()
-          .withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0, 1.5f)).build())
+          .withFunction(LootingEnchantLootFunction.builder(UniformLootNumberProvider.create(0, 1.5f)).build())
           .withEntry(ItemEntry.builder(Items.SAND)
             .weight(1)
             .conditionally(KilledByPlayerLootCondition.builder())

@@ -24,8 +24,9 @@ import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.screen.PropertyDelegate;
 import net.minecraft.sound.SoundCategory;
@@ -33,17 +34,16 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.ItemTags;
-import net.minecraft.util.Tickable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 
 import net.vanillaEssence.util.PropertiesCache;
 
 @Mixin(BeaconBlockEntity.class)
-public abstract class BeaconBlockEntityMixin extends BlockEntity implements NamedScreenHandlerFactory, Tickable {
+public abstract class BeaconBlockEntityMixin extends BlockEntity implements NamedScreenHandlerFactory {
 
-  public BeaconBlockEntityMixin() {
-		super(BlockEntityType.BEACON);
+  public BeaconBlockEntityMixin(BlockPos pos, BlockState state) {
+		super(BlockEntityType.BEACON, pos, state);
 	}
 
   @Shadow
@@ -100,12 +100,12 @@ public abstract class BeaconBlockEntityMixin extends BlockEntity implements Name
               if (!BeaconBlockEntityMixin.this.world.isClient && !BeaconBlockEntityMixin.this.beamSegments.isEmpty()) {
                 BeaconBlockEntityMixin.this.playSound(SoundEvents.BLOCK_BEACON_POWER_SELECT);
               }
-              BeaconBlockEntityMixin.this.primary = BeaconBlockEntityMixin.getPotionEffectById(value);
+              BeaconBlockEntityMixin.this.primary = getPotionEffectById(value);
               break;
             case 2:
-              BeaconBlockEntityMixin.this.secondary = BeaconBlockEntityMixin.getPotionEffectById(value);
+              BeaconBlockEntityMixin.this.secondary = getPotionEffectById(value);
             case 3:
-              if (Item.byRawId(value).isIn(ItemTags.BEACON_PAYMENT_ITEMS)) {
+              if (new ItemStack(Item.byRawId(value)).isIn(ItemTags.BEACON_PAYMENT_ITEMS)) {
                 BeaconBlockEntityMixin.this.payment = Item.byRawId(value);
               }
           }
@@ -127,24 +127,24 @@ public abstract class BeaconBlockEntityMixin extends BlockEntity implements Name
     StatusEffect statusEffect = StatusEffect.byRawId(id);
     return EFFECTS.contains(statusEffect) ? statusEffect : null;
   }
- 
+
   @Inject(
-    method = "toTag",
+    method = "writeNbt",
     at = @At("HEAD")
   )
-  public void toTag(CompoundTag tag, CallbackInfoReturnable<CompoundTag> cir) {
+  public void writeNbt(NbtCompound nbt, CallbackInfoReturnable<NbtCompound> cir) {
     if (Boolean.parseBoolean(PropertiesCache.getInstance().getProperty("beacons-enabled"))) {
-      tag.putInt("payment", Item.getRawId(this.payment));
+      nbt.putInt("payment", Item.getRawId(this.payment));
     }
   }
 
   @Inject(
-    method = "fromTag",
+    method = "readNbt",
     at = @At("HEAD")
   )
-  public void fromTag(BlockState state, CompoundTag tag, CallbackInfo cir) {
+  public void readNbt(BlockState state, NbtCompound nbt, CallbackInfo cir) {
     if (Boolean.parseBoolean(PropertiesCache.getInstance().getProperty("beacons-enabled"))) {
-      this.payment = Item.byRawId(tag.getInt("payment"));
+      this.payment = Item.byRawId(nbt.getInt("payment"));
     }
   }
 
