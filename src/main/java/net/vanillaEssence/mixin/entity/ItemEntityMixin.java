@@ -117,55 +117,6 @@ public abstract class ItemEntityMixin extends Entity {
           }
         }
       }
-
-      // if (this.target != null) {
-      //   Iterable<ItemStack> equipped = target.getItemsEquipped();
-      //   for (ItemStack itemStack : equipped) {
-      //     NbtList listTag = itemStack.getEnchantments();
-      //     if (!itemStack.getItem().equals(Items.FISHING_ROD)) {
-      //       for (NbtElement tag : listTag) {
-              
-      //         // Example: {lvl:1s,id:"minecraft:protection"};
-      //         Boolean hasLure = tag.toString().contains("id:\"minecraft:lure\"");
-      
-      //         if (hasLure) {
-      //           int lvl = Integer.parseInt(Character.toString(tag.toString().charAt(5)));
-
-      //           // attracts every item as an xp orb
-      //           Vec3d vec3d = new Vec3d(this.target.getX() - this.getX(), this.target.getY() + (double)this.target.getStandingEyeHeight() / 2.0D - this.getY(), this.target.getZ() - this.getZ());
-      //           double e = vec3d.lengthSquared();
-      //           if (e < 64.0D) {
-      //             double f = 1.0D - Math.sqrt(e) / 8.0D;
-      //             this.setVelocity(this.getVelocity().add(vec3d.normalize().multiply(lvl * f * f * 0.1D)));
-      //           }
-
-      //           this.move(MovementType.SELF, this.getVelocity());
-      //           float g = 0.98F;
-      //           if (this.onGround) {
-      //               g = this.world.getBlockState(new BlockPos(this.getX(), this.getY() - 1.0D, this.getZ())).getBlock().getSlipperiness() * 0.98F;
-      //           }
-
-      //           this.setVelocity(this.getVelocity().multiply((double)g, 0.98D, (double)g));
-      //           if (this.onGround) {
-      //               this.setVelocity(this.getVelocity().multiply(1.0D, -0.9D, 1.0D));
-      //           }
-
-      //           ++this.renderTicks;
-      //           ++this.orbAge;
-      //           if (this.orbAge >= 6000) {
-      //               this.remove(RemovalReason.UNLOADED_WITH_PLAYER);
-      //           }
-      //         }
-      //       }
-      //     }
-      //   }
-      // }
-    }
-  }
-
-  private void onEverySecond() {
-    if (this.target == null || this.target.squaredDistanceTo(this) > 64.0D) {
-       this.target = this.world.getClosestPlayer(this, 8.0D);
     }
   }
 }
