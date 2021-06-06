@@ -4,11 +4,13 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.google.common.collect.Lists;
 
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Mutable;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -27,6 +29,7 @@ import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.entity.BeaconBlockEntity.BeamSegment;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -57,9 +60,12 @@ public abstract class BeaconBlockEntityMixin extends BlockEntity implements Name
   @Shadow
   private StatusEffect secondary;
   @Shadow
+  @Mutable
   private PropertyDelegate propertyDelegate;
   @Shadow
   private List<BeamSegmentMixin> beamSegments = Lists.newArrayList();
+  @Shadow
+  public static StatusEffect[][] EFFECTS_BY_LEVEL;
   @Shadow
   private static Set<StatusEffect> EFFECTS;
   @Shadow
@@ -78,7 +84,7 @@ public abstract class BeaconBlockEntityMixin extends BlockEntity implements Name
   int netheriteBlocks = 0;
 
   @Inject(
-    method = "<init>()V",
+    method = "<init>(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/BlockState;)V",
     at = @At("TAIL")
   )
   private void init(BlockPos pos, BlockState state, CallbackInfo cir) {
@@ -125,12 +131,6 @@ public abstract class BeaconBlockEntityMixin extends BlockEntity implements Name
         public int size() {
           return 4;
         }
-
-        @Nullable
-        static StatusEffect getPotionEffectById(int id) {
-          StatusEffect statusEffect = StatusEffect.byRawId(id);
-          return EFFECTS.contains(statusEffect) ? statusEffect : null;
-        }
       };
     }
   }
@@ -153,6 +153,12 @@ public abstract class BeaconBlockEntityMixin extends BlockEntity implements Name
     if (Boolean.parseBoolean(PropertiesCache.getInstance().getProperty("beacons-enabled"))) {
       this.payment = Item.byRawId(nbt.getInt("payment"));
     }
+  }
+
+  @Nullable @Overwrite
+  public static StatusEffect getPotionEffectById(int id) {
+    StatusEffect statusEffect = StatusEffect.byRawId(id);
+    return EFFECTS.contains(statusEffect) ? statusEffect : null;
   }
 
   @Overwrite
@@ -421,5 +427,10 @@ public abstract class BeaconBlockEntityMixin extends BlockEntity implements Name
     public int getHeight() {
       return this.height;
     }
+  }
+
+  static {
+    EFFECTS_BY_LEVEL = new StatusEffect[][]{{StatusEffects.SPEED, StatusEffects.HASTE}, {StatusEffects.RESISTANCE, StatusEffects.JUMP_BOOST}, {StatusEffects.STRENGTH}, {StatusEffects.REGENERATION}};
+    EFFECTS = Arrays.stream(EFFECTS_BY_LEVEL).flatMap(Arrays::stream).collect(Collectors.toSet());
   }
 }
