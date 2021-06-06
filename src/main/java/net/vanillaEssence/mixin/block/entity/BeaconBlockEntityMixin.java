@@ -24,6 +24,7 @@ import net.minecraft.block.Stainable;
 import net.minecraft.block.entity.BeaconBlockEntity;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.block.entity.BeaconBlockEntity.BeamSegment;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
@@ -58,13 +59,13 @@ public abstract class BeaconBlockEntityMixin extends BlockEntity implements Name
   @Shadow
   private PropertyDelegate propertyDelegate;
   @Shadow
-  private List<BeamSegment> beamSegments = Lists.newArrayList();
+  private List<BeamSegmentMixin> beamSegments = Lists.newArrayList();
   @Shadow
   private static Set<StatusEffect> EFFECTS;
   @Shadow
   private int minY;
   @Shadow
-  private List<BeamSegment> field_19178 = Lists.newArrayList();
+  private List<BeamSegmentMixin> field_19178 = Lists.newArrayList();
 
   Item payment;
   double bonus;
@@ -83,6 +84,7 @@ public abstract class BeaconBlockEntityMixin extends BlockEntity implements Name
   private void init(BlockPos pos, BlockState state, CallbackInfo cir) {
     if (Boolean.parseBoolean(PropertiesCache.getInstance().getProperty("beacons-enabled"))) {
       this.propertyDelegate = new PropertyDelegate() {
+        @Override
         public int get(int index) {
           switch (index) {
             case 0:
@@ -98,6 +100,7 @@ public abstract class BeaconBlockEntityMixin extends BlockEntity implements Name
           }
         }
 
+        @Override
         public void set(int index, int value) {
           switch (index) {
             case 0:
@@ -118,6 +121,7 @@ public abstract class BeaconBlockEntityMixin extends BlockEntity implements Name
           }
         }
 
+        @Override
         public int size() {
           return 4;
         }
@@ -167,7 +171,7 @@ public abstract class BeaconBlockEntityMixin extends BlockEntity implements Name
         blockPos2 = new BlockPos(i, blockEntityMixin.minY + 1, k);
     }
 
-    BeamSegment beamSegment = blockEntityMixin.field_19178.isEmpty() ? null : blockEntityMixin.field_19178.get(blockEntityMixin.field_19178.size() - 1);
+    BeamSegmentMixin beamSegment = blockEntityMixin.field_19178.isEmpty() ? null : blockEntityMixin.field_19178.get(blockEntityMixin.field_19178.size() - 1);
     int l = world.getTopY(Heightmap.Type.WORLD_SURFACE, i, k);
 
     int n;
@@ -177,13 +181,13 @@ public abstract class BeaconBlockEntityMixin extends BlockEntity implements Name
         if (block instanceof Stainable) {
           float[] fs = ((Stainable)block).getColor().getColorComponents();
           if (blockEntityMixin.field_19178.size() <= 1) {
-              beamSegment = new BeamSegment(fs);
+              beamSegment = blockEntityMixin.new BeamSegmentMixin(fs);
               blockEntityMixin.field_19178.add(beamSegment);
           } else if (beamSegment != null) {
               if (Arrays.equals(fs, beamSegment.getColor())) {
                 beamSegment.increaseHeight();
               } else {
-                beamSegment = new BeamSegment(new float[]{(beamSegment.getColor()[0] + fs[0]) / 2.0F, (beamSegment.getColor()[1] + fs[1]) / 2.0F, (beamSegment.getColor()[2] + fs[2]) / 2.0F});
+                beamSegment = blockEntityMixin.new BeamSegmentMixin(new float[]{(beamSegment.getColor()[0] + fs[0]) / 2.0F, (beamSegment.getColor()[1] + fs[1]) / 2.0F, (beamSegment.getColor()[2] + fs[2]) / 2.0F});
                 blockEntityMixin.field_19178.add(beamSegment);
               }
           }
@@ -393,23 +397,27 @@ public abstract class BeaconBlockEntityMixin extends BlockEntity implements Name
     return internalLevel;
   }
 
-  public static class BeamSegment {
+  private final class BeamSegmentMixin extends BeamSegment {
     final float[] color;
     private int height;
 
-    public BeamSegment(float[] color) {
+    public BeamSegmentMixin(float[] color) {
+      super(color);
       this.color = color;
       this.height = 1;
     }
 
-    protected void increaseHeight() {
+    @Override
+    public void increaseHeight() {
       ++this.height;
     }
-
+    
+    @Override
     public float[] getColor() {
       return this.color;
     }
-
+    
+    @Override
     public int getHeight() {
       return this.height;
     }
