@@ -1,5 +1,6 @@
 package net.vanillaEssence.mixin.block.entity;
 
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -8,18 +9,21 @@ import com.google.common.collect.Lists;
 
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import net.minecraft.advancement.criterion.Criteria;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.Stainable;
 import net.minecraft.block.entity.BeaconBlockEntity;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.block.entity.BeaconBlockEntity.BeamSegment;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
@@ -29,19 +33,18 @@ import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.screen.PropertyDelegate;
-import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvent;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.ItemTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
-
+import net.minecraft.world.Heightmap;
+import net.minecraft.world.World;
 import net.vanillaEssence.util.PropertiesCache;
 
 @Mixin(BeaconBlockEntity.class)
 public abstract class BeaconBlockEntityMixin extends BlockEntity implements NamedScreenHandlerFactory {
-
   public BeaconBlockEntityMixin(BlockPos pos, BlockState state) {
 		super(BlockEntityType.BEACON, pos, state);
 	}
@@ -58,6 +61,10 @@ public abstract class BeaconBlockEntityMixin extends BlockEntity implements Name
   private List<BeamSegment> beamSegments = Lists.newArrayList();
   @Shadow
   private static Set<StatusEffect> EFFECTS;
+  @Shadow
+  private int minY;
+  @Shadow
+  private List<BeamSegment> field_19178 = Lists.newArrayList();
 
   Item payment;
   double bonus;
@@ -73,7 +80,7 @@ public abstract class BeaconBlockEntityMixin extends BlockEntity implements Name
     method = "<init>()V",
     at = @At("TAIL")
   )
-  private void init(CallbackInfo cir) {
+  private void init(BlockPos pos, BlockState state, CallbackInfo cir) {
     if (Boolean.parseBoolean(PropertiesCache.getInstance().getProperty("beacons-enabled"))) {
       this.propertyDelegate = new PropertyDelegate() {
         public int get(int index) {
@@ -98,7 +105,7 @@ public abstract class BeaconBlockEntityMixin extends BlockEntity implements Name
               break;
             case 1:
               if (!BeaconBlockEntityMixin.this.world.isClient && !BeaconBlockEntityMixin.this.beamSegments.isEmpty()) {
-                BeaconBlockEntityMixin.this.playSound(SoundEvents.BLOCK_BEACON_POWER_SELECT);
+                BeaconBlockEntity.playSound(BeaconBlockEntityMixin.this.world, pos, SoundEvents.BLOCK_BEACON_POWER_SELECT);
               }
               BeaconBlockEntityMixin.this.primary = getPotionEffectById(value);
               break;
@@ -114,18 +121,14 @@ public abstract class BeaconBlockEntityMixin extends BlockEntity implements Name
         public int size() {
           return 4;
         }
+
+        @Nullable
+        static StatusEffect getPotionEffectById(int id) {
+          StatusEffect statusEffect = StatusEffect.byRawId(id);
+          return EFFECTS.contains(statusEffect) ? statusEffect : null;
+        }
       };
     }
-  }
-
-  public void playSound(SoundEvent soundEvent) {
-    this.world.playSound((PlayerEntity) null, this.pos, soundEvent, SoundCategory.BLOCKS, 1.0F, 1.0F);
-  }
-
-  @Nullable
-  private static StatusEffect getPotionEffectById(int id) {
-    StatusEffect statusEffect = StatusEffect.byRawId(id);
-    return EFFECTS.contains(statusEffect) ? statusEffect : null;
   }
 
   @Inject(
@@ -142,150 +145,273 @@ public abstract class BeaconBlockEntityMixin extends BlockEntity implements Name
     method = "readNbt",
     at = @At("HEAD")
   )
-  public void readNbt(BlockState state, NbtCompound nbt, CallbackInfo cir) {
+  public void readNbt(NbtCompound nbt, CallbackInfo cir) {
     if (Boolean.parseBoolean(PropertiesCache.getInstance().getProperty("beacons-enabled"))) {
       this.payment = Item.byRawId(nbt.getInt("payment"));
     }
   }
 
-  @Inject(
-    method = "updateLevel",
-    at = @At("HEAD"),
-    cancellable = true
-  )
-  private void updateLevel(int x, int y, int z, CallbackInfo ci) {
-    if (Boolean.parseBoolean(PropertiesCache.getInstance().getProperty("beacons-enabled"))) {
-      this.level = 0;
-      this.range = 0;
+  @Overwrite
+  public static void tick(World world, BlockPos pos, BlockState state, BeaconBlockEntity blockEntity) {
+    BeaconBlockEntityMixin blockEntityMixin = ((BeaconBlockEntityMixin) (Object) blockEntity);
 
-      this.ironBlocks = 0;
-      this.goldBlocks = 0;
-      this.emeraldBlocks = 0;
-      this.diamondBlocks = 0;
-      this.netheriteBlocks = 0;
+    int i = pos.getX();
+    int j = pos.getY();
+    int k = pos.getZ();
+    BlockPos blockPos2;
+    if (blockEntityMixin.minY < j) {
+        blockPos2 = pos;
+        blockEntityMixin.field_19178 = Lists.newArrayList();
+        blockEntityMixin.minY = pos.getY() - 1;
+    } else {
+        blockPos2 = new BlockPos(i, blockEntityMixin.minY + 1, k);
+    }
 
-      for(int i = 1; i <= 4; this.level = i++) {
-        int counterIron = 0;
-        int counterGold = 0;
-        int counterEmerald = 0;
-        int counterDiamond = 0;
-        int counterNetherite = 0;
+    BeamSegment beamSegment = blockEntityMixin.field_19178.isEmpty() ? null : blockEntityMixin.field_19178.get(blockEntityMixin.field_19178.size() - 1);
+    int l = world.getTopY(Heightmap.Type.WORLD_SURFACE, i, k);
 
-        int j = y - i;
-        if (j < 0) {
-          break;
-        }
-
-        boolean bl = true;
-
-        for(int k = x - i; k <= x + i && bl; ++k) {
-          for(int l = z - i; l <= z + i; ++l) {
-            if (!this.world.getBlockState(new BlockPos(k, j, l)).isIn(BlockTags.BEACON_BASE_BLOCKS)) {
-              bl = false;
-              break;
-            }
-            if (this.world.getBlockState(new BlockPos(k, j, l)).isOf(Blocks.IRON_BLOCK)) {
-              counterIron++;
-            } else if (this.world.getBlockState(new BlockPos(k, j, l)).isOf(Blocks.GOLD_BLOCK)) {
-              counterGold++;
-            } else if (this.world.getBlockState(new BlockPos(k, j, l)).isOf(Blocks.EMERALD_BLOCK)) {
-              counterEmerald++;
-            } else if (this.world.getBlockState(new BlockPos(k, j, l)).isOf(Blocks.DIAMOND_BLOCK)) {
-              counterDiamond++;
-            } else if (this.world.getBlockState(new BlockPos(k, j, l)).isOf(Blocks.NETHERITE_BLOCK)) {
-              counterNetherite++;
-            }
+    int n;
+    for(n = 0; n < 10 && blockPos2.getY() <= l; ++n) {
+        BlockState blockState = world.getBlockState(blockPos2);
+        Block block = blockState.getBlock();
+        if (block instanceof Stainable) {
+          float[] fs = ((Stainable)block).getColor().getColorComponents();
+          if (blockEntityMixin.field_19178.size() <= 1) {
+              beamSegment = new BeamSegment(fs);
+              blockEntityMixin.field_19178.add(beamSegment);
+          } else if (beamSegment != null) {
+              if (Arrays.equals(fs, beamSegment.getColor())) {
+                beamSegment.increaseHeight();
+              } else {
+                beamSegment = new BeamSegment(new float[]{(beamSegment.getColor()[0] + fs[0]) / 2.0F, (beamSegment.getColor()[1] + fs[1]) / 2.0F, (beamSegment.getColor()[2] + fs[2]) / 2.0F});
+                blockEntityMixin.field_19178.add(beamSegment);
+              }
           }
+        } else {
+          if (beamSegment == null || blockState.getOpacity(world, blockPos2) >= 15 && !blockState.isOf(Blocks.BEDROCK)) {
+              blockEntityMixin.field_19178.clear();
+              blockEntityMixin.minY = l;
+              break;
+          }
+
+          beamSegment.increaseHeight();
         }
 
-        if (!bl) {
-          break;
-        }
+        blockPos2 = blockPos2.up();
+        ++blockEntityMixin.minY;
+    }
 
-        ironBlocks += counterIron;
-        goldBlocks += counterGold;
-        emeraldBlocks += counterEmerald;
-        diamondBlocks += counterDiamond;
-        netheriteBlocks += counterNetherite;
+    n = blockEntityMixin.level;
+    if (world.getTime() % 80L == 0L) {
+      if (!blockEntityMixin.beamSegments.isEmpty()) {
+        blockEntityMixin.level = updateLevel(blockEntityMixin, world, i, j, k);
       }
-      ci.cancel();
+
+      if (blockEntityMixin.level > 0 && !blockEntityMixin.beamSegments.isEmpty()) {
+        applyPlayerEffects(world, pos, blockEntityMixin);
+        BeaconBlockEntity.playSound(world, pos, SoundEvents.BLOCK_BEACON_AMBIENT);
+      }
+    }
+
+    if (blockEntityMixin.minY >= l) {
+      blockEntityMixin.minY = world.getBottomY() - 1;
+      boolean bl = n > 0;
+      blockEntityMixin.beamSegments = blockEntityMixin.field_19178;
+      if (!world.isClient) {
+        boolean bl2 = blockEntityMixin.level > 0;
+        if (!bl && bl2) {
+          BeaconBlockEntity.playSound(world, pos, SoundEvents.BLOCK_BEACON_ACTIVATE);
+          Iterator<ServerPlayerEntity> var17 = world.getNonSpectatingEntities(ServerPlayerEntity.class, (new Box((double)i, (double)j, (double)k, (double)i, (double)(j - 4), (double)k)).expand(10.0D, 5.0D, 10.0D)).iterator();
+
+          while(var17.hasNext()) {
+            ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)var17.next();
+            Criteria.CONSTRUCT_BEACON.trigger(serverPlayerEntity, blockEntityMixin.level);
+          }
+        } else if (bl && !bl2) {
+          BeaconBlockEntity.playSound(world, pos, SoundEvents.BLOCK_BEACON_DEACTIVATE);
+        }
+      }
     }
   }
 
-  private int totalBlocks (int l) {
+  private static int totalBlocks (int l) {
     return (l == 0) ? l : totalBlocks(l - 1) + (int)Math.pow(2 * l + 1, 2);
   }
 
-  private double floorDouble (double l) {
+  private static double floorDouble (double l) {
     return Math.floor(l * 100) / 100;
   }
 
-  @Inject(
-    method = "applyPlayerEffects",
-    at = @At("HEAD"),
-    cancellable = true
-  )
-  private void applyPlayerEffects(CallbackInfo ci) {
-    if (!this.world.isClient && this.primary != null) {
+  private static void applyPlayerEffects(World world, BlockPos pos, BeaconBlockEntityMixin blockEntityMixin) {
+    StatusEffect primaryEffect = blockEntityMixin.primary;
+    
+    if (!world.isClient && primaryEffect != null) {
+      StatusEffect secondaryEffect = blockEntityMixin.secondary;
+
+      int beaconLevel = blockEntityMixin.level;
+      double beaconRange = blockEntityMixin.range;
+      double beaconBonus = blockEntityMixin.bonus;
+      Item beaconPayment = blockEntityMixin.payment;
+
+      int beaconIronBlocks = blockEntityMixin.ironBlocks;
+      int beaconGoldBlocks = blockEntityMixin.goldBlocks;
+      int beaconEmeraldBlocks = blockEntityMixin.emeraldBlocks;
+      int beaconDiamondBlocks = blockEntityMixin.diamondBlocks;
+      int beaconNetheriteBlocks = blockEntityMixin.netheriteBlocks;
+
       double d;
-      int i, j;
+
+      int i = 0;
+      if (beaconLevel >= 4 && primaryEffect == secondaryEffect) {
+        i = 1;
+      }
+
+      int j = (9 + beaconLevel * 2) * 20;
+
       if (Boolean.parseBoolean(PropertiesCache.getInstance().getProperty("beacons-enabled"))) {
         // La formula del nivel: f(x) = f(x-1) + (2x+1)^2
 
-        int blocks = this.totalBlocks(this.level);
+        int blocks = totalBlocks(beaconLevel);
 
-        this.range = floorDouble(
-          (double)this.ironBlocks * floorDouble(((double)this.level * 10 + 10)/blocks)
-          + (double)this.goldBlocks * floorDouble(((double)this.level * 15 + 15)/blocks)
-          + (double)this.emeraldBlocks * floorDouble(((double)this.level * 25 + 25)/blocks)
-          + (double)this.diamondBlocks * floorDouble(((double)this.level * 30 + 30)/blocks)
-          + (double)this.netheriteBlocks * floorDouble(((double)this.level * 40 + 40)/blocks)
+        beaconRange = floorDouble(
+          (double)beaconIronBlocks * floorDouble(((double)beaconLevel * 10 + 10)/blocks)
+          + (double)beaconGoldBlocks * floorDouble(((double)beaconLevel * 15 + 15)/blocks)
+          + (double)beaconEmeraldBlocks * floorDouble(((double)beaconLevel * 25 + 25)/blocks)
+          + (double)beaconDiamondBlocks * floorDouble(((double)beaconLevel * 30 + 30)/blocks)
+          + (double)beaconNetheriteBlocks * floorDouble(((double)beaconLevel * 40 + 40)/blocks)
         );
 
-        i = 0;
 
-        if (this.level >= 4 && this.primary == this.secondary) {
-          i = 1;
-        }
-
-        j = (9 + this.level * 2) * 20;
-        if (this.payment != null) {
-          if (this.payment.equals(Items.IRON_INGOT)) {
+        if (beaconPayment != null) {
+          if (beaconPayment.equals(Items.IRON_INGOT)) {
             // Nothing
-          } else if (this.payment.equals(Items.GOLD_INGOT)) {
+          } else if (beaconPayment.equals(Items.GOLD_INGOT)) {
             j += j * 25/100;
-          } else if (this.payment.equals(Items.EMERALD)) {
-            this.bonus = this.range * 5/100;
-          } else if (this.payment.equals(Items.DIAMOND)) {
-            this.bonus = this.range * 20/100;
-          } else if (this.payment.equals(Items.NETHERITE_INGOT)) { 
-            this.bonus = this.range * 20/100;
+          } else if (beaconPayment.equals(Items.EMERALD)) {
+            beaconBonus = beaconRange * 5/100;
+          } else if (beaconPayment.equals(Items.DIAMOND)) {
+            beaconBonus = beaconRange * 20/100;
+          } else if (beaconPayment.equals(Items.NETHERITE_INGOT)) {
+            beaconBonus = beaconRange * 20/100;
             j += j * 25/100;
           }
         }
 
-        d = this.range + this.bonus;
-
-        Box box = (new Box(this.pos)).expand(d).stretch(0.0D, (double)this.world.getHeight(), 0.0D);
-        List<PlayerEntity> list = this.world.getNonSpectatingEntities(PlayerEntity.class, box);
-        Iterator<PlayerEntity> var7 = list.iterator();
-
-        PlayerEntity playerEntity2;
-        while(var7.hasNext()) {
-          playerEntity2 = (PlayerEntity)var7.next();
-          playerEntity2.addStatusEffect(new StatusEffectInstance(this.primary, j, i, true, true));
-        }
-
-        if (this.level >= 4 && this.primary != this.secondary && this.secondary != null) {
-          var7 = list.iterator();
-
-          while(var7.hasNext()) {
-            playerEntity2 = (PlayerEntity)var7.next();
-            playerEntity2.addStatusEffect(new StatusEffectInstance(this.secondary, j, 0, true, true));
-          }
-        }
-        ci.cancel(); 
+        d = beaconRange + beaconBonus;
+      } else {
+        d = (double)(beaconLevel * 10 + 10);
       }
+
+      Box box = (new Box(pos)).expand(d).stretch(0.0D, (double)world.getHeight(), 0.0D);
+      List<PlayerEntity> list = world.getNonSpectatingEntities(PlayerEntity.class, box);
+      Iterator<PlayerEntity> var11 = list.iterator();
+
+      PlayerEntity playerEntity2;
+      while(var11.hasNext()) {
+        playerEntity2 = var11.next();
+        playerEntity2.addStatusEffect(new StatusEffectInstance(primaryEffect, j, i, true, true));
+      }
+
+      if (beaconLevel >= 4 && primaryEffect != secondaryEffect && secondaryEffect != null) {
+        var11 = list.iterator();
+
+        while(var11.hasNext()) {
+          playerEntity2 = var11.next();
+          playerEntity2.addStatusEffect(new StatusEffectInstance(secondaryEffect, j, 0, true, true));
+        }
+      }
+    }
+  }
+
+  private static int updateLevel(BeaconBlockEntityMixin blockEntityMixin, World world, int x, int y, int z) {
+    int internalLevel = 0;
+    int internalRange = 0;
+
+    int internalIronBlocks = 0;
+    int internalGoldBlocks = 0;
+    int internalEmeraldBlocks = 0;
+    int internalDiamondBlocks = 0;
+    int internalNetheriteBlocks = 0;
+
+    for(int i = 1; i <= 4; internalLevel = i++) {
+      int counterIron = 0;
+      int counterGold = 0;
+      int counterEmerald = 0;
+      int counterDiamond = 0;
+      int counterNetherite = 0;
+
+      int j = y - i;
+      if (j < world.getBottomY()) {
+        break;
+      }
+
+      boolean bl = true;
+
+      for(int k = x - i; k <= x + i && bl; ++k) {
+        for(int l = z - i; l <= z + i; ++l) {
+          BlockState blockState = world.getBlockState(new BlockPos(k, j, l));
+
+          if (!blockState.isIn(BlockTags.BEACON_BASE_BLOCKS)) {
+            bl = false;
+            break;
+          }
+
+          if (blockState.isOf(Blocks.IRON_BLOCK)) {
+            counterIron++;
+          } else if (blockState.isOf(Blocks.GOLD_BLOCK)) {
+            counterGold++;
+          } else if (blockState.isOf(Blocks.EMERALD_BLOCK)) {
+            counterEmerald++;
+          } else if (blockState.isOf(Blocks.DIAMOND_BLOCK)) {
+            counterDiamond++;
+          } else if (blockState.isOf(Blocks.NETHERITE_BLOCK)) {
+            counterNetherite++;
+          }
+        }
+      }
+
+      if (!bl) {
+        break;
+      }
+
+      internalIronBlocks += counterIron;
+      internalGoldBlocks += counterGold;
+      internalEmeraldBlocks += counterEmerald;
+      internalDiamondBlocks += counterDiamond;
+      internalNetheriteBlocks += counterNetherite;
+    }
+
+    if (Boolean.parseBoolean(PropertiesCache.getInstance().getProperty("beacons-enabled"))) {
+      blockEntityMixin.range = internalRange;
+      blockEntityMixin.ironBlocks = internalIronBlocks;
+      blockEntityMixin.goldBlocks = internalGoldBlocks;
+      blockEntityMixin.emeraldBlocks = internalEmeraldBlocks;
+      blockEntityMixin.diamondBlocks = internalDiamondBlocks;
+      blockEntityMixin.netheriteBlocks = internalNetheriteBlocks;
+    }
+
+    return internalLevel;
+  }
+
+  public static class BeamSegment {
+    final float[] color;
+    private int height;
+
+    public BeamSegment(float[] color) {
+      this.color = color;
+      this.height = 1;
+    }
+
+    protected void increaseHeight() {
+      ++this.height;
+    }
+
+    public float[] getColor() {
+      return this.color;
+    }
+
+    public int getHeight() {
+      return this.height;
     }
   }
 }

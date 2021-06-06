@@ -78,17 +78,15 @@ public abstract class ItemEntityMixin extends Entity {
       if (this.target != null) {
         Iterable<ItemStack> equipped = target.getItemsEquipped();
         for (ItemStack itemStack : equipped) {
-          NbtList listTag = itemStack.getEnchantments();
+          NbtList nbtList = itemStack.getEnchantments();
           if (!itemStack.getItem().equals(Items.FISHING_ROD)) {
-            for (NbtElement tag : listTag) {
+            for (NbtElement nbt : nbtList) {
               
               // Example: {id:"minecraft:lure",lvl:1s};
-              Boolean hasLure = tag.toString().contains("id:\"minecraft:lure\"");
-
-              System.out.println(tag.toString());
+              Boolean hasLure = nbt.toString().contains("id:\"minecraft:lure\"");
       
               if (hasLure) {
-                int lvl = Integer.parseInt(Character.toString(tag.toString().split(",")[1].charAt(4)));
+                int lvl = Integer.parseInt(Character.toString(nbt.toString().split(",")[1].charAt(4)));
 
                 // attracts every item as an xp orb
                 Vec3d vec3d = new Vec3d(this.target.getX() - this.getX(), this.target.getY() + (double)this.target.getStandingEyeHeight() / 2.0D - this.getY(), this.target.getZ() - this.getZ());
