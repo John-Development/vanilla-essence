@@ -10,6 +10,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -51,10 +52,10 @@ public class ScaffoldingBlockMixin extends Block {
   public static final BooleanProperty BOTTOM = Properties.BOTTOM;
 
   @Inject(
-    method = "<init>()V",
+    method = "<init>(Lnet/minecraft/block/AbstractBlock/Settings;)V",
     at = @At("TAIL")
   )
-  private void init(CallbackInfo cir) {
+  private void init(AbstractBlock.Settings settings, CallbackInfo cir) {
     this.setDefaultState((BlockState)((BlockState)((BlockState)((BlockState)this.stateManager.getDefaultState()).with(DISTANCE, SCAFF_LIMIT)).with(WATERLOGGED, false)).with(BOTTOM, false));
   }
 

@@ -17,7 +17,7 @@ public class TradeOfferMixin {
   private int demandBonus;
 
   @Inject(
-    method = "<init>(Lnet/minecraft/nbt/CompoundTag;)V",
+    method = "<init>(Lnet/minecraft/nbt/NbtCompound;)V",
     at = @At("TAIL")
   )
   private void init(
