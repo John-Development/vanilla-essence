@@ -212,7 +212,7 @@ public class GameRuleCustomCommand {
 
   private static int reload(CommandContext<ServerCommandSource> context) {
     ServerCommandSource serverCommandSource = (ServerCommandSource) context.getSource();
-    MinecraftServer minecraftServer = serverCommandSource.getMinecraftServer();
+    MinecraftServer minecraftServer = serverCommandSource.getServer();
     ResourcePackManager resourcePackManager = minecraftServer.getDataPackManager();
     SaveProperties saveProperties = minecraftServer.getSaveProperties();
     Collection<String> collection = resourcePackManager.getEnabledNames();
