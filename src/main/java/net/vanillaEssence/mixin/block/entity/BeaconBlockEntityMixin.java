@@ -139,7 +139,7 @@ public abstract class BeaconBlockEntityMixin extends BlockEntity implements Name
     method = "writeNbt",
     at = @At("HEAD")
   )
-  public void writeNbt(NbtCompound nbt, CallbackInfoReturnable<NbtCompound> cir) {
+  public void writeNbt(NbtCompound nbt, CallbackInfo ci) {
     if (Boolean.parseBoolean(PropertiesCache.getInstance().getProperty("beacons-enabled"))) {
       nbt.putInt("payment", Item.getRawId(this.payment));
     }
@@ -149,7 +149,7 @@ public abstract class BeaconBlockEntityMixin extends BlockEntity implements Name
     method = "readNbt",
     at = @At("HEAD")
   )
-  public void readNbt(NbtCompound nbt, CallbackInfo cir) {
+  public void readNbt(NbtCompound nbt, CallbackInfo ci) {
     if (Boolean.parseBoolean(PropertiesCache.getInstance().getProperty("beacons-enabled"))) {
       this.payment = Item.byRawId(nbt.getInt("payment"));
     }
