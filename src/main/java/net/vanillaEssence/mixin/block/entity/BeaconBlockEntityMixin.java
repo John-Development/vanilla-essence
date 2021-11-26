@@ -293,6 +293,7 @@ public abstract class BeaconBlockEntityMixin extends BlockEntity implements Name
           + (double)beaconNetheriteBlocks * floorDouble(((double)beaconLevel * 40 + 40)/blocks)
         );
 
+        beaconRange = Math.floor(beaconRange) + 1;
 
         if (beaconPayment != null) {
           // TODO: refactor
