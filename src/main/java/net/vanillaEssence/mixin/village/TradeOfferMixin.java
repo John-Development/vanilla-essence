@@ -10,6 +10,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.village.TradeOffer;
 import net.vanillaEssence.util.PropertiesCache;
 
+// TODO: think if want to use this
 @Mixin(TradeOffer.class)
 public class TradeOfferMixin {
 
@@ -24,6 +25,8 @@ public class TradeOfferMixin {
     NbtCompound nbt,
     CallbackInfo cir
   ) {
-    this.demandBonus = nbt.getInt("demand") - 15 * Integer.parseInt(PropertiesCache.getInstance().getProperty("vill-daily-restocks"));
+    this.demandBonus = Boolean.parseBoolean(PropertiesCache.getInstance().getProperty("vill-enabled"))
+      ? nbt.getInt("demand") - 15 * Integer.parseInt(PropertiesCache.getInstance().getProperty("vill-daily-restocks"))
+      : nbt.getInt("demand");
   }
 }

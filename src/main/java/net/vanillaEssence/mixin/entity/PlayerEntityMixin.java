@@ -45,6 +45,5 @@ public abstract class PlayerEntityMixin {
         cir.setReturnValue(ActionResult.success(((PlayerEntity) (Object) this).world.isClient));
       }
     }
-    return;
   }
 }

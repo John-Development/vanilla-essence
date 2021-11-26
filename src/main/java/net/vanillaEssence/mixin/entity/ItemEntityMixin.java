@@ -27,9 +27,7 @@ public abstract class ItemEntityMixin extends Entity {
     super(type, world);
   }
 
-  public int renderTicks;
   public int orbAge;
-  public int pickupDelay;
   private PlayerEntity target;
 
   private void applyWaterMovement() {
@@ -58,7 +56,7 @@ public abstract class ItemEntityMixin extends Entity {
       }
 
       if (this.world.getFluidState(this.getBlockPos()).isIn(FluidTags.LAVA)) {
-         this.setVelocity((double)((this.random.nextFloat() - this.random.nextFloat()) * 0.2F), 0.20000000298023224D, (double)((this.random.nextFloat() - this.random.nextFloat()) * 0.2F));
+         this.setVelocity((this.random.nextFloat() - this.random.nextFloat()) * 0.2F, 0.20000000298023224D, (this.random.nextFloat() - this.random.nextFloat()) * 0.2F);
       }
 
       if (!this.world.isSpaceEmpty(this.getBoundingBox())) {
@@ -83,7 +81,7 @@ public abstract class ItemEntityMixin extends Entity {
             for (NbtElement nbt : nbtList) {
               
               // Example: {id:"minecraft:lure",lvl:1s};
-              Boolean hasLure = nbt.toString().contains("id:\"minecraft:lure\"");
+              boolean hasLure = nbt.toString().contains("id:\"minecraft:lure\"");
       
               if (hasLure) {
                 int lvl = Integer.parseInt(Character.toString(nbt.toString().split(",")[1].charAt(4)));
@@ -101,7 +99,7 @@ public abstract class ItemEntityMixin extends Entity {
                     f = this.world.getBlockState(new BlockPos(this.getX(), this.getY() - 1.0D, this.getZ())).getBlock().getSlipperiness() * 0.98F;
                 }
 
-                this.setVelocity(this.getVelocity().multiply((double)f, 0.98D, (double)f));
+                this.setVelocity(this.getVelocity().multiply(f, 0.98D, f));
                 if (this.onGround) {
                     this.setVelocity(this.getVelocity().multiply(1.0D, -0.9D, 1.0D));
                 }

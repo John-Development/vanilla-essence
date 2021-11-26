@@ -3,6 +3,7 @@ package net.vanillaEssence.mixin.block;
 import java.util.Iterator;
 import java.util.Random;
 
+import net.minecraft.block.*;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -10,11 +11,6 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import net.minecraft.block.AbstractBlock;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.ScaffoldingBlock;
 import net.minecraft.entity.FallingBlockEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.property.BooleanProperty;
@@ -27,11 +23,11 @@ import net.minecraft.world.WorldView;
 import net.vanillaEssence.util.PropertiesCache;
 
 @Mixin(ScaffoldingBlock.class)
-public class ScaffoldingBlockMixin extends Block {
+public class ScaffoldingBlockMixin extends Block implements Waterloggable {
 
   public ScaffoldingBlockMixin(Settings settings) {
-		super(settings);
-	}
+    super(settings);
+  }
 
   private static boolean SCAFF_ENABLED = Boolean.parseBoolean(PropertiesCache.getInstance().getProperty("scaff-enabled"));
   private static int SCAFF_LIMIT_CONFIG = Integer.parseInt((
@@ -56,7 +52,7 @@ public class ScaffoldingBlockMixin extends Block {
     at = @At("TAIL")
   )
   private void init(AbstractBlock.Settings settings, CallbackInfo cir) {
-    this.setDefaultState((BlockState)((BlockState)((BlockState)((BlockState)this.stateManager.getDefaultState()).with(DISTANCE, SCAFF_LIMIT)).with(WATERLOGGED, false)).with(BOTTOM, false));
+    this.setDefaultState(this.stateManager.getDefaultState().with(DISTANCE, SCAFF_LIMIT).with(WATERLOGGED, false).with(BOTTOM, false));
   }
 
   @Inject(
@@ -67,9 +63,9 @@ public class ScaffoldingBlockMixin extends Block {
   public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random, CallbackInfo ci) {
     int i = ScaffoldingBlock.calculateDistance(world, pos);
     BlockState blockState = (BlockState)((BlockState)state.with(DISTANCE, i)).with(BOTTOM, this.shouldBeBottom(world, pos, i));
-    if ((Integer)blockState.get(DISTANCE) == SCAFF_LIMIT) {
-      if ((Integer)state.get(DISTANCE) == SCAFF_LIMIT) {
-        world.spawnEntity(new FallingBlockEntity(world, (double)pos.getX() + 0.5D, (double)pos.getY(), (double)pos.getZ() + 0.5D, (BlockState)blockState.with(WATERLOGGED, false)));
+    if (blockState.get(DISTANCE) == SCAFF_LIMIT) {
+      if (state.get(DISTANCE) == SCAFF_LIMIT) {
+        world.spawnEntity(new FallingBlockEntity(world, (double)pos.getX() + 0.5D, pos.getY(), (double)pos.getZ() + 0.5D, blockState.with(WATERLOGGED, false)));
       } else {
         world.breakBlock(pos, true);
       }
@@ -103,19 +99,16 @@ public class ScaffoldingBlockMixin extends Block {
       BlockState blockState = world.getBlockState(mutable);
       int i = SCAFF_LIMIT;
       if (blockState.isOf(Blocks.SCAFFOLDING)) {
-        i = (Integer)blockState.get(DISTANCE);
+        i = blockState.get(DISTANCE);
       } else if (blockState.isSideSolidFullSquare(world, mutable, Direction.UP)) {
         cir.setReturnValue(0);
         return;
       }
 
-      Iterator<Direction> var5 = Direction.Type.HORIZONTAL.iterator();
-
-      while(var5.hasNext()) {
-        Direction direction = (Direction)var5.next();
+      for (Direction direction : Direction.Type.HORIZONTAL) {
         BlockState blockState2 = world.getBlockState(mutable.set(pos, direction));
         if (blockState2.isOf(Blocks.SCAFFOLDING)) {
-          i = Math.min(i, (Integer)blockState2.get(DISTANCE) + 1);
+          i = Math.min(i, blockState2.get(DISTANCE) + 1);
           if (i == 1) {
             break;
           }
@@ -123,7 +116,6 @@ public class ScaffoldingBlockMixin extends Block {
       }
       cir.setReturnValue(i);
     }
-    return;
   }
 
   private boolean shouldBeBottom(BlockView world, BlockPos pos, int distance) {

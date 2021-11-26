@@ -13,9 +13,9 @@ import net.vanillaEssence.util.PropertiesCache;
 public abstract class VillagerEntityMixin {
 
   @Shadow
-  public int restocksToday;
+  private int restocksToday;
   @Shadow
-  public long lastRestockTime;
+  private long lastRestockTime;
   
   @Inject(
     method = "canRestock",
@@ -28,8 +28,8 @@ public abstract class VillagerEntityMixin {
     PropertiesCache cache = PropertiesCache.getInstance();
     if (Boolean.parseBoolean(cache.getProperty("vill-enabled"))) {
 
-      Integer restocks = Integer.parseInt(cache.getProperty("vill-daily-restocks"));
-      Long cooldown = Long.parseLong(cache.getProperty("vill-time-between-restocks"));
+      int restocks = Integer.parseInt(cache.getProperty("vill-daily-restocks"));
+      long cooldown = Long.parseLong(cache.getProperty("vill-time-between-restocks"));
 
       if (restocks == 0) {
         cir.setReturnValue(this.restocksToday == 0 || ((VillagerEntity) (Object) this).world.getTime() > (this.lastRestockTime + cooldown));
@@ -42,6 +42,5 @@ public abstract class VillagerEntityMixin {
         );
       }
     }
-    return;
   }
 }
