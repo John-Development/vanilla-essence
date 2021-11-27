@@ -59,11 +59,24 @@ public class PropertiesCache {
     return LazyHolder.INSTANCE;
   }
   
+  public boolean getBoolProperty(String key) {
+    String property = configProp.getProperty(key);
+    return Boolean.parseBoolean(property);
+  }
+
+  public int getIntProperty(String key) {
+    String property = configProp.getProperty(key);
+    return Integer.parseInt(property);
+  }
+
+  public long getLongProperty(String key) {
+    String property = configProp.getProperty(key);
+    return Long.parseLong(property);
+  }
 
   public String getProperty(String key) {
     return configProp.getProperty(key);
   }
-  
 
   public void setProperty(String key, String i) {
     configProp.setProperty(key, i);

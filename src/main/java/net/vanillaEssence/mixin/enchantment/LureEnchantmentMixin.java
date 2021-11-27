@@ -24,7 +24,7 @@ public class LureEnchantmentMixin extends Enchantment {
     )
     private static EnchantmentTarget getType(EnchantmentTarget type) {
         PropertiesCache cache = PropertiesCache.getInstance();
-        if (Boolean.parseBoolean(cache.getProperty("magnetic-lure-enabled"))) {
+        if (cache.getBoolProperty("magnetic-lure-enabled")) {
             // TODO: think which items to accept
             return EnchantmentTarget.BREAKABLE;
         } else {

@@ -28,7 +28,7 @@ public abstract class PlayerEntityMixin {
     CallbackInfoReturnable<ActionResult> cir
   ) {
     PropertiesCache cache = PropertiesCache.getInstance();
-    if (Boolean.parseBoolean(cache.getProperty("crystal-enabled"))) {
+    if (cache.getBoolProperty("crystal-enabled")) {
       ItemStack itemStack = ((PlayerEntity) (Object) this).getStackInHand(hand);
 
       if (itemStack.getItem().equals(Items.NAME_TAG)

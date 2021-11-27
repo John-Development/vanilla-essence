@@ -43,7 +43,7 @@ public abstract class ItemEntityMixin extends Entity {
     CallbackInfo cir
   ) {
     PropertiesCache cache = PropertiesCache.getInstance();
-    if (Boolean.parseBoolean(cache.getProperty("magnetic-lure-enabled"))) {
+    if (cache.getBoolProperty("magnetic-lure-enabled")) {
       super.tick();
       this.prevX = this.getX();
       this.prevY = this.getY();

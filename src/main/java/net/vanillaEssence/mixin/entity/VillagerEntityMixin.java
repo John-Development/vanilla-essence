@@ -26,10 +26,10 @@ public abstract class VillagerEntityMixin {
     CallbackInfoReturnable<Boolean> cir
   ) {
     PropertiesCache cache = PropertiesCache.getInstance();
-    if (Boolean.parseBoolean(cache.getProperty("vill-enabled"))) {
+    if (cache.getBoolProperty("vill-enabled")) {
 
-      int restocks = Integer.parseInt(cache.getProperty("vill-daily-restocks"));
-      long cooldown = Long.parseLong(cache.getProperty("vill-time-between-restocks"));
+      int restocks = cache.getIntProperty("vill-daily-restocks");
+      long cooldown = cache.getLongProperty("vill-time-between-restocks");
 
       if (restocks == 0) {
         cir.setReturnValue(this.restocksToday == 0 || ((VillagerEntity) (Object) this).world.getTime() > (this.lastRestockTime + cooldown));

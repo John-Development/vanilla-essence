@@ -33,7 +33,7 @@ public abstract class BeaconScreenHandlerMixin {
   )
   private static PropertyDelegate getArrayPropertyDelegate(PropertyDelegate array) {
     PropertiesCache cache = PropertiesCache.getInstance();
-    return Boolean.parseBoolean(cache.getProperty("beacons-enabled"))
+    return cache.getBoolProperty("beacons-enabled")
       ? new ArrayPropertyDelegate(4)
       : array;
   }
@@ -46,7 +46,7 @@ public abstract class BeaconScreenHandlerMixin {
   )
   private int getNumber(int number) {
     PropertiesCache cache = PropertiesCache.getInstance();
-    return Boolean.parseBoolean(cache.getProperty("beacons-enabled"))
+    return cache.getBoolProperty("beacons-enabled")
       ? 4
       : number;
   }

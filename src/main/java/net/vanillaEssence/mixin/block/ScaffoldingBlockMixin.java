@@ -29,13 +29,13 @@ public class ScaffoldingBlockMixin extends Block implements Waterloggable {
     super(settings);
   }
 
-  private static final boolean SCAFF_ENABLED = Boolean.parseBoolean(PropertiesCache.getInstance().getProperty("scaff-enabled"));
-  private static final int SCAFF_LIMIT_CONFIG = Integer.parseInt((
+  private static final boolean SCAFF_ENABLED = PropertiesCache.getInstance().getBoolProperty("scaff-enabled");
+  private static final int SCAFF_LIMIT_CONFIG = (
     PropertiesCache.getInstance().getProperty("scaff-limit") != null
     && !PropertiesCache.getInstance().getProperty("scaff-limit").isEmpty()
   )
-    ? PropertiesCache.getInstance().getProperty("scaff-limit")
-    : "7");
+    ? PropertiesCache.getInstance().getIntProperty("scaff-limit")
+    : 7;
   private static final int SCAFF_LIMIT = SCAFF_ENABLED
     ? SCAFF_LIMIT_CONFIG
     : 7;
@@ -101,7 +101,7 @@ public class ScaffoldingBlockMixin extends Block implements Waterloggable {
     BlockPos pos,
     CallbackInfoReturnable<Integer> cir
   ) {
-    if (Boolean.parseBoolean(PropertiesCache.getInstance().getProperty("scaff-enabled"))) {
+    if (PropertiesCache.getInstance().getBoolProperty("scaff-enabled")) {
       BlockPos.Mutable mutable = pos.mutableCopy().move(Direction.DOWN);
       BlockState blockState = world.getBlockState(mutable);
       int i = SCAFF_LIMIT;

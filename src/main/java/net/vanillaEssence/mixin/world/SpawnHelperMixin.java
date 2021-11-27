@@ -37,7 +37,7 @@ public abstract class SpawnHelperMixin {
   ) {
     PropertiesCache cache = PropertiesCache.getInstance();
     
-    if (Boolean.parseBoolean(cache.getProperty("crystal-enabled"))
+    if (cache.getBoolProperty("crystal-enabled")
       && group != null
       && group.compareTo(SpawnGroup.MONSTER) == 0
     ) {
@@ -46,8 +46,8 @@ public abstract class SpawnHelperMixin {
       monsterY = blockPos.getY();
       monsterZ = blockPos.getZ();
 
-      int radius = Integer.parseInt(cache.getProperty("crystal-radius"));
-      int lowerLimitDistance = Integer.parseInt(cache.getProperty("crystal-lower-limit-distance"));
+      int radius = cache.getIntProperty("crystal-radius");
+      int lowerLimitDistance = cache.getIntProperty("crystal-lower-limit-distance");
 
       Box box = new Box(
         monsterX + radius - 0.49,

@@ -89,7 +89,7 @@ public abstract class BeaconBlockEntityMixin extends BlockEntity implements Name
     at = @At("TAIL")
   )
   private void init(BlockPos pos, BlockState state, CallbackInfo cir) {
-    if (Boolean.parseBoolean(PropertiesCache.getInstance().getProperty("beacons-enabled"))) {
+    if (PropertiesCache.getInstance().getBoolProperty("beacons-enabled")) {
       this.propertyDelegate = new PropertyDelegate() {
         @Override
         public int get(int index) {
@@ -137,7 +137,7 @@ public abstract class BeaconBlockEntityMixin extends BlockEntity implements Name
     at = @At("HEAD")
   )
   public void writeNbt(NbtCompound nbt, CallbackInfo ci) {
-    if (Boolean.parseBoolean(PropertiesCache.getInstance().getProperty("beacons-enabled"))) {
+    if (PropertiesCache.getInstance().getBoolProperty("beacons-enabled")) {
       nbt.putInt("payment", Item.getRawId(this.payment));
     }
   }
@@ -147,7 +147,7 @@ public abstract class BeaconBlockEntityMixin extends BlockEntity implements Name
     at = @At("HEAD")
   )
   public void readNbt(NbtCompound nbt, CallbackInfo ci) {
-    if (Boolean.parseBoolean(PropertiesCache.getInstance().getProperty("beacons-enabled"))) {
+    if (PropertiesCache.getInstance().getBoolProperty("beacons-enabled")) {
       this.payment = Item.byRawId(nbt.getInt("payment"));
     }
   }
@@ -280,7 +280,7 @@ public abstract class BeaconBlockEntityMixin extends BlockEntity implements Name
 
       int j = (9 + beaconLevel * 2) * 20;
 
-      if (Boolean.parseBoolean(PropertiesCache.getInstance().getProperty("beacons-enabled"))) {
+      if (PropertiesCache.getInstance().getBoolProperty("beacons-enabled")) {
         // La formula del nivel: f(x) = f(x-1) + (2x+1)^2
 
         int blocks = totalBlocks(beaconLevel);
@@ -395,7 +395,7 @@ public abstract class BeaconBlockEntityMixin extends BlockEntity implements Name
       internalNetheriteBlocks += counterNetherite;
     }
 
-    if (Boolean.parseBoolean(PropertiesCache.getInstance().getProperty("beacons-enabled"))) {
+    if (PropertiesCache.getInstance().getBoolProperty("beacons-enabled")) {
       blockEntityMixin.range = internalRange;
       blockEntityMixin.ironBlocks = internalIronBlocks;
       blockEntityMixin.goldBlocks = internalGoldBlocks;
