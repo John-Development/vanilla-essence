@@ -50,14 +50,13 @@ public abstract class SpawnHelperMixin {
       int lowerLimitDistance = Integer.parseInt(cache.getProperty("crystal-lower-limit-distance"));
 
       Box box = new Box(
-        monsterX + radius,
+        monsterX + radius - 0.49,
         monsterY + lowerLimitDistance,
-        monsterZ + radius,
-        monsterX - radius,
-        monsterY - 2 * radius - lowerLimitDistance,
-        monsterZ - radius
+        monsterZ + radius - 0.49,
+        monsterX - radius + 0.5,
+        monsterY - 2 * radius - lowerLimitDistance + 3,
+        monsterZ - radius + 0.5
       );
-
       List<EndCrystalEntity> crystals = world.getEntitiesByClass(
         EndCrystalEntity.class,
         box,
