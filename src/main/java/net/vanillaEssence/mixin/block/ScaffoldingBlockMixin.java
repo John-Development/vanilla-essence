@@ -1,16 +1,6 @@
 package net.vanillaEssence.mixin.block;
 
-import java.util.Iterator;
-import java.util.Random;
-
 import net.minecraft.block.*;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-
 import net.minecraft.entity.FallingBlockEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.property.BooleanProperty;
@@ -21,6 +11,16 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.WorldView;
 import net.vanillaEssence.util.PropertiesCache;
+import org.spongepowered.asm.mixin.Final;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyArg;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+
+import java.util.Random;
 
 @Mixin(ScaffoldingBlock.class)
 public class ScaffoldingBlockMixin extends Block implements Waterloggable {
@@ -29,30 +29,37 @@ public class ScaffoldingBlockMixin extends Block implements Waterloggable {
     super(settings);
   }
 
-  private static boolean SCAFF_ENABLED = Boolean.parseBoolean(PropertiesCache.getInstance().getProperty("scaff-enabled"));
-  private static int SCAFF_LIMIT_CONFIG = Integer.parseInt((
+  private static final boolean SCAFF_ENABLED = Boolean.parseBoolean(PropertiesCache.getInstance().getProperty("scaff-enabled"));
+  private static final int SCAFF_LIMIT_CONFIG = Integer.parseInt((
     PropertiesCache.getInstance().getProperty("scaff-limit") != null
     && !PropertiesCache.getInstance().getProperty("scaff-limit").isEmpty()
   )
     ? PropertiesCache.getInstance().getProperty("scaff-limit")
     : "7");
-  private static int SCAFF_LIMIT = SCAFF_ENABLED
+  private static final int SCAFF_LIMIT = SCAFF_ENABLED
     ? SCAFF_LIMIT_CONFIG
     : 7;
 
+  @Final
   @Shadow
   public static final IntProperty DISTANCE = IntProperty.of("distance_scaff", 0, SCAFF_LIMIT);
+  @Final
   @Shadow
   public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
+  @Final
   @Shadow
   public static final BooleanProperty BOTTOM = Properties.BOTTOM;
 
-  @Inject(
-    method = "<init>(Lnet/minecraft/block/AbstractBlock/Settings;)V",
-    at = @At("TAIL")
+  @ModifyArg(
+    method = "<init>",
+    at = @At(value = "INVOKE",
+      target = "Lnet/minecraft/block/BlockState;with(Lnet/minecraft/state/property/Property;Ljava/lang/Comparable;)Ljava/lang/Object;",
+      ordinal = 0
+    ),
+    index = 1
   )
-  private void init(AbstractBlock.Settings settings, CallbackInfo cir) {
-    this.setDefaultState(this.stateManager.getDefaultState().with(DISTANCE, SCAFF_LIMIT).with(WATERLOGGED, false).with(BOTTOM, false));
+  private int getBlockState(int limit) {
+    return SCAFF_LIMIT;
   }
 
   @Inject(
@@ -62,7 +69,7 @@ public class ScaffoldingBlockMixin extends Block implements Waterloggable {
   )
   public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random, CallbackInfo ci) {
     int i = ScaffoldingBlock.calculateDistance(world, pos);
-    BlockState blockState = (BlockState)((BlockState)state.with(DISTANCE, i)).with(BOTTOM, this.shouldBeBottom(world, pos, i));
+    BlockState blockState = state.with(DISTANCE, i).with(BOTTOM, this.shouldBeBottom(world, pos, i));
     if (blockState.get(DISTANCE) == SCAFF_LIMIT) {
       if (state.get(DISTANCE) == SCAFF_LIMIT) {
         world.spawnEntity(new FallingBlockEntity(world, (double)pos.getX() + 0.5D, pos.getY(), (double)pos.getZ() + 0.5D, blockState.with(WATERLOGGED, false)));
