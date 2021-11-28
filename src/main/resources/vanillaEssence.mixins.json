@@ -9,7 +9,8 @@
     "block.entity.BeaconBlockEntityMixin",
     "entity.VillagerEntityMixin",
     "screen.BeaconScreenHandlerMixin",
-    "entity.ItemEntityMixin"
+    "entity.ItemEntityMixin",
+    "enchantment.LureEnchantmentMixin"
   ],
   "client": [
   ],

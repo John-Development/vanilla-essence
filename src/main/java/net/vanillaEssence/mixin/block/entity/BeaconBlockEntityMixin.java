@@ -9,14 +9,10 @@ import java.util.stream.Collectors;
 import com.google.common.collect.Lists;
 
 import org.jetbrains.annotations.Nullable;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Mutable;
-import org.spongepowered.asm.mixin.Overwrite;
-import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.Block;
@@ -46,26 +42,32 @@ import net.minecraft.util.math.Box;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.World;
 import net.vanillaEssence.util.PropertiesCache;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(BeaconBlockEntity.class)
 public abstract class BeaconBlockEntityMixin extends BlockEntity implements NamedScreenHandlerFactory {
   public BeaconBlockEntityMixin(BlockPos pos, BlockState state) {
-		super(BlockEntityType.BEACON, pos, state);
-	}
+    super(BlockEntityType.BEACON, pos, state);
+  }
 
   @Shadow
-  private int level;
+  int level;
   @Shadow
-  private StatusEffect primary;
+  StatusEffect primary;
   @Shadow
-  private StatusEffect secondary;
+  StatusEffect secondary;
+  @Final
   @Shadow
   @Mutable
   private PropertyDelegate propertyDelegate;
   @Shadow
-  private List<BeamSegmentMixin> beamSegments = Lists.newArrayList();
+  List<BeamSegmentMixin> beamSegments = Lists.newArrayList();
+  @Mutable
+  @Final
   @Shadow
   public static StatusEffect[][] EFFECTS_BY_LEVEL;
+  @Mutable
+  @Final
   @Shadow
   private static Set<StatusEffect> EFFECTS;
   @Shadow
@@ -84,26 +86,21 @@ public abstract class BeaconBlockEntityMixin extends BlockEntity implements Name
   int netheriteBlocks = 0;
 
   @Inject(
-    method = "<init>(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/BlockState;)V",
-    at = @At("TAIL")
+          method = "<init>(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/BlockState;)V",
+          at = @At("TAIL")
   )
   private void init(BlockPos pos, BlockState state, CallbackInfo cir) {
-    if (Boolean.parseBoolean(PropertiesCache.getInstance().getProperty("beacons-enabled"))) {
+    if (PropertiesCache.getInstance().getBoolProperty("beacons-enabled")) {
       this.propertyDelegate = new PropertyDelegate() {
         @Override
         public int get(int index) {
-          switch (index) {
-            case 0:
-              return BeaconBlockEntityMixin.this.level;
-            case 1:
-              return StatusEffect.getRawId(BeaconBlockEntityMixin.this.primary);
-            case 2:
-              return StatusEffect.getRawId(BeaconBlockEntityMixin.this.secondary);
-            case 3:
-              return Item.getRawId(BeaconBlockEntityMixin.this.payment);
-            default:
-              return 0;
-          }
+          return switch (index) {
+            case 0 -> BeaconBlockEntityMixin.this.level;
+            case 1 -> StatusEffect.getRawId(BeaconBlockEntityMixin.this.primary);
+            case 2 -> StatusEffect.getRawId(BeaconBlockEntityMixin.this.secondary);
+            case 3 -> Item.getRawId(BeaconBlockEntityMixin.this.payment);
+            default -> 0;
+          };
         }
 
         @Override
@@ -113,6 +110,7 @@ public abstract class BeaconBlockEntityMixin extends BlockEntity implements Name
               BeaconBlockEntityMixin.this.level = value;
               break;
             case 1:
+              assert BeaconBlockEntityMixin.this.world != null;
               if (!BeaconBlockEntityMixin.this.world.isClient && !BeaconBlockEntityMixin.this.beamSegments.isEmpty()) {
                 BeaconBlockEntity.playSound(BeaconBlockEntityMixin.this.world, pos, SoundEvents.BLOCK_BEACON_POWER_SELECT);
               }
@@ -140,27 +138,32 @@ public abstract class BeaconBlockEntityMixin extends BlockEntity implements Name
     at = @At("HEAD")
   )
   public void writeNbt(NbtCompound nbt, CallbackInfoReturnable<NbtCompound> cir) {
-    if (Boolean.parseBoolean(PropertiesCache.getInstance().getProperty("beacons-enabled"))) {
+    if (PropertiesCache.getInstance().getBoolProperty("beacons-enabled")) {
       nbt.putInt("payment", Item.getRawId(this.payment));
     }
   }
 
   @Inject(
-    method = "readNbt",
-    at = @At("HEAD")
+          method = "readNbt",
+          at = @At("HEAD")
   )
-  public void readNbt(NbtCompound nbt, CallbackInfo cir) {
-    if (Boolean.parseBoolean(PropertiesCache.getInstance().getProperty("beacons-enabled"))) {
+  public void readNbt(NbtCompound nbt, CallbackInfo ci) {
+    if (PropertiesCache.getInstance().getBoolProperty("beacons-enabled")) {
       this.payment = Item.byRawId(nbt.getInt("payment"));
     }
   }
 
-  @Nullable @Overwrite
-  public static StatusEffect getPotionEffectById(int id) {
+
+  @Nullable
+  @Shadow
+  static StatusEffect getPotionEffectById(int id) {
     StatusEffect statusEffect = StatusEffect.byRawId(id);
     return EFFECTS.contains(statusEffect) ? statusEffect : null;
   }
 
+  /**
+   * @author Juarrin
+   */
   @Overwrite
   public static void tick(World world, BlockPos pos, BlockState state, BeaconBlockEntity blockEntity) {
     BeaconBlockEntityMixin blockEntityMixin = ((BeaconBlockEntityMixin) (Object) blockEntity);
@@ -169,12 +172,13 @@ public abstract class BeaconBlockEntityMixin extends BlockEntity implements Name
     int j = pos.getY();
     int k = pos.getZ();
     BlockPos blockPos2;
+    // TODO: check if blockEntityMixin is always null
     if (blockEntityMixin.minY < j) {
-        blockPos2 = pos;
-        blockEntityMixin.field_19178 = Lists.newArrayList();
-        blockEntityMixin.minY = pos.getY() - 1;
+      blockPos2 = pos;
+      blockEntityMixin.field_19178 = Lists.newArrayList();
+      blockEntityMixin.minY = pos.getY() - 1;
     } else {
-        blockPos2 = new BlockPos(i, blockEntityMixin.minY + 1, k);
+      blockPos2 = new BlockPos(i, blockEntityMixin.minY + 1, k);
     }
 
     BeamSegmentMixin beamSegment = blockEntityMixin.field_19178.isEmpty() ? null : blockEntityMixin.field_19178.get(blockEntityMixin.field_19178.size() - 1);
@@ -182,33 +186,33 @@ public abstract class BeaconBlockEntityMixin extends BlockEntity implements Name
 
     int n;
     for(n = 0; n < 10 && blockPos2.getY() <= l; ++n) {
-        BlockState blockState = world.getBlockState(blockPos2);
-        Block block = blockState.getBlock();
-        if (block instanceof Stainable) {
-          float[] fs = ((Stainable)block).getColor().getColorComponents();
-          if (blockEntityMixin.field_19178.size() <= 1) {
-              beamSegment = blockEntityMixin.new BeamSegmentMixin(fs);
-              blockEntityMixin.field_19178.add(beamSegment);
-          } else if (beamSegment != null) {
-              if (Arrays.equals(fs, beamSegment.getColor())) {
-                beamSegment.increaseHeight();
-              } else {
-                beamSegment = blockEntityMixin.new BeamSegmentMixin(new float[]{(beamSegment.getColor()[0] + fs[0]) / 2.0F, (beamSegment.getColor()[1] + fs[1]) / 2.0F, (beamSegment.getColor()[2] + fs[2]) / 2.0F});
-                blockEntityMixin.field_19178.add(beamSegment);
-              }
+      BlockState blockState = world.getBlockState(blockPos2);
+      Block block = blockState.getBlock();
+      if (block instanceof Stainable) {
+        float[] fs = ((Stainable)block).getColor().getColorComponents();
+        if (blockEntityMixin.field_19178.size() <= 1) {
+          beamSegment = blockEntityMixin.new BeamSegmentMixin(fs);
+          blockEntityMixin.field_19178.add(beamSegment);
+        } else if (beamSegment != null) {
+          if (Arrays.equals(fs, beamSegment.getColor())) {
+            beamSegment.increaseHeight();
+          } else {
+            beamSegment = blockEntityMixin.new BeamSegmentMixin(new float[]{(beamSegment.getColor()[0] + fs[0]) / 2.0F, (beamSegment.getColor()[1] + fs[1]) / 2.0F, (beamSegment.getColor()[2] + fs[2]) / 2.0F});
+            blockEntityMixin.field_19178.add(beamSegment);
           }
-        } else {
-          if (beamSegment == null || blockState.getOpacity(world, blockPos2) >= 15 && !blockState.isOf(Blocks.BEDROCK)) {
-              blockEntityMixin.field_19178.clear();
-              blockEntityMixin.minY = l;
-              break;
-          }
-
-          beamSegment.increaseHeight();
+        }
+      } else {
+        if (beamSegment == null || blockState.getOpacity(world, blockPos2) >= 15 && !blockState.isOf(Blocks.BEDROCK)) {
+          blockEntityMixin.field_19178.clear();
+          blockEntityMixin.minY = l;
+          break;
         }
 
-        blockPos2 = blockPos2.up();
-        ++blockEntityMixin.minY;
+        beamSegment.increaseHeight();
+      }
+
+      blockPos2 = blockPos2.up();
+      ++blockEntityMixin.minY;
     }
 
     n = blockEntityMixin.level;
@@ -231,10 +235,8 @@ public abstract class BeaconBlockEntityMixin extends BlockEntity implements Name
         boolean bl2 = blockEntityMixin.level > 0;
         if (!bl && bl2) {
           BeaconBlockEntity.playSound(world, pos, SoundEvents.BLOCK_BEACON_ACTIVATE);
-          Iterator<ServerPlayerEntity> var17 = world.getNonSpectatingEntities(ServerPlayerEntity.class, (new Box((double)i, (double)j, (double)k, (double)i, (double)(j - 4), (double)k)).expand(10.0D, 5.0D, 10.0D)).iterator();
 
-          while(var17.hasNext()) {
-            ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)var17.next();
+          for (ServerPlayerEntity serverPlayerEntity : world.getNonSpectatingEntities(ServerPlayerEntity.class, (new Box(i, j, k, i, j - 4, k)).expand(10.0D, 5.0D, 10.0D))) {
             Criteria.CONSTRUCT_BEACON.trigger(serverPlayerEntity, blockEntityMixin.level);
           }
         } else if (bl && !bl2) {
@@ -254,12 +256,12 @@ public abstract class BeaconBlockEntityMixin extends BlockEntity implements Name
 
   private static void applyPlayerEffects(World world, BlockPos pos, BeaconBlockEntityMixin blockEntityMixin) {
     StatusEffect primaryEffect = blockEntityMixin.primary;
-    
+
     if (!world.isClient && primaryEffect != null) {
       StatusEffect secondaryEffect = blockEntityMixin.secondary;
 
       int beaconLevel = blockEntityMixin.level;
-      double beaconRange = blockEntityMixin.range;
+      double beaconRange;
       double beaconBonus = blockEntityMixin.bonus;
       Item beaconPayment = blockEntityMixin.payment;
 
@@ -278,21 +280,23 @@ public abstract class BeaconBlockEntityMixin extends BlockEntity implements Name
 
       int j = (9 + beaconLevel * 2) * 20;
 
-      if (Boolean.parseBoolean(PropertiesCache.getInstance().getProperty("beacons-enabled"))) {
+      if (PropertiesCache.getInstance().getBoolProperty("beacons-enabled")) {
         // La formula del nivel: f(x) = f(x-1) + (2x+1)^2
 
         int blocks = totalBlocks(beaconLevel);
 
         beaconRange = floorDouble(
-          (double)beaconIronBlocks * floorDouble(((double)beaconLevel * 10 + 10)/blocks)
+        (double)beaconIronBlocks * floorDouble(((double)beaconLevel * 10 + 10)/blocks)
           + (double)beaconGoldBlocks * floorDouble(((double)beaconLevel * 15 + 15)/blocks)
           + (double)beaconEmeraldBlocks * floorDouble(((double)beaconLevel * 25 + 25)/blocks)
           + (double)beaconDiamondBlocks * floorDouble(((double)beaconLevel * 30 + 30)/blocks)
           + (double)beaconNetheriteBlocks * floorDouble(((double)beaconLevel * 40 + 40)/blocks)
         );
 
+        beaconRange = Math.floor(beaconRange) + 1;
 
         if (beaconPayment != null) {
+          // TODO: refactor
           if (beaconPayment.equals(Items.IRON_INGOT)) {
             // Nothing
           } else if (beaconPayment.equals(Items.GOLD_INGOT)) {
@@ -309,10 +313,10 @@ public abstract class BeaconBlockEntityMixin extends BlockEntity implements Name
 
         d = beaconRange + beaconBonus;
       } else {
-        d = (double)(beaconLevel * 10 + 10);
+        d = beaconLevel * 10 + 10;
       }
 
-      Box box = (new Box(pos)).expand(d).stretch(0.0D, (double)world.getHeight(), 0.0D);
+      Box box = (new Box(pos)).expand(d).stretch(0.0D, world.getHeight(), 0.0D);
       List<PlayerEntity> list = world.getNonSpectatingEntities(PlayerEntity.class, box);
       Iterator<PlayerEntity> var11 = list.iterator();
 
@@ -391,7 +395,7 @@ public abstract class BeaconBlockEntityMixin extends BlockEntity implements Name
       internalNetheriteBlocks += counterNetherite;
     }
 
-    if (Boolean.parseBoolean(PropertiesCache.getInstance().getProperty("beacons-enabled"))) {
+    if (PropertiesCache.getInstance().getBoolProperty("beacons-enabled")) {
       blockEntityMixin.range = internalRange;
       blockEntityMixin.ironBlocks = internalIronBlocks;
       blockEntityMixin.goldBlocks = internalGoldBlocks;
@@ -403,6 +407,7 @@ public abstract class BeaconBlockEntityMixin extends BlockEntity implements Name
     return internalLevel;
   }
 
+  // TODO: find better solution
   private final class BeamSegmentMixin extends BeamSegment {
     final float[] color;
     private int height;
@@ -417,12 +422,12 @@ public abstract class BeaconBlockEntityMixin extends BlockEntity implements Name
     public void increaseHeight() {
       ++this.height;
     }
-    
+
     @Override
     public float[] getColor() {
       return this.color;
     }
-    
+
     @Override
     public int getHeight() {
       return this.height;

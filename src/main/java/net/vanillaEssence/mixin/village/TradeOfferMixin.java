@@ -24,6 +24,6 @@ public class TradeOfferMixin {
     NbtCompound nbt,
     CallbackInfo cir
   ) {
-    this.demandBonus = nbt.getInt("demand") - 15 * Integer.parseInt(PropertiesCache.getInstance().getProperty("vill-daily-restocks"));
+    this.demandBonus = nbt.getInt("demand") - 15 * PropertiesCache.getInstance().getIntProperty("vill-daily-restocks");
   }
 }
