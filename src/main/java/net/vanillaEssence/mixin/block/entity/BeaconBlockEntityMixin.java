@@ -152,17 +152,16 @@ public abstract class BeaconBlockEntityMixin extends BlockEntity implements Name
     }
   }
 
-  /**
-   * @author Juarrin
-   */
-  @Nullable @Overwrite
-  public static StatusEffect getPotionEffectById(int id) {
+  @Nullable
+  @Shadow
+  static StatusEffect getPotionEffectById(int id) {
     StatusEffect statusEffect = StatusEffect.byRawId(id);
     return EFFECTS.contains(statusEffect) ? statusEffect : null;
   }
 
   /**
    * @author Juarrin
+   * @reason
    */
   @Overwrite
   public static void tick(World world, BlockPos pos, BlockState state, BeaconBlockEntity blockEntity) {
