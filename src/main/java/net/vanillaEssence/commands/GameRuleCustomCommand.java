@@ -11,6 +11,7 @@ import net.minecraft.resource.ResourcePackManager;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.ReloadCommand;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.text.LiteralText;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.world.SaveProperties;
 import net.vanillaEssence.util.PropertiesCache;
@@ -41,17 +42,61 @@ public class GameRuleCustomCommand {
 
   // Command example: /gamerule doHusksDropSand <value>
   private void doHuskDropSandInit() {
-    commandHelper("doHusksDropSand", "sand-enabled");
+    genericCommandBuilderInit("doHusksDropSand", "sand-enabled");
   }
 
   // Command example: /gamerule betterBeacons <value>
   private void betterBeaconsInit() {
-    commandHelper("betterBeacons", "beacons-enabled");
+    genericCommandBuilderInit("betterBeacons", "beacons-enabled");
   }
 
   // Command example: /gamerule magneticLure <value>
   private void magneticLureInit() {
-    commandHelper("magneticLure", "magnetic-lure-enabled");
+    genericCommandBuilderInit("magneticLure", "magnetic-lure-enabled");
+  }
+
+  // Common builder
+  private void genericCommandBuilderInit(String rule, String configValue) {
+    CommandRegistrationCallback.EVENT.register((dispatcher, dedicated) -> {
+      dispatcher.register(literal("gamerule")
+        .requires(source -> source.hasPermissionLevel(4))
+        .then(genericCommandBuilderHelper(rule, configValue))
+      );
+      dispatcher.register(literal("gamerule")
+        .requires(source -> source.hasPermissionLevel(4))
+        .then(literal("default")
+          .then(genericCommandBuilderHelperDefault(rule, configValue))
+        )
+      );
+    });
+  }
+
+  private ArgumentBuilder<ServerCommandSource, ?> genericCommandBuilderHelper(String rule, String configValue) {
+    return literal(rule)
+      .executes((context) -> printValue(context, PropertiesCache.getInstance(), configValue))
+      .then(argument("value", BoolArgumentType.bool())
+        .executes(context -> genericCommandBuilderCommonHelperExecute(context, configValue, PropertiesCache.getInstance()))
+      );
+  }
+
+  private ArgumentBuilder<ServerCommandSource, ?> genericCommandBuilderHelperDefault(String rule, String configValue) {
+    return literal(rule)
+      .executes((context) -> printValue(context, PropertiesCache.getDefaultInstance(), configValue))
+      .then(argument("value", BoolArgumentType.bool())
+        .executes(context -> genericCommandBuilderCommonHelperExecute(context, configValue, PropertiesCache.getDefaultInstance()))
+      );
+  }
+
+  private int genericCommandBuilderCommonHelperExecute(CommandContext<ServerCommandSource> context, String configValue, PropertiesCache cache) {
+    cache.setProperty(configValue, ((Boolean) BoolArgumentType.getBool(context, "value")).toString());
+
+    try {
+      cache.flush();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+
+    return reload(context);
   }
 
   // Command example: /gamerule dailyVillagerRestocks <dailyRestocks> <timeBetweenRestocks>
@@ -59,15 +104,52 @@ public class GameRuleCustomCommand {
     CommandRegistrationCallback.EVENT.register((dispatcher, dedicated) -> {
       dispatcher.register(literal("gamerule")
         .requires(source -> source.hasPermissionLevel(4))
-        .then(dailyVillagersHelper(PropertiesCache.getInstance()))
+        .then(dailyVillagersHelper())
       );
       dispatcher.register(literal("gamerule")
         .requires(source -> source.hasPermissionLevel(4))
         .then(literal("default")
-          .then(dailyVillagersHelper(PropertiesCache.getDefaultInstance()))
+          .then(dailyVillagersHelperDefault())
         )
       );
     });
+  }
+
+  private ArgumentBuilder<ServerCommandSource, ?> dailyVillagersHelper() {
+    return literal("dailyVillagerRestocks")
+      .executes((context) -> printValue(context, PropertiesCache.getInstance(), "vill-enabled"))
+      .then(argument("dailyRestocks", IntegerArgumentType.integer(0, 999))
+        .then(argument("timeBetweenRestocks", IntegerArgumentType.integer(20, 2400))
+          .executes(context -> dailyVillagersCommonHelperExecute(context, PropertiesCache.getInstance()))
+        )
+      );
+  }
+
+  private ArgumentBuilder<ServerCommandSource, ?> dailyVillagersHelperDefault() {
+    return literal("dailyVillagerRestocks")
+      .executes((context) -> printValue(context, PropertiesCache.getDefaultInstance(), "vill-enabled"))
+      .then(argument("dailyRestocks", IntegerArgumentType.integer(0, 999))
+        .then(argument("timeBetweenRestocks", IntegerArgumentType.integer(20, 2400))
+          .executes(context -> dailyVillagersCommonHelperExecute(context, PropertiesCache.getDefaultInstance()))
+        )
+      );
+  }
+
+  private int dailyVillagersCommonHelperExecute(CommandContext<ServerCommandSource> context, PropertiesCache cache) {
+    int restocks = IntegerArgumentType.getInteger(context, "dailyRestocks");
+    int cooldown = IntegerArgumentType.getInteger(context, "timeBetweenRestocks");
+
+    cache.setProperty("vill-enabled", ((Boolean) (restocks != 2)).toString());
+    cache.setProperty("vill-daily-restocks", Integer.toString(restocks));
+    cache.setProperty("vill-time-between-restocks", Integer.toString(cooldown));
+
+    try {
+      cache.flush();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+
+    return reload(context);
   }
 
   // Command example: /gamerule doEndCrystalsLimitSpawn <value> <radius> <lowDistance> <name>
@@ -75,125 +157,68 @@ public class GameRuleCustomCommand {
     CommandRegistrationCallback.EVENT.register((dispatcher, dedicated) -> {
       dispatcher.register(literal("gamerule")
         .requires(source -> source.hasPermissionLevel(4))
-          .then(endCrystalHelper(PropertiesCache.getInstance()))
+          .then(endCrystalHelper())
         );
       dispatcher.register(literal("gamerule")
         .requires(source -> source.hasPermissionLevel(4))
         .then(literal("default")
-          .then(endCrystalHelper(PropertiesCache.getDefaultInstance()))
+          .then(endCrystalHelperDefault())
         )
       );
     });
   }
 
-  // Command example: /gamerule scaffoldingHangLimit <length>
-  // private void scaffoldingHangLimitInit() {
-  //   CommandRegistrationCallback.EVENT.register((dispatcher, dedicated) -> {
-  //     dispatcher.register(literal("gamerule")
-  //     .requires(source -> source.hasPermissionLevel(4))
-  //       .then(literal("scaffoldingHangLimit")
-  //         .then(argument("length", IntegerArgumentType.integer(7, 64))
-  //           .executes(context -> {
-  //             Integer length = IntegerArgumentType.getInteger(context, "length");
-
-  //             cache.setProperty("scaff-enabled", ((Boolean)(length != 7)).toString());
-  //             cache.setProperty("scaff-limit", length.toString());
-
-  //             try {
-  //               cache.flush();
-  //             } catch (IOException e) {
-  //               e.printStackTrace();
-  //             }
-
-  //             return reload(context);
-  //           })
-  //         )
-  //       )
-  //     );
-  //   });
-  // }
-
-  private ArgumentBuilder<ServerCommandSource, ?> dailyVillagersHelper(PropertiesCache cache) {
-    return literal("dailyVillagerRestocks")
-      .then(argument("dailyRestocks", IntegerArgumentType.integer(0, 999))
-        .then(argument("timeBetweenRestocks", IntegerArgumentType.integer(20, 2400))
-          .executes(context -> {
-            int restocks = IntegerArgumentType.getInteger(context, "dailyRestocks");
-            int cooldown = IntegerArgumentType.getInteger(context, "timeBetweenRestocks");
-
-            cache.setProperty("vill-enabled", ((Boolean) (restocks != 2)).toString());
-            cache.setProperty("vill-daily-restocks", Integer.toString(restocks));
-            cache.setProperty("vill-time-between-restocks", Integer.toString(cooldown));
-
-            try {
-              cache.flush();
-            } catch (IOException e) {
-              e.printStackTrace();
-            }
-
-            return reload(context);
-          })
-        )
-      );
-  }
-
-  private ArgumentBuilder<ServerCommandSource, ?> endCrystalHelper(PropertiesCache cache) {
+  private ArgumentBuilder<ServerCommandSource, ?> endCrystalHelper() {
     return literal("doEndCrystalsLimitSpawn")
+      .executes((context) -> printValue(context, PropertiesCache.getInstance(), "crystal-enabled"))
       .then(argument("value", BoolArgumentType.bool())
-        .executes((context) -> crystalHelper(context, cache))
+        .executes((context) -> endCrystalCommonHelperExecute(context, PropertiesCache.getInstance()))
       )
       .then(argument("value", BoolArgumentType.bool())
         .then(argument("name", StringArgumentType.string())
-          .executes((context) -> crystalHelper(context, cache))
+          .executes((context) -> endCrystalCommonHelperExecute(context, PropertiesCache.getInstance()))
         )
         .then(argument("radius", IntegerArgumentType.integer(1, 64))
           .then(argument("lowDistance", IntegerArgumentType.integer(-64, 64))
-            .executes((context) -> crystalHelper(context, cache))
+            .executes((context) -> endCrystalCommonHelperExecute(context, PropertiesCache.getInstance()))
           )
         )
         .then(argument("radius", IntegerArgumentType.integer(1, 64))
           .then(argument("lowDistance", IntegerArgumentType.integer(-64, 64))
             .then(argument("name", StringArgumentType.string())
-              .executes((context) -> crystalHelper(context, cache))
+              .executes((context) -> endCrystalCommonHelperExecute(context, PropertiesCache.getInstance()))
             )
           )
         )
       );
   }
 
-  private ArgumentBuilder<ServerCommandSource, ?> commonHelperBuilder(String rule, String configValue, PropertiesCache cache) {
-    return literal(rule)
+  private ArgumentBuilder<ServerCommandSource, ?> endCrystalHelperDefault() {
+    return literal("doEndCrystalsLimitSpawn")
+      .executes((context) -> printValue(context, PropertiesCache.getDefaultInstance(), "crystal-enabled"))
       .then(argument("value", BoolArgumentType.bool())
-        .executes(context -> {
-          cache.setProperty(configValue, ((Boolean) BoolArgumentType.getBool(context, "value")).toString());
-
-          try {
-            cache.flush();
-          } catch (IOException e) {
-            e.printStackTrace();
-          }
-
-          return reload(context);
-        })
-      );
-  }
-
-  private void commandHelper(String rule, String configValue) {
-    CommandRegistrationCallback.EVENT.register((dispatcher, dedicated) -> {
-      dispatcher.register(literal("gamerule")
-        .requires(source -> source.hasPermissionLevel(4))
-        .then(commonHelperBuilder(rule, configValue, PropertiesCache.getInstance()))
-      );
-      dispatcher.register(literal("gamerule")
-        .requires(source -> source.hasPermissionLevel(4))
-        .then(literal("default")
-          .then(commonHelperBuilder(rule, configValue, PropertiesCache.getDefaultInstance()))
+        .executes((context) -> endCrystalCommonHelperExecute(context, PropertiesCache.getDefaultInstance()))
+      )
+      .then(argument("value", BoolArgumentType.bool())
+        .then(argument("name", StringArgumentType.string())
+          .executes((context) -> endCrystalCommonHelperExecute(context, PropertiesCache.getDefaultInstance()))
+        )
+        .then(argument("radius", IntegerArgumentType.integer(1, 64))
+          .then(argument("lowDistance", IntegerArgumentType.integer(-64, 64))
+            .executes((context) -> endCrystalCommonHelperExecute(context, PropertiesCache.getDefaultInstance()))
+          )
+        )
+        .then(argument("radius", IntegerArgumentType.integer(1, 64))
+          .then(argument("lowDistance", IntegerArgumentType.integer(-64, 64))
+            .then(argument("name", StringArgumentType.string())
+              .executes((context) -> endCrystalCommonHelperExecute(context, PropertiesCache.getDefaultInstance()))
+            )
+          )
         )
       );
-    });
   }
 
-  private int crystalHelper(CommandContext<ServerCommandSource> context, PropertiesCache cache) {
+  private int endCrystalCommonHelperExecute(CommandContext<ServerCommandSource> context, PropertiesCache cache) {
     boolean value = BoolArgumentType.getBool(context, "value");
     int radius;
     int lowDistance;
@@ -224,6 +249,13 @@ public class GameRuleCustomCommand {
     }
 
     return reload(context);
+  }
+
+  // Utils
+  private static int printValue(CommandContext<ServerCommandSource> context, PropertiesCache cache, String property) {
+    ServerCommandSource serverCommandSource = context.getSource();
+    serverCommandSource.sendFeedback(new LiteralText(cache.getProperty(property)), true);
+    return 1;
   }
 
   private static int reload(CommandContext<ServerCommandSource> context) {

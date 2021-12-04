@@ -6,6 +6,7 @@ It includes:
  - Villagers can restock more times a day
  - Husks can drop sand
  - Beacons varies boosts depending on which block they are made and which pay they receive
- - (**Currently not implemented**) Scaffoldings with no placing limit in the air.
+ - Lure ehcnated gear attract items
+ - (**Future plan needs research**) Make jukebox interacts with redstone
 
 More information in the [wiki](https://github.com/John-Development/vanilla-essence/wiki)

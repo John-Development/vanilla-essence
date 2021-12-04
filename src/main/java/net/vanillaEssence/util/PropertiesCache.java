@@ -28,6 +28,7 @@ class SortedProperties extends Properties {
 
     return set2;
   }
+
   public Enumeration<Object> keys() {
     return Collections.enumeration(new TreeSet<>(super.keySet()));
   }
@@ -50,7 +51,7 @@ public class PropertiesCache {
 
     try {
       // If config file does not exists creates a new one with the default values
-      if ((new File(configRoute)).createNewFile()) {
+      if (!((new File(configRoute)).createNewFile())) {
         logger.log(Level.INFO, "File creation failed.");
       }
 
@@ -119,14 +120,6 @@ public class PropertiesCache {
       this.setProperty("crystal-name", Constants.DEF_CRYSTAL_NAME);
       hasChanged = true;
     }
-    // if (this.getProperty("scaff-enabled") == null) {
-    //   this.setProperty("scaff-enabled", "false");
-    //   hasChanged = true;
-    // }
-    // if (this.getProperty("scaff-limit") == null) {
-    //   this.setProperty("scaff-limit", DEF_SCAFF_LIMIT);
-    //   hasChanged = true;
-    // }
     if (this.getProperty("sand-enabled") == null) {
       this.setProperty("sand-enabled", "false");
       hasChanged = true;
@@ -162,7 +155,7 @@ public class PropertiesCache {
 
   private static class LazyHolder {
     private static final PropertiesCache DEFAULT_INSTANCE = new PropertiesCache();
-    private static PropertiesCache INSTANCE = new PropertiesCache();
+    private static PropertiesCache INSTANCE;
 
     protected static void resetInstance(String name) {
       INSTANCE = new PropertiesCache(name);
@@ -170,7 +163,11 @@ public class PropertiesCache {
   }
 
   public static PropertiesCache getInstance() {
-    return LazyHolder.INSTANCE;
+    PropertiesCache cache = LazyHolder.INSTANCE;
+    if (cache == null) {
+      return PropertiesCache.getDefaultInstance();
+    }
+    return cache;
   }
 
   public static PropertiesCache getDefaultInstance() {
