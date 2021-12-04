@@ -12,7 +12,7 @@ import net.vanillaEssence.util.PropertiesCache;
 
 public class Sand {
   private static final Identifier HUSK_LOOT_TABLE_ID = new Identifier("minecraft", "entities/husk");
-  
+
   private static class LazyHolder {
     private static final Sand INSTANCE = new Sand();
   }

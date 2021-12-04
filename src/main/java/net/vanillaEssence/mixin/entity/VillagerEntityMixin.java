@@ -16,7 +16,7 @@ public abstract class VillagerEntityMixin {
   private int restocksToday;
   @Shadow
   private long lastRestockTime;
-  
+
   @Inject(
     method = "canRestock",
     at = @At("HEAD"),
@@ -37,8 +37,8 @@ public abstract class VillagerEntityMixin {
       else {
         cir.setReturnValue(
           this.restocksToday == 0
-          || this.restocksToday < restocks
-          && ((VillagerEntity) (Object) this).world.getTime() > this.lastRestockTime + cooldown
+            || this.restocksToday < restocks
+            && ((VillagerEntity) (Object) this).world.getTime() > this.lastRestockTime + cooldown
         );
       }
     }

@@ -44,8 +44,8 @@ import java.util.stream.Collectors;
 @Mixin(BeaconBlockEntity.class)
 public abstract class BeaconBlockEntityMixin extends BlockEntity implements NamedScreenHandlerFactory {
   public BeaconBlockEntityMixin(BlockPos pos, BlockState state) {
-		super(BlockEntityType.BEACON, pos, state);
-	}
+    super(BlockEntityType.BEACON, pos, state);
+  }
 
   @Shadow
   int level;
@@ -171,11 +171,11 @@ public abstract class BeaconBlockEntityMixin extends BlockEntity implements Name
     BlockPos blockPos2;
 
     if (blockEntityMixin.minY < j) {
-        blockPos2 = pos;
-        blockEntityMixin.field_19178 = Lists.newArrayList();
-        blockEntityMixin.minY = pos.getY() - 1;
+      blockPos2 = pos;
+      blockEntityMixin.field_19178 = Lists.newArrayList();
+      blockEntityMixin.minY = pos.getY() - 1;
     } else {
-        blockPos2 = new BlockPos(i, blockEntityMixin.minY + 1, k);
+      blockPos2 = new BlockPos(i, blockEntityMixin.minY + 1, k);
     }
 
     BeamSegment beamSegment = blockEntityMixin.field_19178.isEmpty() ? null : blockEntityMixin.field_19178.get(blockEntityMixin.field_19178.size() - 1);
@@ -183,32 +183,32 @@ public abstract class BeaconBlockEntityMixin extends BlockEntity implements Name
 
     int n;
     for(n = 0; n < 10 && blockPos2.getY() <= l; ++n) {
-        BlockState blockState = world.getBlockState(blockPos2);
-        Block block = blockState.getBlock();
-        if (block instanceof Stainable) {
-          float[] fs = ((Stainable)block).getColor().getColorComponents();
-          if (blockEntityMixin.field_19178.size() <= 1) {
-              beamSegment = new BeamSegment(fs);
-              blockEntityMixin.field_19178.add(beamSegment);
-          } else if (beamSegment != null) {
-              if (Arrays.equals(fs, beamSegment.getColor())) {
-                beamSegment.increaseHeight();
-              } else {
-                beamSegment = new BeamSegment(new float[]{(beamSegment.getColor()[0] + fs[0]) / 2.0F, (beamSegment.getColor()[1] + fs[1]) / 2.0F, (beamSegment.getColor()[2] + fs[2]) / 2.0F});
-                blockEntityMixin.field_19178.add(beamSegment);
-              }
+      BlockState blockState = world.getBlockState(blockPos2);
+      Block block = blockState.getBlock();
+      if (block instanceof Stainable) {
+        float[] fs = ((Stainable)block).getColor().getColorComponents();
+        if (blockEntityMixin.field_19178.size() <= 1) {
+          beamSegment = new BeamSegment(fs);
+          blockEntityMixin.field_19178.add(beamSegment);
+        } else if (beamSegment != null) {
+          if (Arrays.equals(fs, beamSegment.getColor())) {
+            beamSegment.increaseHeight();
+          } else {
+            beamSegment = new BeamSegment(new float[]{(beamSegment.getColor()[0] + fs[0]) / 2.0F, (beamSegment.getColor()[1] + fs[1]) / 2.0F, (beamSegment.getColor()[2] + fs[2]) / 2.0F});
+            blockEntityMixin.field_19178.add(beamSegment);
           }
-        } else {
-          if (beamSegment == null || blockState.getOpacity(world, blockPos2) >= 15 && !blockState.isOf(Blocks.BEDROCK)) {
-              blockEntityMixin.field_19178.clear();
-              blockEntityMixin.minY = l;
-              break;
-          }
-          beamSegment.increaseHeight();
         }
+      } else {
+        if (beamSegment == null || blockState.getOpacity(world, blockPos2) >= 15 && !blockState.isOf(Blocks.BEDROCK)) {
+          blockEntityMixin.field_19178.clear();
+          blockEntityMixin.minY = l;
+          break;
+        }
+        beamSegment.increaseHeight();
+      }
 
-        blockPos2 = blockPos2.up();
-        ++blockEntityMixin.minY;
+      blockPos2 = blockPos2.up();
+      ++blockEntityMixin.minY;
     }
 
     n = blockEntityMixin.level;
@@ -252,7 +252,7 @@ public abstract class BeaconBlockEntityMixin extends BlockEntity implements Name
 
   private static void applyPlayerEffects(World world, BlockPos pos, BeaconBlockEntityMixin blockEntityMixin) {
     StatusEffect primaryEffect = blockEntityMixin.primary;
-    
+
     if (!world.isClient && primaryEffect != null) {
       StatusEffect secondaryEffect = blockEntityMixin.secondary;
 
@@ -283,10 +283,10 @@ public abstract class BeaconBlockEntityMixin extends BlockEntity implements Name
 
         beaconRange = floorDouble(
           (double)beaconIronBlocks * floorDouble(((double)beaconLevel * 10 + 10)/blocks)
-          + (double)beaconGoldBlocks * floorDouble(((double)beaconLevel * 15 + 15)/blocks)
-          + (double)beaconEmeraldBlocks * floorDouble(((double)beaconLevel * 25 + 25)/blocks)
-          + (double)beaconDiamondBlocks * floorDouble(((double)beaconLevel * 30 + 30)/blocks)
-          + (double)beaconNetheriteBlocks * floorDouble(((double)beaconLevel * 40 + 40)/blocks)
+            + (double)beaconGoldBlocks * floorDouble(((double)beaconLevel * 15 + 15)/blocks)
+            + (double)beaconEmeraldBlocks * floorDouble(((double)beaconLevel * 25 + 25)/blocks)
+            + (double)beaconDiamondBlocks * floorDouble(((double)beaconLevel * 30 + 30)/blocks)
+            + (double)beaconNetheriteBlocks * floorDouble(((double)beaconLevel * 40 + 40)/blocks)
         );
 
         beaconRange = Math.floor(beaconRange) + 1;

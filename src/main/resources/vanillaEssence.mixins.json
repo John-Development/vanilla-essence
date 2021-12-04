@@ -10,7 +10,8 @@
     "entity.PlayerEntityMixin",
     "entity.VillagerEntityMixin",
     "screen.BeaconScreenHandlerMixin",
-    "world.SpawnHelperMixin"
+    "world.SpawnHelperMixin",
+    "world.level.LevelPropertiesMixin"
   ],
   "client": [
   ],

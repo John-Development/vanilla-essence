@@ -36,7 +36,7 @@ public abstract class SpawnHelperMixin {
     CallbackInfoReturnable<Boolean> cir
   ) {
     PropertiesCache cache = PropertiesCache.getInstance();
-    
+
     if (cache.getBoolProperty("crystal-enabled")
       && group != null
       && group.compareTo(SpawnGroup.MONSTER) == 0
