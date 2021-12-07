@@ -204,6 +204,7 @@ public abstract class BeaconBlockEntityMixin extends BlockEntity implements Name
           blockEntityMixin.minY = l;
           break;
         }
+
         beamSegment.increaseHeight();
       }
 

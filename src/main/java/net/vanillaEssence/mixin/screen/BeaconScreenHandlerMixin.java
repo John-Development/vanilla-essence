@@ -32,8 +32,7 @@ public abstract class BeaconScreenHandlerMixin {
     index = 2
   )
   private static PropertyDelegate getArrayPropertyDelegate(PropertyDelegate array) {
-    PropertiesCache cache = PropertiesCache.getInstance();
-    return cache.getBoolProperty("beacons-enabled")
+    return PropertiesCache.getInstance().getBoolProperty("beacons-enabled")
       ? new ArrayPropertyDelegate(4)
       : array;
   }
@@ -41,12 +40,12 @@ public abstract class BeaconScreenHandlerMixin {
   @ModifyArg(
     method = "<init>(ILnet/minecraft/inventory/Inventory;Lnet/minecraft/screen/PropertyDelegate;Lnet/minecraft/screen/ScreenHandlerContext;)V",
     at = @At(value = "INVOKE",
-      target = "Lnet/minecraft/screen/BeaconScreenHandler;checkDataCount(Lnet/minecraft/screen/PropertyDelegate;I)V"),
+      target = "Lnet/minecraft/screen/BeaconScreenHandler;checkDataCount(Lnet/minecraft/screen/PropertyDelegate;I)V"
+    ),
     index = 1
   )
   private int getNumber(int number) {
-    PropertiesCache cache = PropertiesCache.getInstance();
-    return cache.getBoolProperty("beacons-enabled")
+    return PropertiesCache.getInstance().getBoolProperty("beacons-enabled")
       ? 4
       : number;
   }

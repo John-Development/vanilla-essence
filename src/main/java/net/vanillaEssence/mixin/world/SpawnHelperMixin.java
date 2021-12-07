@@ -19,7 +19,6 @@ import java.util.List;
 
 @Mixin(SpawnHelper.class)
 public abstract class SpawnHelperMixin {
-
   @Inject(
     method = "canSpawn*",
     at = @At("HEAD"),
