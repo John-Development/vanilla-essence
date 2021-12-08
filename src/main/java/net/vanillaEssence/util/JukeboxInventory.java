@@ -17,28 +17,14 @@ public interface JukeboxInventory extends Inventory {
    * Retrieves the item list of this inventory.
    * Must return the same instance every time it's called.
    */
-  DefaultedList<ItemStack> getItems();
-
-  /**
-   * Creates an inventory from the item list.
-   */
-  static JukeboxInventory of(DefaultedList<ItemStack> items) {
-    return () -> items;
-  }
-
-  /**
-   * Creates a new inventory with the specified size.
-   */
-  static JukeboxInventory ofSize(int size) {
-    return of(DefaultedList.ofSize(size, ItemStack.EMPTY));
-  }
+  DefaultedList<ItemStack> getInventory();
 
   /**
    * Returns the inventory size.
    */
   @Override
   default int size() {
-    return getItems().size();
+    return getInventory().size();
   }
 
   /**
@@ -61,7 +47,7 @@ public interface JukeboxInventory extends Inventory {
    */
   @Override
   default ItemStack getStack(int slot) {
-    return getItems().get(slot);
+    return getInventory().get(slot);
   }
 
   /**
@@ -72,7 +58,7 @@ public interface JukeboxInventory extends Inventory {
    */
   @Override
   default ItemStack removeStack(int slot, int count) {
-    ItemStack result = Inventories.splitStack(getItems(), slot, count);
+    ItemStack result = Inventories.splitStack(getInventory(), slot, count);
     if (!result.isEmpty()) {
       markDirty();
     }
@@ -85,7 +71,7 @@ public interface JukeboxInventory extends Inventory {
    */
   @Override
   default ItemStack removeStack(int slot) {
-    return Inventories.removeStack(getItems(), slot);
+    return Inventories.removeStack(getInventory(), slot);
   }
 
   /**
@@ -97,7 +83,7 @@ public interface JukeboxInventory extends Inventory {
    */
   @Override
   default void setStack(int slot, ItemStack stack) {
-    getItems().set(slot, stack);
+    getInventory().set(slot, stack);
     if (stack.getCount() > getMaxCountPerStack()) {
       stack.setCount(getMaxCountPerStack());
     }
@@ -108,7 +94,7 @@ public interface JukeboxInventory extends Inventory {
    */
   @Override
   default void clear() {
-    getItems().clear();
+    getInventory().clear();
   }
 
   /**

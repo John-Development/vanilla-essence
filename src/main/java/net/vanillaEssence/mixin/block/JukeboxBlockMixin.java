@@ -50,9 +50,9 @@ public abstract class JukeboxBlockMixin extends BlockWithEntity {
 
   @Override
   public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-    boolean bl = !world.isReceivingRedstonePower(pos);
+    boolean powered = world.isReceivingRedstonePower(pos);
 
-    if (state.get(HAS_RECORD) || (!state.get(HAS_RECORD) && !bl ) ) {
+    if (state.get(HAS_RECORD) || (!state.get(HAS_RECORD) && powered)) {
       this.removeRecord(world, pos);
       state = state.with(HAS_RECORD, false);
       world.setBlockState(pos, state, 2);
@@ -63,10 +63,10 @@ public abstract class JukeboxBlockMixin extends BlockWithEntity {
   }
 
   private void updateEnabled(World world, BlockPos pos, BlockState state) {
-    boolean bl = !world.isReceivingRedstonePower(pos);
-    if (bl != state.get(TRIGGERED)) {
-      world.setBlockState(pos, state.with(TRIGGERED, bl), 4);
-      if (!bl) {
+    boolean powered = world.isReceivingRedstonePower(pos);
+    if (powered == state.get(TRIGGERED)) {
+      world.setBlockState(pos, state.with(TRIGGERED, !powered), 4);
+      if (powered) {
         this.removeRecord(world, pos);
       }
     }
