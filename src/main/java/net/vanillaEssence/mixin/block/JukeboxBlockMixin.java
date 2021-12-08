@@ -10,6 +10,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.vanillaEssence.util.PropertiesCache;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Mutable;
@@ -45,12 +46,14 @@ public abstract class JukeboxBlockMixin extends BlockWithEntity {
 
   @Override
   public void neighborUpdate(BlockState state, World world, BlockPos pos, Block block, BlockPos fromPos, boolean notify) {
-    this.updateEnabled(world, pos, state);
+    if (PropertiesCache.getInstance().getBoolProperty("redstoned-jukeboxes-enabled")) {
+      this.updateEnabled(world, pos, state);
+    }
   }
 
   @Override
   public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-    boolean powered = world.isReceivingRedstonePower(pos);
+    boolean powered = PropertiesCache.getInstance().getBoolProperty("redstoned-jukeboxes-enabled") && world.isReceivingRedstonePower(pos);
 
     if (state.get(HAS_RECORD) || (!state.get(HAS_RECORD) && powered)) {
       this.removeRecord(world, pos);
@@ -63,7 +66,7 @@ public abstract class JukeboxBlockMixin extends BlockWithEntity {
   }
 
   private void updateEnabled(World world, BlockPos pos, BlockState state) {
-    boolean powered = world.isReceivingRedstonePower(pos);
+    boolean powered = PropertiesCache.getInstance().getBoolProperty("redstoned-jukeboxes-enabled") && world.isReceivingRedstonePower(pos);
     if (powered == state.get(TRIGGERED)) {
       world.setBlockState(pos, state.with(TRIGGERED, !powered), 4);
       if (powered) {

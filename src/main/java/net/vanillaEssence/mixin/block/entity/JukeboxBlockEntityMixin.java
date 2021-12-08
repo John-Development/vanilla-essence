@@ -14,8 +14,13 @@ import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.vanillaEssence.util.JukeboxInventory;
+import net.vanillaEssence.util.PropertiesCache;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(JukeboxBlockEntity.class)
 public class JukeboxBlockEntityMixin extends BlockEntity implements JukeboxInventory, SidedInventory {
@@ -23,6 +28,7 @@ public class JukeboxBlockEntityMixin extends BlockEntity implements JukeboxInven
 
   public JukeboxBlockEntityMixin(BlockEntityType<?> type, BlockPos pos, BlockState state) {
     super(type, pos, state);
+    this.inventory.set(0, ItemStack.EMPTY);
   }
 
   @Override
@@ -44,7 +50,6 @@ public class JukeboxBlockEntityMixin extends BlockEntity implements JukeboxInven
 
   @Override
   public int[] getAvailableSlots(Direction var1) {
-    // Just return an array of all slots
     int[] result = new int[getInventory().size()];
     for (int i = 0; i < result.length; i++) {
       result[i] = i;
@@ -53,50 +58,59 @@ public class JukeboxBlockEntityMixin extends BlockEntity implements JukeboxInven
     return result;
   }
 
-  /**
-   * @author Juarrin
-   */
-  @Overwrite
-  public ItemStack getRecord() {
-    return this.inventory.get(0);
+  @Inject(
+    method = "getRecord",
+    at = @At("RETURN"),
+    cancellable = true
+  )
+  public void getRecord(CallbackInfoReturnable<ItemStack> cir) {
+    cir.setReturnValue(this.inventory.get(0));
   }
 
-  /**
-   * @author Juarrin
-   */
-  @Overwrite
-  public void setRecord(ItemStack stack) {
+  @Inject(
+    method = "setRecord",
+    at = @At("HEAD"),
+    cancellable = true
+  )
+  public void setRecord(ItemStack stack, CallbackInfo ci) {
     this.inventory.set(0, stack);
     this.markDirty();
+    ci.cancel();
   }
 
   @Override
   public boolean canInsert(int slot, ItemStack stack, Direction direction) {
-    assert this.world != null;
-    boolean powered = this.world.isReceivingRedstonePower(pos);
+    if (PropertiesCache.getInstance().getBoolProperty("redstoned-jukeboxes-enabled")) {
+      assert this.world != null;
+      boolean powered = this.world.isReceivingRedstonePower(pos);
 
-    if (!powered && direction == Direction.UP) {
-      if (!world.isClient) {
-        world.syncWorldEvent(1010, pos, Item.getRawId(stack.getItem()));
+      if (!powered && direction == Direction.UP) {
+        if (!world.isClient) {
+          world.syncWorldEvent(1010, pos, Item.getRawId(stack.getItem()));
+        }
+        this.world.setBlockState(pos, this.world.getBlockState(pos).with(Properties.HAS_RECORD, true), 2);
       }
-      this.world.setBlockState(pos, this.world.getBlockState(pos).with(Properties.HAS_RECORD, true), 2);
-    }
 
-    return !powered && direction == Direction.UP;
+      return !powered && direction == Direction.UP;
+    }
+    return false;
   }
 
   @Override
   public boolean canExtract(int slot, ItemStack stack, Direction direction) {
-    assert this.world != null;
-    boolean powered = this.world.isReceivingRedstonePower(pos);
+    if (PropertiesCache.getInstance().getBoolProperty("redstoned-jukeboxes-enabled")) {
+      assert this.world != null;
+      boolean powered = this.world.isReceivingRedstonePower(pos);
 
-    if (!powered) {
-      if (!world.isClient) {
-        world.syncWorldEvent(1010, pos, 0);
+      if (!powered) {
+        if (!world.isClient) {
+          world.syncWorldEvent(1010, pos, 0);
+        }
+        this.world.setBlockState(pos, this.world.getBlockState(pos).with(Properties.HAS_RECORD, false), 2);
       }
-      this.world.setBlockState(pos, this.world.getBlockState(pos).with(Properties.HAS_RECORD, false), 2);
-    }
 
-    return !powered;
+      return !powered;
+    }
+    return false;
   }
 }

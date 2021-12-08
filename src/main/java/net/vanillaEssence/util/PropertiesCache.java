@@ -140,6 +140,10 @@ public class PropertiesCache {
       this.setProperty("magnetic-lure-enabled", "false");
       hasChanged = true;
     }
+    if (this.getProperty("redstoned-jukeboxes-enabled") == null){
+      this.setProperty("redstoned-jukeboxes-enabled", "false");
+      hasChanged = true;
+    }
 
     if (hasChanged) {
       //Write to the file

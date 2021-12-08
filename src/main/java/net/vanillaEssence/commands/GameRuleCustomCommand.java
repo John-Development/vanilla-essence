@@ -38,6 +38,7 @@ public class GameRuleCustomCommand {
     doEndCrystalsLimitSpawnInit();
     betterBeaconsInit();
     magneticLureInit();
+    redstonedJukeboxInit();
   }
 
   // Command example: /gamerule doHusksDropSand <value>
@@ -53,6 +54,11 @@ public class GameRuleCustomCommand {
   // Command example: /gamerule magneticLure <value>
   private void magneticLureInit() {
     genericCommandBuilderInit("magneticLure", "magnetic-lure-enabled");
+  }
+
+  // Command example: /gamerule redstonedJukeboxes <value>
+  private void redstonedJukeboxInit() {
+    genericCommandBuilderInit("redstonedJukeboxes", "redstoned-jukeboxes-enabled");
   }
 
   // Common builder
