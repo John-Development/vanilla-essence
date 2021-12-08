@@ -26,39 +26,38 @@ public abstract class BeaconScreenHandlerMixin {
   PropertyDelegate propertyDelegate;
 
   @ModifyArg(
-          method = "<init>(ILnet/minecraft/inventory/Inventory;)V",
-          at = @At(value = "INVOKE",
-                  target = "Lnet/minecraft/screen/BeaconScreenHandler;<init>(ILnet/minecraft/inventory/Inventory;Lnet/minecraft/screen/PropertyDelegate;Lnet/minecraft/screen/ScreenHandlerContext;)V"),
-          index = 2
+    method = "<init>(ILnet/minecraft/inventory/Inventory;)V",
+    at = @At(value = "INVOKE",
+      target = "Lnet/minecraft/screen/BeaconScreenHandler;<init>(ILnet/minecraft/inventory/Inventory;Lnet/minecraft/screen/PropertyDelegate;Lnet/minecraft/screen/ScreenHandlerContext;)V"),
+    index = 2
   )
   private static PropertyDelegate getArrayPropertyDelegate(PropertyDelegate array) {
-    PropertiesCache cache = PropertiesCache.getInstance();
-    return cache.getBoolProperty("beacons-enabled")
-            ? new ArrayPropertyDelegate(4)
-            : array;
+    return PropertiesCache.getInstance().getBoolProperty("beacons-enabled")
+      ? new ArrayPropertyDelegate(4)
+      : array;
   }
 
   @ModifyArg(
-          method = "<init>(ILnet/minecraft/inventory/Inventory;Lnet/minecraft/screen/PropertyDelegate;Lnet/minecraft/screen/ScreenHandlerContext;)V",
-          at = @At(value = "INVOKE",
-                  target = "Lnet/minecraft/screen/BeaconScreenHandler;checkDataCount(Lnet/minecraft/screen/PropertyDelegate;I)V"),
-          index = 1
+    method = "<init>(ILnet/minecraft/inventory/Inventory;Lnet/minecraft/screen/PropertyDelegate;Lnet/minecraft/screen/ScreenHandlerContext;)V",
+    at = @At(value = "INVOKE",
+      target = "Lnet/minecraft/screen/BeaconScreenHandler;checkDataCount(Lnet/minecraft/screen/PropertyDelegate;I)V"
+    ),
+    index = 1
   )
   private int getNumber(int number) {
-    PropertiesCache cache = PropertiesCache.getInstance();
-    return cache.getBoolProperty("beacons-enabled")
-            ? 4
-            : number;
+    return PropertiesCache.getInstance().getBoolProperty("beacons-enabled")
+      ? 4
+      : number;
   }
 
   @Inject(
-          method = "setEffects",
-          at = @At("HEAD")
+    method = "setEffects",
+    at = @At("HEAD")
   )
   public void setEffectsMethod(
-          int primaryEffectId,
-          int secondaryEffectId,
-          CallbackInfo cir
+    int primaryEffectId,
+    int secondaryEffectId,
+    CallbackInfo cir
   ) {
     if (this.payment != null) {
       this.propertyDelegate.set(3, Item.getRawId(this.payment.getStack(0).getItem()));

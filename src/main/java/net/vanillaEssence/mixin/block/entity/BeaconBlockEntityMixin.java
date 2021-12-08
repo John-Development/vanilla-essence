@@ -1,19 +1,6 @@
 package net.vanillaEssence.mixin.block.entity;
 
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 import com.google.common.collect.Lists;
-
-import org.jetbrains.annotations.Nullable;
-import org.spongepowered.asm.mixin.*;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -22,7 +9,6 @@ import net.minecraft.block.Stainable;
 import net.minecraft.block.entity.BeaconBlockEntity;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.block.entity.BeaconBlockEntity.BeamSegment;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
@@ -41,8 +27,20 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.World;
+import net.vanillaEssence.util.BeamSegment;
 import net.vanillaEssence.util.PropertiesCache;
+import org.jetbrains.annotations.Nullable;
+import org.spongepowered.asm.mixin.*;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Mixin(BeaconBlockEntity.class)
 public abstract class BeaconBlockEntityMixin extends BlockEntity implements NamedScreenHandlerFactory {
@@ -61,7 +59,7 @@ public abstract class BeaconBlockEntityMixin extends BlockEntity implements Name
   @Mutable
   private PropertyDelegate propertyDelegate;
   @Shadow
-  List<BeamSegmentMixin> beamSegments = Lists.newArrayList();
+  List<BeamSegment> beamSegments = Lists.newArrayList();
   @Mutable
   @Final
   @Shadow
@@ -73,7 +71,7 @@ public abstract class BeaconBlockEntityMixin extends BlockEntity implements Name
   @Shadow
   private int minY;
   @Shadow
-  private List<BeamSegmentMixin> field_19178 = Lists.newArrayList();
+  private List<BeamSegment> field_19178 = Lists.newArrayList();
 
   Item payment;
   double bonus;
@@ -86,8 +84,8 @@ public abstract class BeaconBlockEntityMixin extends BlockEntity implements Name
   int netheriteBlocks = 0;
 
   @Inject(
-          method = "<init>(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/BlockState;)V",
-          at = @At("TAIL")
+    method = "<init>(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/BlockState;)V",
+    at = @At("TAIL")
   )
   private void init(BlockPos pos, BlockState state, CallbackInfo cir) {
     if (PropertiesCache.getInstance().getBoolProperty("beacons-enabled")) {
@@ -144,8 +142,8 @@ public abstract class BeaconBlockEntityMixin extends BlockEntity implements Name
   }
 
   @Inject(
-          method = "readNbt",
-          at = @At("HEAD")
+    method = "readNbt",
+    at = @At("HEAD")
   )
   public void readNbt(NbtCompound nbt, CallbackInfo ci) {
     if (PropertiesCache.getInstance().getBoolProperty("beacons-enabled")) {
@@ -153,26 +151,26 @@ public abstract class BeaconBlockEntityMixin extends BlockEntity implements Name
     }
   }
 
-
   @Nullable
   @Shadow
   static StatusEffect getPotionEffectById(int id) {
-    StatusEffect statusEffect = StatusEffect.byRawId(id);
-    return EFFECTS.contains(statusEffect) ? statusEffect : null;
+    return null;
   }
 
   /**
    * @author Juarrin
+   * @reason
    */
   @Overwrite
   public static void tick(World world, BlockPos pos, BlockState state, BeaconBlockEntity blockEntity) {
+    assert (blockEntity != null);
     BeaconBlockEntityMixin blockEntityMixin = ((BeaconBlockEntityMixin) (Object) blockEntity);
 
     int i = pos.getX();
     int j = pos.getY();
     int k = pos.getZ();
     BlockPos blockPos2;
-    // TODO: check if blockEntityMixin is always null
+
     if (blockEntityMixin.minY < j) {
       blockPos2 = pos;
       blockEntityMixin.field_19178 = Lists.newArrayList();
@@ -181,7 +179,7 @@ public abstract class BeaconBlockEntityMixin extends BlockEntity implements Name
       blockPos2 = new BlockPos(i, blockEntityMixin.minY + 1, k);
     }
 
-    BeamSegmentMixin beamSegment = blockEntityMixin.field_19178.isEmpty() ? null : blockEntityMixin.field_19178.get(blockEntityMixin.field_19178.size() - 1);
+    BeamSegment beamSegment = blockEntityMixin.field_19178.isEmpty() ? null : blockEntityMixin.field_19178.get(blockEntityMixin.field_19178.size() - 1);
     int l = world.getTopY(Heightmap.Type.WORLD_SURFACE, i, k);
 
     int n;
@@ -191,13 +189,13 @@ public abstract class BeaconBlockEntityMixin extends BlockEntity implements Name
       if (block instanceof Stainable) {
         float[] fs = ((Stainable)block).getColor().getColorComponents();
         if (blockEntityMixin.field_19178.size() <= 1) {
-          beamSegment = blockEntityMixin.new BeamSegmentMixin(fs);
+          beamSegment = new BeamSegment(fs);
           blockEntityMixin.field_19178.add(beamSegment);
         } else if (beamSegment != null) {
           if (Arrays.equals(fs, beamSegment.getColor())) {
             beamSegment.increaseHeight();
           } else {
-            beamSegment = blockEntityMixin.new BeamSegmentMixin(new float[]{(beamSegment.getColor()[0] + fs[0]) / 2.0F, (beamSegment.getColor()[1] + fs[1]) / 2.0F, (beamSegment.getColor()[2] + fs[2]) / 2.0F});
+            beamSegment = new BeamSegment(new float[]{(beamSegment.getColor()[0] + fs[0]) / 2.0F, (beamSegment.getColor()[1] + fs[1]) / 2.0F, (beamSegment.getColor()[2] + fs[2]) / 2.0F});
             blockEntityMixin.field_19178.add(beamSegment);
           }
         }
@@ -286,20 +284,17 @@ public abstract class BeaconBlockEntityMixin extends BlockEntity implements Name
         int blocks = totalBlocks(beaconLevel);
 
         beaconRange = floorDouble(
-        (double)beaconIronBlocks * floorDouble(((double)beaconLevel * 10 + 10)/blocks)
-          + (double)beaconGoldBlocks * floorDouble(((double)beaconLevel * 15 + 15)/blocks)
-          + (double)beaconEmeraldBlocks * floorDouble(((double)beaconLevel * 25 + 25)/blocks)
-          + (double)beaconDiamondBlocks * floorDouble(((double)beaconLevel * 30 + 30)/blocks)
-          + (double)beaconNetheriteBlocks * floorDouble(((double)beaconLevel * 40 + 40)/blocks)
+          (double)beaconIronBlocks * floorDouble(((double)beaconLevel * 10 + 10)/blocks)
+            + (double)beaconGoldBlocks * floorDouble(((double)beaconLevel * 15 + 15)/blocks)
+            + (double)beaconEmeraldBlocks * floorDouble(((double)beaconLevel * 25 + 25)/blocks)
+            + (double)beaconDiamondBlocks * floorDouble(((double)beaconLevel * 30 + 30)/blocks)
+            + (double)beaconNetheriteBlocks * floorDouble(((double)beaconLevel * 40 + 40)/blocks)
         );
 
         beaconRange = Math.floor(beaconRange) + 1;
 
         if (beaconPayment != null) {
-          // TODO: refactor
-          if (beaconPayment.equals(Items.IRON_INGOT)) {
-            // Nothing
-          } else if (beaconPayment.equals(Items.GOLD_INGOT)) {
+          if (beaconPayment.equals(Items.GOLD_INGOT)) {
             j += j * 25/100;
           } else if (beaconPayment.equals(Items.EMERALD)) {
             beaconBonus = beaconRange * 5/100;
@@ -405,33 +400,6 @@ public abstract class BeaconBlockEntityMixin extends BlockEntity implements Name
     }
 
     return internalLevel;
-  }
-
-  // TODO: find better solution
-  private final class BeamSegmentMixin extends BeamSegment {
-    final float[] color;
-    private int height;
-
-    public BeamSegmentMixin(float[] color) {
-      super(color);
-      this.color = color;
-      this.height = 1;
-    }
-
-    @Override
-    public void increaseHeight() {
-      ++this.height;
-    }
-
-    @Override
-    public float[] getColor() {
-      return this.color;
-    }
-
-    @Override
-    public int getHeight() {
-      return this.height;
-    }
   }
 
   static {
