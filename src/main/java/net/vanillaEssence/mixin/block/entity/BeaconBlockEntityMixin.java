@@ -7,7 +7,9 @@ import java.util.Set;
 import com.google.common.collect.Lists;
 
 import org.jetbrains.annotations.Nullable;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Mutable;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -43,8 +45,8 @@ import net.vanillaEssence.util.PropertiesCache;
 public abstract class BeaconBlockEntityMixin extends BlockEntity implements NamedScreenHandlerFactory, Tickable {
 
   public BeaconBlockEntityMixin() {
-		super(BlockEntityType.BEACON);
-	}
+    super(BlockEntityType.BEACON);
+  }
 
   @Shadow
   private int level;
@@ -52,10 +54,13 @@ public abstract class BeaconBlockEntityMixin extends BlockEntity implements Name
   private StatusEffect primary;
   @Shadow
   private StatusEffect secondary;
+  @Mutable
+  @Final
   @Shadow
   private PropertyDelegate propertyDelegate;
   @Shadow
   private List<BeamSegment> beamSegments = Lists.newArrayList();
+  @Final
   @Shadow
   private static Set<StatusEffect> EFFECTS;
 
@@ -97,6 +102,7 @@ public abstract class BeaconBlockEntityMixin extends BlockEntity implements Name
               BeaconBlockEntityMixin.this.level = value;
               break;
             case 1:
+              assert BeaconBlockEntityMixin.this.world != null;
               if (!BeaconBlockEntityMixin.this.world.isClient && !BeaconBlockEntityMixin.this.beamSegments.isEmpty()) {
                 BeaconBlockEntityMixin.this.playSound(SoundEvents.BLOCK_BEACON_POWER_SELECT);
               }
@@ -119,7 +125,8 @@ public abstract class BeaconBlockEntityMixin extends BlockEntity implements Name
   }
 
   public void playSound(SoundEvent soundEvent) {
-    this.world.playSound((PlayerEntity) null, this.pos, soundEvent, SoundCategory.BLOCKS, 1.0F, 1.0F);
+    assert this.world != null;
+    this.world.playSound(null, this.pos, soundEvent, SoundCategory.BLOCKS, 1.0F, 1.0F);
   }
 
   @Nullable
@@ -127,7 +134,7 @@ public abstract class BeaconBlockEntityMixin extends BlockEntity implements Name
     StatusEffect statusEffect = StatusEffect.byRawId(id);
     return EFFECTS.contains(statusEffect) ? statusEffect : null;
   }
- 
+
   @Inject(
     method = "toTag",
     at = @At("HEAD")
@@ -180,6 +187,7 @@ public abstract class BeaconBlockEntityMixin extends BlockEntity implements Name
 
         for(int k = x - i; k <= x + i && bl; ++k) {
           for(int l = z - i; l <= z + i; ++l) {
+            assert this.world != null;
             if (!this.world.getBlockState(new BlockPos(k, j, l)).isIn(BlockTags.BEACON_BASE_BLOCKS)) {
               bl = false;
               break;
@@ -226,66 +234,84 @@ public abstract class BeaconBlockEntityMixin extends BlockEntity implements Name
     cancellable = true
   )
   private void applyPlayerEffects(CallbackInfo ci) {
-    if (!this.world.isClient && this.primary != null) {
+    StatusEffect primaryEffect = this.primary;
+
+    assert world != null;
+    if (!world.isClient && primaryEffect != null) {
+      StatusEffect secondaryEffect = this.secondary;
+
+      int beaconLevel = this.level;
+      double beaconRange;
+      double beaconBonus = this.bonus;
+      Item beaconPayment = this.payment;
+
+      int beaconIronBlocks = this.ironBlocks;
+      int beaconGoldBlocks = this.goldBlocks;
+      int beaconEmeraldBlocks = this.emeraldBlocks;
+      int beaconDiamondBlocks = this.diamondBlocks;
+      int beaconNetheriteBlocks = this.netheriteBlocks;
+
       double d;
-      int i, j;
-      if (Boolean.parseBoolean(PropertiesCache.getInstance().getProperty("beacons-enabled"))) {
+
+      int i = 0;
+      if (beaconLevel >= 4 && primaryEffect == secondaryEffect) {
+        i = 1;
+      }
+
+      int j = (9 + beaconLevel * 2) * 20;
+
+      if (PropertiesCache.getInstance().getBoolProperty("beacons-enabled")) {
         // La formula del nivel: f(x) = f(x-1) + (2x+1)^2
 
-        int blocks = this.totalBlocks(this.level);
+        int blocks = totalBlocks(beaconLevel);
 
-        this.range = floorDouble(
-          (double)this.ironBlocks * floorDouble(((double)this.level * 10 + 10)/blocks)
-          + (double)this.goldBlocks * floorDouble(((double)this.level * 15 + 15)/blocks)
-          + (double)this.emeraldBlocks * floorDouble(((double)this.level * 25 + 25)/blocks)
-          + (double)this.diamondBlocks * floorDouble(((double)this.level * 30 + 30)/blocks)
-          + (double)this.netheriteBlocks * floorDouble(((double)this.level * 40 + 40)/blocks)
+        beaconRange = floorDouble(
+          (double)beaconIronBlocks * floorDouble(((double)beaconLevel * 10 + 10)/blocks)
+            + (double)beaconGoldBlocks * floorDouble(((double)beaconLevel * 15 + 15)/blocks)
+            + (double)beaconEmeraldBlocks * floorDouble(((double)beaconLevel * 25 + 25)/blocks)
+            + (double)beaconDiamondBlocks * floorDouble(((double)beaconLevel * 30 + 30)/blocks)
+            + (double)beaconNetheriteBlocks * floorDouble(((double)beaconLevel * 40 + 40)/blocks)
         );
 
-        i = 0;
+        beaconRange = Math.floor(beaconRange) + 1;
 
-        if (this.level >= 4 && this.primary == this.secondary) {
-          i = 1;
-        }
-
-        j = (9 + this.level * 2) * 20;
-        if (this.payment != null) {
-          if (this.payment.equals(Items.IRON_INGOT)) {
-            // Nothing
-          } else if (this.payment.equals(Items.GOLD_INGOT)) {
+        if (beaconPayment != null) {
+          if (beaconPayment.equals(Items.GOLD_INGOT)) {
             j += j * 25/100;
-          } else if (this.payment.equals(Items.EMERALD)) {
-            this.bonus = this.range * 5/100;
-          } else if (this.payment.equals(Items.DIAMOND)) {
-            this.bonus = this.range * 20/100;
-          } else if (this.payment.equals(Items.NETHERITE_INGOT)) { 
-            this.bonus = this.range * 20/100;
+          } else if (beaconPayment.equals(Items.EMERALD)) {
+            beaconBonus = beaconRange * 5/100;
+          } else if (beaconPayment.equals(Items.DIAMOND)) {
+            beaconBonus = beaconRange * 20/100;
+          } else if (beaconPayment.equals(Items.NETHERITE_INGOT)) {
+            beaconBonus = beaconRange * 20/100;
             j += j * 25/100;
           }
         }
 
-        d = this.range + this.bonus;
-
-        Box box = (new Box(this.pos)).expand(d).stretch(0.0D, (double)this.world.getHeight(), 0.0D);
-        List<PlayerEntity> list = this.world.getNonSpectatingEntities(PlayerEntity.class, box);
-        Iterator<PlayerEntity> var7 = list.iterator();
-
-        PlayerEntity playerEntity2;
-        while(var7.hasNext()) {
-          playerEntity2 = (PlayerEntity)var7.next();
-          playerEntity2.addStatusEffect(new StatusEffectInstance(this.primary, j, i, true, true));
-        }
-
-        if (this.level >= 4 && this.primary != this.secondary && this.secondary != null) {
-          var7 = list.iterator();
-
-          while(var7.hasNext()) {
-            playerEntity2 = (PlayerEntity)var7.next();
-            playerEntity2.addStatusEffect(new StatusEffectInstance(this.secondary, j, 0, true, true));
-          }
-        }
-        ci.cancel(); 
+        d = beaconRange + beaconBonus;
+      } else {
+        d = beaconLevel * 10 + 10;
       }
+
+      Box box = (new Box(pos)).expand(d).stretch(0.0D, world.getHeight(), 0.0D);
+      List<PlayerEntity> list = world.getNonSpectatingEntities(PlayerEntity.class, box);
+      Iterator<PlayerEntity> var11 = list.iterator();
+
+      PlayerEntity playerEntity2;
+      while(var11.hasNext()) {
+        playerEntity2 = var11.next();
+        playerEntity2.addStatusEffect(new StatusEffectInstance(primaryEffect, j, i, true, true));
+      }
+
+      if (beaconLevel >= 4 && primaryEffect != secondaryEffect && secondaryEffect != null) {
+        var11 = list.iterator();
+
+        while(var11.hasNext()) {
+          playerEntity2 = var11.next();
+          playerEntity2.addStatusEffect(new StatusEffectInstance(secondaryEffect, j, 0, true, true));
+        }
+      }
+      ci.cancel();
     }
   }
 }

@@ -21,9 +21,9 @@ public class TradeOfferMixin {
     at = @At("TAIL")
   )
   private void init(
-    CompoundTag compoundTag,
+    CompoundTag nbt,
     CallbackInfo cir
   ) {
-    this.demandBonus = compoundTag.getInt("demand") - 15 * Integer.parseInt(PropertiesCache.getInstance().getProperty("vill-daily-restocks"));
+    this.demandBonus = nbt.getInt("demand") - 15 * PropertiesCache.getInstance().getIntProperty("vill-daily-restocks");
   }
 }

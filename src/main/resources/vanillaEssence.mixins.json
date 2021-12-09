@@ -4,12 +4,16 @@
   "package": "net.vanillaEssence.mixin",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
-    "world.SpawnHelperMixin",
-    "entity.PlayerEntityMixin",
+    "block.JukeboxBlockMixin",
     "block.entity.BeaconBlockEntityMixin",
+    "block.entity.JukeboxBlockEntityMixin",
+    "enchantment.LureEnchantmentMixin",
+    "entity.ItemEntityMixin",
+    "entity.PlayerEntityMixin",
     "entity.VillagerEntityMixin",
     "screen.BeaconScreenHandlerMixin",
-    "entity.ItemEntityMixin"
+    "world.SpawnHelperMixin",
+    "world.level.LevelPropertiesMixin"
   ],
   "client": [
   ],
