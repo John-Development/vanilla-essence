@@ -36,6 +36,10 @@ public abstract class JukeboxBlockMixin extends BlockWithEntity {
         this.removeRecord(world, pos);
         state = state.with(HAS_RECORD, false);
         world.setBlockState(pos, state, 2);
+      } else {
+        if (!world.isClient && !state.get(HAS_RECORD)) {
+          world.syncWorldEvent(1010, pos, 0);
+        }
       }
     }
   }

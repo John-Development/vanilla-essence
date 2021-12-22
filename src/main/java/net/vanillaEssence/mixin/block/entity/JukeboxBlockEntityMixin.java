@@ -8,6 +8,7 @@ import net.minecraft.inventory.Inventories;
 import net.minecraft.inventory.SidedInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.MusicDiscItem;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.collection.DefaultedList;
@@ -16,7 +17,6 @@ import net.minecraft.util.math.Direction;
 import net.vanillaEssence.util.JukeboxInventory;
 import net.vanillaEssence.util.PropertiesCache;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -84,15 +84,16 @@ public class JukeboxBlockEntityMixin extends BlockEntity implements JukeboxInven
       assert this.world != null;
       boolean powered = this.world.isReceivingRedstonePower(pos);
 
-      if (!powered && direction == Direction.UP) {
+      if (!powered && direction == Direction.UP && stack.getItem() instanceof MusicDiscItem) {
         if (!world.isClient) {
           world.syncWorldEvent(1010, pos, Item.getRawId(stack.getItem()));
         }
         this.world.setBlockState(pos, this.world.getBlockState(pos).with(Properties.HAS_RECORD, true), 2);
-      }
 
-      return !powered && direction == Direction.UP;
+      return true;
+      }
     }
+
     return false;
   }
 

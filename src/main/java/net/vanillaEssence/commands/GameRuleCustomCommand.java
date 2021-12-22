@@ -102,6 +102,10 @@ public class GameRuleCustomCommand {
       e.printStackTrace();
     }
 
+    if (Objects.equals(configValue, "doHusksDropSand")) {
+      Sand.getInstance().init();
+    }
+
     return reload(context);
   }
 
