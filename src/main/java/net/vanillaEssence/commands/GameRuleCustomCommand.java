@@ -14,10 +14,12 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.world.SaveProperties;
+import net.vanillaEssence.loot.Sand;
 import net.vanillaEssence.util.PropertiesCache;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Objects;
 
 import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;
@@ -100,6 +102,10 @@ public class GameRuleCustomCommand {
       cache.flush();
     } catch (IOException e) {
       e.printStackTrace();
+    }
+
+    if (Objects.equals(configValue, "doHusksDropSand")) {
+      Sand.getInstance().init();
     }
 
     return reload(context);
