@@ -22,10 +22,8 @@ public class Sand {
   }
 
   public void init() {
-    PropertiesCache cache = PropertiesCache.getInstance();
-
     LootTableLoadingCallback.EVENT.register((resourceManager, lootManager, id, supplier, setter) -> {
-      if (HUSK_LOOT_TABLE_ID.equals(id) && cache.getBoolProperty("sand-enabled")) {
+      if (HUSK_LOOT_TABLE_ID.equals(id) && PropertiesCache.getInstance().getBoolProperty("sand-enabled")) {
         FabricLootPoolBuilder poolBuilder = FabricLootPoolBuilder.builder()
           .withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0, 1.5f)).build())
           .withEntry(ItemEntry.builder(Items.SAND)
