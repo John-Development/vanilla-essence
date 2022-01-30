@@ -148,6 +148,10 @@ public class PropertiesCache {
       this.setProperty("riptide-fix-enabled", "false");
       hasChanged = true;
     }
+    if (this.getProperty("riptide-fix-multiplier") == null){
+      this.setProperty("riptide-fix-multiplier", Constants.DEF_RIPTIDE_MULTIPLIER);
+      hasChanged = true;
+    }
 
     if (hasChanged) {
       //Write to the file
@@ -192,6 +196,10 @@ public class PropertiesCache {
 
   public int getIntProperty(String key) {
     return Integer.parseInt(configProp.getProperty(key));
+  }
+
+  public double getDoubleProperty(String key) {
+    return Double.parseDouble(configProp.getProperty(key));
   }
 
   public long getLongProperty(String key) {
