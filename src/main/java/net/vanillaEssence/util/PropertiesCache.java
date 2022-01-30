@@ -144,6 +144,10 @@ public class PropertiesCache {
       this.setProperty("redstoned-jukeboxes-enabled", "false");
       hasChanged = true;
     }
+    if (this.getProperty("riptide-fix-enabled") == null){
+      this.setProperty("riptide-fix-enabled", "false");
+      hasChanged = true;
+    }
 
     if (hasChanged) {
       //Write to the file

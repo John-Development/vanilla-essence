@@ -41,6 +41,7 @@ public class GameRuleCustomCommand {
     betterBeaconsInit();
     magneticLureInit();
     redstonedJukeboxInit();
+    RiptideFixInit();
   }
 
   // Command example: /gamerule doHusksDropSand <value>
@@ -56,6 +57,11 @@ public class GameRuleCustomCommand {
   // Command example: /gamerule magneticLure <value>
   private void magneticLureInit() {
     genericCommandBuilderInit("magneticLure", "magnetic-lure-enabled");
+  }
+
+  // Command example: /gamerule riptideFix <value>
+  private void RiptideFixInit() {
+    genericCommandBuilderInit("riptideFix", "riptide-fix-enabled");
   }
 
   // Command example: /gamerule redstonedJukeboxes <value>
