@@ -9,6 +9,7 @@
     "block.entity.JukeboxBlockEntityMixin",
     "enchantment.LureEnchantmentMixin",
     "entity.ItemEntityMixin",
+    "entity.LivingEntityMixin",
     "entity.PlayerEntityMixin",
     "entity.VillagerEntityMixin",
     "screen.BeaconScreenHandlerMixin",
