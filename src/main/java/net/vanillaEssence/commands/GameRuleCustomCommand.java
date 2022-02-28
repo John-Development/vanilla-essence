@@ -2,7 +2,7 @@ package net.vanillaEssence.commands;
 
 import com.google.common.collect.Lists;
 import com.mojang.brigadier.arguments.BoolArgumentType;
-import com.mojang.brigadier.arguments.DoubleArgumentType;
+//import com.mojang.brigadier.arguments.DoubleArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.ArgumentBuilder;
@@ -42,7 +42,7 @@ public class GameRuleCustomCommand {
     betterBeaconsInit();
     magneticLureInit();
     redstonedJukeboxInit();
-    riptideMultiplierInit();
+//    riptideMultiplierInit();
   }
 
   // Command example: /gamerule doHusksDropSand <value>
@@ -114,56 +114,56 @@ public class GameRuleCustomCommand {
   }
 
   // Command example: /gamerule riptideFix <value> <multiplier>
-  private void riptideMultiplierInit() {
-    CommandRegistrationCallback.EVENT.register((dispatcher, dedicated) -> {
-      dispatcher.register(literal("gamerule")
-        .requires(source -> source.hasPermissionLevel(4))
-        .then(riptideMultiplierHelper())
-      );
-      dispatcher.register(literal("gamerule")
-        .requires(source -> source.hasPermissionLevel(4))
-        .then(literal("default")
-          .then(riptideMultiplierHelperDefault())
-        )
-      );
-    });
-  }
+//  private void riptideMultiplierInit() {
+//    CommandRegistrationCallback.EVENT.register((dispatcher, dedicated) -> {
+//      dispatcher.register(literal("gamerule")
+//        .requires(source -> source.hasPermissionLevel(4))
+//        .then(riptideMultiplierHelper())
+//      );
+//      dispatcher.register(literal("gamerule")
+//        .requires(source -> source.hasPermissionLevel(4))
+//        .then(literal("default")
+//          .then(riptideMultiplierHelperDefault())
+//        )
+//      );
+//    });
+//  }
 
-  private ArgumentBuilder<ServerCommandSource, ?> riptideMultiplierHelper() {
-    return literal("riptideFix")
-      .executes((context) -> printValue(context, PropertiesCache.getInstance(), "riptide-fix-enabled"))
-      .then(argument("value", BoolArgumentType.bool())
-        .then(argument("multiplier", DoubleArgumentType.doubleArg(0, 1))
-          .executes(context -> riptideFixCommonHelperExecute(context, PropertiesCache.getInstance()))
-        )
-      );
-  }
+//  private ArgumentBuilder<ServerCommandSource, ?> riptideMultiplierHelper() {
+//    return literal("riptideFix")
+//      .executes((context) -> printValue(context, PropertiesCache.getInstance(), "riptide-fix-enabled"))
+//      .then(argument("value", BoolArgumentType.bool())
+//        .then(argument("multiplier", DoubleArgumentType.doubleArg(0, 1))
+//          .executes(context -> riptideFixCommonHelperExecute(context, PropertiesCache.getInstance()))
+//        )
+//      );
+//  }
+//
+//  private ArgumentBuilder<ServerCommandSource, ?> riptideMultiplierHelperDefault() {
+//    return literal("riptideFix")
+//      .executes((context) -> printValue(context, PropertiesCache.getDefaultInstance(), "riptide-fix-enabled"))
+//      .then(argument("value", BoolArgumentType.bool())
+//        .then(argument("multiplier", DoubleArgumentType.doubleArg(0, 1))
+//          .executes(context -> riptideFixCommonHelperExecute(context, PropertiesCache.getDefaultInstance()))
+//        )
+//      );
+//  }
 
-  private ArgumentBuilder<ServerCommandSource, ?> riptideMultiplierHelperDefault() {
-    return literal("riptideFix")
-      .executes((context) -> printValue(context, PropertiesCache.getDefaultInstance(), "riptide-fix-enabled"))
-      .then(argument("value", BoolArgumentType.bool())
-        .then(argument("multiplier", DoubleArgumentType.doubleArg(0, 1))
-          .executes(context -> riptideFixCommonHelperExecute(context, PropertiesCache.getDefaultInstance()))
-        )
-      );
-  }
-
-  private int riptideFixCommonHelperExecute(CommandContext<ServerCommandSource> context, PropertiesCache cache) {
-    boolean value = BoolArgumentType.getBool(context, "value");
-    double multiplier = DoubleArgumentType.getDouble(context, "multiplier");
-
-    cache.setProperty("riptide-fix-enabled", Boolean.toString(value));
-    cache.setProperty("riptide-fix-multiplier", Double.toString(multiplier));
-
-    try {
-      cache.flush();
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
-
-    return reload(context);
-  }
+//  private int riptideFixCommonHelperExecute(CommandContext<ServerCommandSource> context, PropertiesCache cache) {
+//    boolean value = BoolArgumentType.getBool(context, "value");
+//    double multiplier = DoubleArgumentType.getDouble(context, "multiplier");
+//
+//    cache.setProperty("riptide-fix-enabled", Boolean.toString(value));
+//    cache.setProperty("riptide-fix-multiplier", Double.toString(multiplier));
+//
+//    try {
+//      cache.flush();
+//    } catch (IOException e) {
+//      e.printStackTrace();
+//    }
+//
+//    return reload(context);
+//  }
 
   // Command example: /gamerule dailyVillagerRestocks <dailyRestocks> <timeBetweenRestocks>
   private void dailyVillagerRestocksInit() {

@@ -144,14 +144,14 @@ public class PropertiesCache {
       this.setProperty("redstoned-jukeboxes-enabled", "false");
       hasChanged = true;
     }
-    if (this.getProperty("riptide-fix-enabled") == null){
-      this.setProperty("riptide-fix-enabled", "false");
-      hasChanged = true;
-    }
-    if (this.getProperty("riptide-fix-multiplier") == null){
-      this.setProperty("riptide-fix-multiplier", Constants.DEF_RIPTIDE_MULTIPLIER);
-      hasChanged = true;
-    }
+//    if (this.getProperty("riptide-fix-enabled") == null){
+//      this.setProperty("riptide-fix-enabled", "false");
+//      hasChanged = true;
+//    }
+//    if (this.getProperty("riptide-fix-multiplier") == null){
+//      this.setProperty("riptide-fix-multiplier", Constants.DEF_RIPTIDE_MULTIPLIER);
+//      hasChanged = true;
+//    }
 
     if (hasChanged) {
       //Write to the file
