@@ -45,9 +45,6 @@ public class ScaffoldingBlockMixin extends Block implements Waterloggable {
   public static final IntProperty DISTANCE = IntProperty.of("distance_scaff", 0, SCAFF_LIMIT);
   @Final
   @Shadow
-  public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
-  @Final
-  @Shadow
   public static final BooleanProperty BOTTOM = Properties.BOTTOM;
 
   @ModifyArg(
@@ -72,7 +69,7 @@ public class ScaffoldingBlockMixin extends Block implements Waterloggable {
     BlockState blockState = state.with(DISTANCE, i).with(BOTTOM, this.shouldBeBottom(world, pos, i));
     if (blockState.get(DISTANCE) == SCAFF_LIMIT) {
       if (state.get(DISTANCE) == SCAFF_LIMIT) {
-        world.spawnEntity(new FallingBlockEntity(world, (double)pos.getX() + 0.5D, pos.getY(), (double)pos.getZ() + 0.5D, blockState.with(WATERLOGGED, false)));
+        FallingBlockEntity.spawnFromBlock(world, pos, blockState);
       } else {
         world.breakBlock(pos, true);
       }
