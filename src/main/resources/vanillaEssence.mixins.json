@@ -8,6 +8,7 @@
     "block.entity.BeaconBlockEntityMixin",
     "block.entity.JukeboxBlockEntityMixin",
     "enchantment.LureEnchantmentMixin",
+    "entity.PotionEntityMixin",
     "entity.ItemEntityMixin",
     "entity.PlayerEntityMixin",
     "entity.VillagerEntityMixin",
