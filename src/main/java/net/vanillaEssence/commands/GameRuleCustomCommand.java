@@ -43,6 +43,7 @@ public class GameRuleCustomCommand {
     magneticLureInit();
     redstonedJukeboxInit();
     riptideMultiplierInit();
+    oxidizeInit();
   }
 
   // Command example: /gamerule doHusksDropSand <value>
@@ -63,6 +64,11 @@ public class GameRuleCustomCommand {
   // Command example: /gamerule redstonedJukeboxes <value>
   private void redstonedJukeboxInit() {
     genericCommandBuilderInit("redstonedJukeboxes", "redstoned-jukeboxes-enabled");
+  }
+
+  // Command example: /gamerule splashOxidize <value>
+  private void oxidizeInit() {
+    genericCommandBuilderInit("splashOxidize", "oxidation-enabled");
   }
 
   // Common builder

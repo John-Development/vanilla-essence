@@ -11,6 +11,7 @@
     "entity.ItemEntityMixin",
     "entity.LivingEntityMixin",
     "entity.PlayerEntityMixin",
+    "entity.PotionEntityMixin",
     "entity.VillagerEntityMixin",
     "screen.BeaconScreenHandlerMixin",
     "world.SpawnHelperMixin",
