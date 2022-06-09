@@ -2,18 +2,19 @@ package net.vanillaEssence.commands;
 
 import com.google.common.collect.Lists;
 import com.mojang.brigadier.arguments.BoolArgumentType;
-//import com.mojang.brigadier.arguments.DoubleArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
-import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
+import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.minecraft.resource.ResourcePackManager;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.ReloadCommand;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.text.LiteralText;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.LiteralTextContent;
+import net.minecraft.text.Text;
+import net.minecraft.text.TextContent;
+import net.minecraft.text.TranslatableTextContent;
 import net.minecraft.world.SaveProperties;
 import net.vanillaEssence.loot.Sand;
 import net.vanillaEssence.util.PropertiesCache;
@@ -73,7 +74,7 @@ public class GameRuleCustomCommand {
 
   // Common builder
   private void genericCommandBuilderInit(String rule, String configValue) {
-    CommandRegistrationCallback.EVENT.register((dispatcher, dedicated) -> {
+    CommandRegistrationCallback.EVENT.register((dispatcher, dedicated, environment) -> {
       dispatcher.register(literal("gamerule")
         .requires(source -> source.hasPermissionLevel(4))
         .then(genericCommandBuilderHelper(rule, configValue))
@@ -121,7 +122,7 @@ public class GameRuleCustomCommand {
 
   // Command example: /gamerule riptideFix <value> <multiplier>
 //  private void riptideMultiplierInit() {
-//    CommandRegistrationCallback.EVENT.register((dispatcher, dedicated) -> {
+//    CommandRegistrationCallback.EVENT.register((dispatcher, dedicated, environment) -> {
 //      dispatcher.register(literal("gamerule")
 //        .requires(source -> source.hasPermissionLevel(4))
 //        .then(riptideMultiplierHelper())
@@ -173,7 +174,7 @@ public class GameRuleCustomCommand {
 
   // Command example: /gamerule dailyVillagerRestocks <dailyRestocks> <timeBetweenRestocks>
   private void dailyVillagerRestocksInit() {
-    CommandRegistrationCallback.EVENT.register((dispatcher, dedicated) -> {
+    CommandRegistrationCallback.EVENT.register((dispatcher, dedicated, environment) -> {
       dispatcher.register(literal("gamerule")
         .requires(source -> source.hasPermissionLevel(4))
         .then(dailyVillagersHelper())
@@ -226,7 +227,7 @@ public class GameRuleCustomCommand {
 
   // Command example: /gamerule doEndCrystalsLimitSpawn <value> <radius> <lowDistance> <name>
   private void doEndCrystalsLimitSpawnInit() {
-    CommandRegistrationCallback.EVENT.register((dispatcher, dedicated) -> {
+    CommandRegistrationCallback.EVENT.register((dispatcher, dedicated, environment) -> {
       dispatcher.register(literal("gamerule")
         .requires(source -> source.hasPermissionLevel(4))
           .then(endCrystalHelper())
@@ -326,7 +327,8 @@ public class GameRuleCustomCommand {
   // Utils
   private static int printValue(CommandContext<ServerCommandSource> context, PropertiesCache cache, String property) {
     ServerCommandSource serverCommandSource = context.getSource();
-    serverCommandSource.sendFeedback(new LiteralText(cache.getProperty(property)), true);
+    TextContent text = new LiteralTextContent(cache.getProperty(property));
+    serverCommandSource.sendFeedback(Text.literal(cache.getProperty(property)), true);
     return 1;
   }
 
@@ -337,7 +339,7 @@ public class GameRuleCustomCommand {
     SaveProperties saveProperties = minecraftServer.getSaveProperties();
     Collection<String> collection = resourcePackManager.getEnabledNames();
     Collection<String> collection2 = getResourcePacks(resourcePackManager, saveProperties, collection);
-    serverCommandSource.sendFeedback(new TranslatableText("commands.custom.reload.success"), true);
+    serverCommandSource.sendFeedback(Text.translatable("commands.custom.reload.success"), true);
     ReloadCommand.tryReloadDataPacks(collection2, serverCommandSource);
     return 1;
   }

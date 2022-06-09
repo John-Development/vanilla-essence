@@ -1,8 +1,8 @@
 package net.vanillaEssence.loot;
 
-import net.fabricmc.fabric.api.loot.v1.FabricLootPoolBuilder;
-import net.fabricmc.fabric.api.loot.v1.event.LootTableLoadingCallback;
+import net.fabricmc.fabric.api.loot.v2.LootTableEvents;
 import net.minecraft.item.Items;
+import net.minecraft.loot.LootPool;
 import net.minecraft.loot.provider.number.UniformLootNumberProvider;
 import net.minecraft.loot.condition.KilledByPlayerLootCondition;
 import net.minecraft.loot.entry.ItemEntry;
@@ -22,16 +22,16 @@ public class Sand {
   }
 
   public void init() {
-    LootTableLoadingCallback.EVENT.register((resourceManager, lootManager, id, supplier, setter) -> {
+    LootTableEvents.MODIFY.register((resourceManager, lootManager, id, supplier, setter) -> {
       if (HUSK_LOOT_TABLE_ID.equals(id) && PropertiesCache.getInstance().getBoolProperty("sand-enabled")) {
-        FabricLootPoolBuilder poolBuilder = FabricLootPoolBuilder.builder()
-          .withFunction(LootingEnchantLootFunction.builder(UniformLootNumberProvider.create(0, 1.5f)).build())
-          .withEntry(ItemEntry.builder(Items.SAND)
+        LootPool.Builder poolBuilder = LootPool.builder()
+          .apply(LootingEnchantLootFunction.builder(UniformLootNumberProvider.create(0, 1.5f)).build())
+          .with(ItemEntry.builder(Items.SAND)
             .weight(1)
             .conditionally(KilledByPlayerLootCondition.builder())
             .build()
           );
-        supplier.withPool(poolBuilder.build());
+        supplier.pool(poolBuilder);
       }
     });
   }

@@ -15,6 +15,11 @@ public class LivingEntityMixin {
 
   @ModifyVariable(method = "travel", at = @At(value = "STORE", ordinal = 1), ordinal = 0)
   private float travel(float input) {
+    //    System.out.println(((LivingEntity) ((Object)(this))).world.isClient + " " + this.riptideTicks);
+    //    if (!((LivingEntity) ((Object)(this))).world.isClient) {
+    //      return input;
+    //    }
+
     PropertiesCache cache = PropertiesCache.getInstance();
     if (cache.getBoolProperty("riptide-fix-enabled")) {
       float h = (float) EnchantmentHelper.getDepthStrider((LivingEntity) (Object) this);

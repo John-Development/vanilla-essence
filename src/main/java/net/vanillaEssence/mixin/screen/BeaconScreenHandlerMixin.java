@@ -1,5 +1,6 @@
 package net.vanillaEssence.mixin.screen;
 
+import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.Item;
 import net.minecraft.screen.ArrayPropertyDelegate;
@@ -13,6 +14,8 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import java.util.Optional;
 
 @Mixin(BeaconScreenHandler.class)
 public abstract class BeaconScreenHandlerMixin {
@@ -55,9 +58,7 @@ public abstract class BeaconScreenHandlerMixin {
     at = @At("HEAD")
   )
   public void setEffectsMethod(
-    int primaryEffectId,
-    int secondaryEffectId,
-    CallbackInfo cir
+    Optional<StatusEffect> primary, Optional<StatusEffect> secondary, CallbackInfo ci
   ) {
     if (this.payment != null) {
       this.propertyDelegate.set(3, Item.getRawId(this.payment.getStack(0).getItem()));
