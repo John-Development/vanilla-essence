@@ -152,6 +152,10 @@ public class PropertiesCache {
       this.setProperty("riptide-fix-multiplier", Constants.DEF_RIPTIDE_MULTIPLIER);
       hasChanged = true;
     }
+    if (this.getProperty("oxidation-enabled") == null){
+      this.setProperty("oxidation-enabled", "false");
+      hasChanged = true;
+    }
 
     if (hasChanged) {
       //Write to the file
