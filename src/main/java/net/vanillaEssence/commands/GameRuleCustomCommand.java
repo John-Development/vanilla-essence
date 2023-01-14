@@ -11,11 +11,7 @@ import net.minecraft.resource.ResourcePackManager;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.ReloadCommand;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.text.LiteralTextContent;
 import net.minecraft.text.Text;
-import net.minecraft.text.TextContent;
-import net.minecraft.text.TranslatableTextContent;
-import net.minecraft.world.SaveProperties;
 import net.vanillaEssence.loot.Sand;
 import net.vanillaEssence.util.PropertiesCache;
 
@@ -327,27 +323,26 @@ public class GameRuleCustomCommand {
   // Utils
   private static int printValue(CommandContext<ServerCommandSource> context, PropertiesCache cache, String property) {
     ServerCommandSource serverCommandSource = context.getSource();
-    TextContent text = new LiteralTextContent(cache.getProperty(property));
     serverCommandSource.sendFeedback(Text.literal(cache.getProperty(property)), true);
+
     return 1;
   }
 
   private static int reload(CommandContext<ServerCommandSource> context) {
     ServerCommandSource serverCommandSource = context.getSource();
     MinecraftServer minecraftServer = serverCommandSource.getServer();
-    ResourcePackManager resourcePackManager = minecraftServer.getDataPackManager();
-    SaveProperties saveProperties = minecraftServer.getSaveProperties();
-    Collection<String> collection = resourcePackManager.getEnabledNames();
-    Collection<String> collection2 = getResourcePacks(resourcePackManager, saveProperties, collection);
+    Collection<String> collection = getResourcePacks(minecraftServer);
     serverCommandSource.sendFeedback(Text.translatable("commands.custom.reload.success"), true);
-    ReloadCommand.tryReloadDataPacks(collection2, serverCommandSource);
+    ReloadCommand.tryReloadDataPacks(collection, serverCommandSource);
+
     return 1;
   }
 
-  private static Collection<String> getResourcePacks(ResourcePackManager resourcePackManager, SaveProperties saveProperties, Collection<String> collection) {
+  private static Collection<String> getResourcePacks(MinecraftServer minecraftServer) {
+    ResourcePackManager resourcePackManager = minecraftServer.getDataPackManager();
     resourcePackManager.scanPacks();
-    Collection<String> collection2 = Lists.newArrayList(collection);
-    Collection<String> collection3 = saveProperties.getDataPackSettings().getDisabled();
+    Collection<String> collection2 = Lists.newArrayList(resourcePackManager.getEnabledNames());
+    Collection<String> collection3 = minecraftServer.getSaveProperties().getDataConfiguration().dataPacks().getDisabled();
 
     for (String string : resourcePackManager.getNames()) {
       if (!collection3.contains(string) && !collection2.contains(string)) {
