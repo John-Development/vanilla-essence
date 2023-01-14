@@ -8,6 +8,7 @@ import net.vanillaEssence.util.PropertiesCache;
 
 public class vanillaEssence implements ModInitializer {
 
+  // 1.19.2 version
   @Override
   public void onInitialize() {
     // Loot table for sand

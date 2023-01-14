@@ -25,7 +25,7 @@ import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.ItemTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
-import net.minecraft.world.Heightmap;
+import net.minecraft.world.Heightmap.Type;
 import net.minecraft.world.World;
 import net.vanillaEssence.util.BeamSegment;
 import net.vanillaEssence.util.PropertiesCache;
@@ -156,12 +156,12 @@ public abstract class BeaconBlockEntityMixin extends BlockEntity implements Name
     return null;
   }
 
-  /**
-   * @author Juarrin
-   * @reason
-   */
-  @Overwrite
-  public static void tick(World world, BlockPos pos, BlockState state, BeaconBlockEntity blockEntity) {
+  @Inject(
+    method = "tick",
+    at = @At("HEAD"),
+    cancellable = true
+  )
+  private static void tick(World world, BlockPos pos, BlockState state, BeaconBlockEntity blockEntity, CallbackInfo ci) {
     assert (blockEntity != null);
     BeaconBlockEntityMixin blockEntityMixin = ((BeaconBlockEntityMixin) (Object) blockEntity);
 
@@ -179,7 +179,7 @@ public abstract class BeaconBlockEntityMixin extends BlockEntity implements Name
     }
 
     BeamSegment beamSegment = blockEntityMixin.field_19178.isEmpty() ? null : blockEntityMixin.field_19178.get(blockEntityMixin.field_19178.size() - 1);
-    int l = world.getTopY(Heightmap.Type.WORLD_SURFACE, i, k);
+    int l = world.getTopY(Type.WORLD_SURFACE, i, k);
 
     int n;
     for(n = 0; n < 10 && blockPos2.getY() <= l; ++n) {
@@ -215,11 +215,11 @@ public abstract class BeaconBlockEntityMixin extends BlockEntity implements Name
     n = blockEntityMixin.level;
     if (world.getTime() % 80L == 0L) {
       if (!blockEntityMixin.beamSegments.isEmpty()) {
-        blockEntityMixin.level = updateLevel(blockEntityMixin, world, i, j, k);
+        blockEntityMixin.level = updateLevel(blockEntityMixin, world, i, j, k); // differs from original
       }
 
       if (blockEntityMixin.level > 0 && !blockEntityMixin.beamSegments.isEmpty()) {
-        applyPlayerEffects(world, pos, blockEntityMixin);
+        applyPlayerEffects(world, pos, blockEntityMixin); // differs from original
         BeaconBlockEntity.playSound(world, pos, SoundEvents.BLOCK_BEACON_AMBIENT);
       }
     }
@@ -241,6 +241,8 @@ public abstract class BeaconBlockEntityMixin extends BlockEntity implements Name
         }
       }
     }
+
+    ci.cancel();
   }
 
   private static int totalBlocks (int l) {
