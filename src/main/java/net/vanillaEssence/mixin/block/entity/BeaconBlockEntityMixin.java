@@ -157,12 +157,12 @@ public abstract class BeaconBlockEntityMixin extends BlockEntity implements Name
     return null;
   }
 
-  /**
-   * @author Juarrin
-   * @reason
-   */
-  @Overwrite
-  public static void tick(World world, BlockPos pos, BlockState state, BeaconBlockEntity blockEntity) {
+  @Inject(
+    method = "tick",
+    at = @At("HEAD"),
+    cancellable = true
+  )
+  private static void tick(World world, BlockPos pos, BlockState state, BeaconBlockEntity blockEntity, CallbackInfo ci) {
     assert (blockEntity != null);
     BeaconBlockEntityMixin blockEntityMixin = ((BeaconBlockEntityMixin) (Object) blockEntity);
 
@@ -242,6 +242,8 @@ public abstract class BeaconBlockEntityMixin extends BlockEntity implements Name
         }
       }
     }
+
+    ci.cancel();
   }
 
   private static int totalBlocks (int l) {
