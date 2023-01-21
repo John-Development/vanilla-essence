@@ -1,5 +1,6 @@
 package net.vanillaEssence.mixin.entity;
 
+import net.vanillaEssence.util.Tweaks;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -28,14 +29,14 @@ public abstract class PlayerEntityMixin {
     CallbackInfoReturnable<ActionResult> cir
   ) {
     PropertiesCache cache = PropertiesCache.getInstance();
-    if (cache.getBoolProperty("crystal-enabled")) {
+    if (cache.getBoolProperty(Tweaks.DO_END_CRYSTALS_LIMIT_SPAWN.getName())) {
       ItemStack itemStack = ((PlayerEntity) (Object) this).getStackInHand(hand);
 
       if (itemStack.getItem().equals(Items.NAME_TAG)
         && itemStack.hasCustomName()
         && entity instanceof EndCrystalEntity
         && !((EndCrystalEntity) entity).shouldShowBottom()
-        && cache.getProperty("crystal-name").equals(itemStack.getName().getString())
+        && cache.getProperty(Tweaks.END_CRYSTAL_NAME.getName()).equals(itemStack.getName().getString())
       ) {
         entity.setCustomName(itemStack.getName());
 

@@ -8,6 +8,7 @@ import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.WorldView;
 import net.vanillaEssence.util.PropertiesCache;
@@ -19,8 +20,6 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-
-import java.util.Random;
 
 @Mixin(ScaffoldingBlock.class)
 public class ScaffoldingBlockMixin extends Block implements Waterloggable {
@@ -55,7 +54,7 @@ public class ScaffoldingBlockMixin extends Block implements Waterloggable {
     ),
     index = 1
   )
-  private int getBlockState(int limit) {
+  private Comparable<Integer> getBlockState(Comparable<Integer> par2) {
     return SCAFF_LIMIT;
   }
 

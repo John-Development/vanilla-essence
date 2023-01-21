@@ -1,5 +1,6 @@
 package net.vanillaEssence.mixin.enchantment;
 
+import net.vanillaEssence.util.Tweaks;
 import org.spongepowered.asm.mixin.Mixin;
 
 import net.minecraft.enchantment.Enchantment;
@@ -24,7 +25,7 @@ public class LureEnchantmentMixin extends Enchantment {
   )
   private static EnchantmentTarget getType(EnchantmentTarget type) {
     PropertiesCache cache = PropertiesCache.getInstance();
-    if (cache.getBoolProperty("magnetic-lure-enabled")) {
+    if (cache.getBoolProperty(Tweaks.MAGNETIC_LURE.getName())) {
       // TODO: think which items to accept
       return EnchantmentTarget.BREAKABLE;
     } else {

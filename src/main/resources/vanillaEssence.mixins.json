@@ -8,10 +8,11 @@
     "block.entity.BeaconBlockEntityMixin",
     "block.entity.JukeboxBlockEntityMixin",
     "enchantment.LureEnchantmentMixin",
-    "entity.PotionEntityMixin",
     "entity.ItemEntityMixin",
     "entity.PlayerEntityMixin",
+    "entity.PotionEntityMixin",
     "entity.VillagerEntityMixin",
+    "screen.AnvilScreenHandlerMixin",
     "screen.BeaconScreenHandlerMixin",
     "world.SpawnHelperMixin",
     "world.level.LevelPropertiesMixin"

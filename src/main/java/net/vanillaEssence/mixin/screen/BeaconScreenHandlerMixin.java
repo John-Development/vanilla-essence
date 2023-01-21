@@ -7,6 +7,7 @@ import net.minecraft.screen.ArrayPropertyDelegate;
 import net.minecraft.screen.BeaconScreenHandler;
 import net.minecraft.screen.PropertyDelegate;
 import net.vanillaEssence.util.PropertiesCache;
+import net.vanillaEssence.util.Tweaks;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -35,7 +36,7 @@ public abstract class BeaconScreenHandlerMixin {
     index = 2
   )
   private static PropertyDelegate getArrayPropertyDelegate(PropertyDelegate array) {
-    return PropertiesCache.getInstance().getBoolProperty("beacons-enabled")
+    return PropertiesCache.getInstance().getBoolProperty(Tweaks.BETTER_BEACONS.getName())
       ? new ArrayPropertyDelegate(4)
       : array;
   }
@@ -48,7 +49,7 @@ public abstract class BeaconScreenHandlerMixin {
     index = 1
   )
   private int getNumber(int number) {
-    return PropertiesCache.getInstance().getBoolProperty("beacons-enabled")
+    return PropertiesCache.getInstance().getBoolProperty(Tweaks.BETTER_BEACONS.getName())
       ? 4
       : number;
   }

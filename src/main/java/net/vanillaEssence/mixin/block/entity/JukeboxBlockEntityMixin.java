@@ -16,6 +16,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.vanillaEssence.util.JukeboxInventory;
 import net.vanillaEssence.util.PropertiesCache;
+import net.vanillaEssence.util.Tweaks;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -80,7 +81,7 @@ public class JukeboxBlockEntityMixin extends BlockEntity implements JukeboxInven
 
   @Override
   public boolean canInsert(int slot, ItemStack stack, Direction direction) {
-    if (PropertiesCache.getInstance().getBoolProperty("redstoned-jukeboxes-enabled")) {
+    if (PropertiesCache.getInstance().getBoolProperty(Tweaks.REDSTONED_JUKEBOXES.getName())) {
       assert this.world != null;
       boolean powered = this.world.isReceivingRedstonePower(pos);
 
@@ -99,7 +100,7 @@ public class JukeboxBlockEntityMixin extends BlockEntity implements JukeboxInven
 
   @Override
   public boolean canExtract(int slot, ItemStack stack, Direction direction) {
-    if (PropertiesCache.getInstance().getBoolProperty("redstoned-jukeboxes-enabled")) {
+    if (PropertiesCache.getInstance().getBoolProperty(Tweaks.REDSTONED_JUKEBOXES.getName())) {
       assert this.world != null;
       boolean powered = this.world.isReceivingRedstonePower(pos);
 

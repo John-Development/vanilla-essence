@@ -1,5 +1,6 @@
 package net.vanillaEssence.mixin.entity;
 
+import net.vanillaEssence.util.Tweaks;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -43,7 +44,7 @@ public abstract class ItemEntityMixin extends Entity {
     CallbackInfo cir
   ) {
     PropertiesCache cache = PropertiesCache.getInstance();
-    if (cache.getBoolProperty("magnetic-lure-enabled")) {
+    if (cache.getBoolProperty(Tweaks.MAGNETIC_LURE.getName())) {
       super.tick();
       this.prevX = this.getX();
       this.prevY = this.getY();

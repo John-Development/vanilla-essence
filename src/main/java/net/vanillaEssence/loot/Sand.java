@@ -9,6 +9,7 @@ import net.minecraft.loot.entry.ItemEntry;
 import net.minecraft.loot.function.LootingEnchantLootFunction;
 import net.minecraft.util.Identifier;
 import net.vanillaEssence.util.PropertiesCache;
+import net.vanillaEssence.util.Tweaks;
 
 public class Sand {
   private static final Identifier HUSK_LOOT_TABLE_ID = new Identifier("minecraft", "entities/husk");
@@ -23,7 +24,7 @@ public class Sand {
 
   public void init() {
     LootTableEvents.MODIFY.register((resourceManager, lootManager, id, supplier, setter) -> {
-      if (HUSK_LOOT_TABLE_ID.equals(id) && PropertiesCache.getInstance().getBoolProperty("sand-enabled")) {
+      if (HUSK_LOOT_TABLE_ID.equals(id) && PropertiesCache.getInstance().getBoolProperty(Tweaks.HUSK_DROP_SAND.getName())) {
         LootPool.Builder poolBuilder = LootPool.builder()
           .apply(LootingEnchantLootFunction.builder(UniformLootNumberProvider.create(0, 1.5f)).build())
           .with(ItemEntry.builder(Items.SAND)
