@@ -100,59 +100,67 @@ public class PropertiesCache {
   private void initMissing() throws IOException {
     boolean hasChanged = false;
 
-    if (this.getProperty("beacons-enabled") == null) {
-      this.setProperty("beacons-enabled", "false");
+    if (this.getProperty(Tweaks.BETTER_BEACONS.getName()) == null) {
+      this.setProperty(Tweaks.BETTER_BEACONS.getName(), "false");
       hasChanged = true;
     }
-    if (this.getProperty("crystal-enabled") == null) {
-      this.setProperty("crystal-enabled", "false");
+    if (this.getProperty(Tweaks.DO_END_CRYSTALS_LIMIT_SPAWN.getName()) == null) {
+      this.setProperty(Tweaks.DO_END_CRYSTALS_LIMIT_SPAWN.getName(), "false");
       hasChanged = true;
     }
-    if (this.getProperty("crystal-radius") == null) {
-      this.setProperty("crystal-radius", Constants.DEF_CRYSTAL_RAD);
+    if (this.getProperty(Tweaks.END_CRYSTAL_RADIUS.getName()) == null) {
+      this.setProperty(Tweaks.END_CRYSTAL_RADIUS.getName(), Constants.DEF_CRYSTAL_RAD);
       hasChanged = true;
     }
-    if (this.getProperty("crystal-lower-limit-distance") == null) {
-      this.setProperty("crystal-lower-limit-distance", Constants.DEF_CRYSTAL_LIM_DISTANCE);
+    if (this.getProperty(Tweaks.END_CRYSTAL_LOWER_LIMIT_DISTANCE.getName()) == null) {
+      this.setProperty(Tweaks.END_CRYSTAL_LOWER_LIMIT_DISTANCE.getName(), Constants.DEF_CRYSTAL_LIM_DISTANCE);
       hasChanged = true;
     }
-    if (this.getProperty("crystal-name") == null) {
-      this.setProperty("crystal-name", Constants.DEF_CRYSTAL_NAME);
+    if (this.getProperty(Tweaks.END_CRYSTAL_NAME.getName()) == null) {
+      this.setProperty(Tweaks.END_CRYSTAL_NAME.getName(), Constants.DEF_CRYSTAL_NAME);
       hasChanged = true;
     }
-    if (this.getProperty("sand-enabled") == null) {
-      this.setProperty("sand-enabled", "false");
+    if (this.getProperty(Tweaks.HUSK_DROP_SAND.getName()) == null) {
+      this.setProperty(Tweaks.HUSK_DROP_SAND.getName(), "false");
       hasChanged = true;
     }
-    if (this.getProperty("vill-enabled") == null){
-      this.setProperty("vill-enabled", "false");
+    if (this.getProperty(Tweaks.MODIFY_VILLAGERS.getName()) == null) {
+      this.setProperty(Tweaks.MODIFY_VILLAGERS.getName(), "false");
       hasChanged = true;
     }
-    if (this.getProperty("vill-daily-restocks") == null){
-      this.setProperty("vill-daily-restocks", Constants.DEF_VILL_RESTOCK);
+    if (this.getProperty(Tweaks.DAILY_VILLAGER_RESTOCKS.getName()) == null) {
+      this.setProperty(Tweaks.DAILY_VILLAGER_RESTOCKS.getName(), Constants.DEF_VILL_RESTOCK);
       hasChanged = true;
     }
-    if (this.getProperty("vill-time-between-restocks") == null){
-      this.setProperty("vill-time-between-restocks", Constants.DEF_VILL_RESTOCK_COOLDOWN);
+    if (this.getProperty(Tweaks.TIME_BETWEEN_VILLAGER_RESTOCKS.getName()) == null) {
+      this.setProperty(Tweaks.TIME_BETWEEN_VILLAGER_RESTOCKS.getName(), Constants.DEF_VILL_RESTOCK_COOLDOWN);
       hasChanged = true;
     }
-    if (this.getProperty("magnetic-lure-enabled") == null){
-      this.setProperty("magnetic-lure-enabled", "false");
+    if (this.getProperty(Tweaks.MAGNETIC_LURE.getName()) == null) {
+      this.setProperty(Tweaks.MAGNETIC_LURE.getName(), "false");
       hasChanged = true;
     }
-    if (this.getProperty("redstoned-jukeboxes-enabled") == null){
-      this.setProperty("redstoned-jukeboxes-enabled", "false");
+    if (this.getProperty(Tweaks.REDSTONED_JUKEBOXES.getName()) == null) {
+      this.setProperty(Tweaks.REDSTONED_JUKEBOXES.getName(), "false");
       hasChanged = true;
     }
-    if (this.getProperty("oxidation-enabled") == null){
-      this.setProperty("oxidation-enabled", "false");
+    if (this.getProperty(Tweaks.SPLASH_OXIDIZE.getName()) == null) {
+      this.setProperty(Tweaks.SPLASH_OXIDIZE.getName(), "false");
       hasChanged = true;
     }
-//    if (this.getProperty("riptide-fix-enabled") == null){
+    if (this.getProperty(Tweaks.ONE_LVL_RENAMING.getName()) == null) {
+      this.setProperty(Tweaks.ONE_LVL_RENAMING.getName(), "false");
+      hasChanged = true;
+    }
+    if (this.getProperty(Tweaks.INFINITE_ENCHANTING.getName()) == null) {
+      this.setProperty(Tweaks.INFINITE_ENCHANTING.getName(), "false");
+      hasChanged = true;
+    }
+//    if (this.getProperty("riptide-fix-enabled") == null) {
 //      this.setProperty("riptide-fix-enabled", "false");
 //      hasChanged = true;
 //    }
-//    if (this.getProperty("riptide-fix-multiplier") == null){
+//    if (this.getProperty("riptide-fix-multiplier") == null) {
 //      this.setProperty("riptide-fix-multiplier", Constants.DEF_RIPTIDE_MULTIPLIER);
 //      hasChanged = true;
 //    }

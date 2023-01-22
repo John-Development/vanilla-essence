@@ -1,5 +1,6 @@
 package net.vanillaEssence.mixin.village;
 
+import net.vanillaEssence.util.Tweaks;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -25,8 +26,8 @@ public class TradeOfferMixin {
     NbtCompound nbt,
     CallbackInfo cir
   ) {
-    this.demandBonus = PropertiesCache.getInstance().getBoolProperty("vill-enabled")
-      ? nbt.getInt("demand") - 15 * PropertiesCache.getInstance().getIntProperty("vill-daily-restocks")
+    this.demandBonus = PropertiesCache.getInstance().getBoolProperty(Tweaks.MODIFY_VILLAGERS.getName())
+      ? nbt.getInt("demand") - 15 * PropertiesCache.getInstance().getIntProperty(Tweaks.DAILY_VILLAGER_RESTOCKS.getName())
       : nbt.getInt("demand");
   }
 }

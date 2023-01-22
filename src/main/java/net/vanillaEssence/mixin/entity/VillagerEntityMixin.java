@@ -1,5 +1,6 @@
 package net.vanillaEssence.mixin.entity;
 
+import net.vanillaEssence.util.Tweaks;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -26,10 +27,10 @@ public abstract class VillagerEntityMixin {
     CallbackInfoReturnable<Boolean> cir
   ) {
     PropertiesCache cache = PropertiesCache.getInstance();
-    if (cache.getBoolProperty("vill-enabled")) {
+    if (cache.getBoolProperty(Tweaks.MODIFY_VILLAGERS.getName())) {
 
-      int restocks = cache.getIntProperty("vill-daily-restocks");
-      long cooldown = cache.getLongProperty("vill-time-between-restocks");
+      int restocks = cache.getIntProperty(Tweaks.DAILY_VILLAGER_RESTOCKS.getName());
+      long cooldown = cache.getLongProperty(Tweaks.TIME_BETWEEN_VILLAGER_RESTOCKS.getName());
 
       if (restocks == 0) {
         cir.setReturnValue(this.restocksToday == 0 || ((VillagerEntity) (Object) this).world.getTime() > (this.lastRestockTime + cooldown));

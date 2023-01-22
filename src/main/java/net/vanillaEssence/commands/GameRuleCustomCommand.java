@@ -17,6 +17,7 @@ import net.minecraft.text.TranslatableText;
 import net.minecraft.world.SaveProperties;
 import net.vanillaEssence.loot.Sand;
 import net.vanillaEssence.util.PropertiesCache;
+import net.vanillaEssence.util.Tweaks;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -43,32 +44,44 @@ public class GameRuleCustomCommand {
     magneticLureInit();
     redstonedJukeboxInit();
     oxidizeInit();
+    infiniteEnchantingInit();
+    oneLvlRenamingInit();
 //    riptideMultiplierInit();
   }
 
   // Command example: /gamerule doHusksDropSand <value>
   private void doHuskDropSandInit() {
-    genericCommandBuilderInit("doHusksDropSand", "sand-enabled");
+    genericCommandBuilderInit("doHusksDropSand", Tweaks.HUSK_DROP_SAND.getName());
   }
 
   // Command example: /gamerule betterBeacons <value>
   private void betterBeaconsInit() {
-    genericCommandBuilderInit("betterBeacons", "beacons-enabled");
+    genericCommandBuilderInit("betterBeacons", Tweaks.BETTER_BEACONS.getName());
   }
 
   // Command example: /gamerule magneticLure <value>
   private void magneticLureInit() {
-    genericCommandBuilderInit("magneticLure", "magnetic-lure-enabled");
+    genericCommandBuilderInit("magneticLure", Tweaks.MAGNETIC_LURE.getName());
   }
 
   // Command example: /gamerule redstonedJukeboxes <value>
   private void redstonedJukeboxInit() {
-    genericCommandBuilderInit("redstonedJukeboxes", "redstoned-jukeboxes-enabled");
+    genericCommandBuilderInit("redstonedJukeboxes", Tweaks.REDSTONED_JUKEBOXES.getName());
   }
 
   // Command example: /gamerule splashOxidize <value>
   private void oxidizeInit() {
-    genericCommandBuilderInit("splashOxidize", "oxidation-enabled");
+    genericCommandBuilderInit("splashOxidize", Tweaks.SPLASH_OXIDIZE.getName());
+  }
+
+  // Command example: /gamerule oneLvlRenaming <value>
+  private void oneLvlRenamingInit() {
+    genericCommandBuilderInit("oneLvlRenaming", Tweaks.ONE_LVL_RENAMING.getName());
+  }
+
+  // Command example: /gamerule infiniteEnchanting <value>
+  private void infiniteEnchantingInit() {
+    genericCommandBuilderInit("infiniteEnchanting", Tweaks.INFINITE_ENCHANTING.getName());
   }
 
   // Common builder
@@ -189,7 +202,7 @@ public class GameRuleCustomCommand {
 
   private ArgumentBuilder<ServerCommandSource, ?> dailyVillagersHelper() {
     return literal("dailyVillagerRestocks")
-      .executes((context) -> printValue(context, PropertiesCache.getInstance(), "vill-enabled"))
+      .executes((context) -> printValue(context, PropertiesCache.getInstance(), Tweaks.MODIFY_VILLAGERS.getName()))
       .then(argument("dailyRestocks", IntegerArgumentType.integer(0, 999))
         .then(argument("timeBetweenRestocks", IntegerArgumentType.integer(20, 2400))
           .executes(context -> dailyVillagersCommonHelperExecute(context, PropertiesCache.getInstance()))
@@ -199,7 +212,7 @@ public class GameRuleCustomCommand {
 
   private ArgumentBuilder<ServerCommandSource, ?> dailyVillagersHelperDefault() {
     return literal("dailyVillagerRestocks")
-      .executes((context) -> printValue(context, PropertiesCache.getDefaultInstance(), "vill-enabled"))
+      .executes((context) -> printValue(context, PropertiesCache.getDefaultInstance(), Tweaks.MODIFY_VILLAGERS.getName()))
       .then(argument("dailyRestocks", IntegerArgumentType.integer(0, 999))
         .then(argument("timeBetweenRestocks", IntegerArgumentType.integer(20, 2400))
           .executes(context -> dailyVillagersCommonHelperExecute(context, PropertiesCache.getDefaultInstance()))
@@ -211,9 +224,9 @@ public class GameRuleCustomCommand {
     int restocks = IntegerArgumentType.getInteger(context, "dailyRestocks");
     int cooldown = IntegerArgumentType.getInteger(context, "timeBetweenRestocks");
 
-    cache.setProperty("vill-enabled", ((Boolean) (restocks != 2)).toString());
-    cache.setProperty("vill-daily-restocks", Integer.toString(restocks));
-    cache.setProperty("vill-time-between-restocks", Integer.toString(cooldown));
+    cache.setProperty(Tweaks.MODIFY_VILLAGERS.getName(), ((Boolean) (restocks != 2)).toString());
+    cache.setProperty(Tweaks.DAILY_VILLAGER_RESTOCKS.getName(), Integer.toString(restocks));
+    cache.setProperty(Tweaks.TIME_BETWEEN_VILLAGER_RESTOCKS.getName(), Integer.toString(cooldown));
 
     try {
       cache.flush();
@@ -242,7 +255,7 @@ public class GameRuleCustomCommand {
 
   private ArgumentBuilder<ServerCommandSource, ?> endCrystalHelper() {
     return literal("doEndCrystalsLimitSpawn")
-      .executes((context) -> printValue(context, PropertiesCache.getInstance(), "crystal-enabled"))
+      .executes((context) -> printValue(context, PropertiesCache.getInstance(), Tweaks.DO_END_CRYSTALS_LIMIT_SPAWN.getName()))
       .then(argument("value", BoolArgumentType.bool())
         .executes((context) -> endCrystalCommonHelperExecute(context, PropertiesCache.getInstance()))
       )
@@ -267,7 +280,7 @@ public class GameRuleCustomCommand {
 
   private ArgumentBuilder<ServerCommandSource, ?> endCrystalHelperDefault() {
     return literal("doEndCrystalsLimitSpawn")
-      .executes((context) -> printValue(context, PropertiesCache.getDefaultInstance(), "crystal-enabled"))
+      .executes((context) -> printValue(context, PropertiesCache.getDefaultInstance(), Tweaks.DO_END_CRYSTALS_LIMIT_SPAWN.getName()))
       .then(argument("value", BoolArgumentType.bool())
         .executes((context) -> endCrystalCommonHelperExecute(context, PropertiesCache.getDefaultInstance()))
       )
@@ -296,21 +309,21 @@ public class GameRuleCustomCommand {
     int lowDistance;
     String name;
 
-    cache.setProperty("crystal-enabled", Boolean.toString(value));
+    cache.setProperty(Tweaks.DO_END_CRYSTALS_LIMIT_SPAWN.getName(), Boolean.toString(value));
     try {
       radius = IntegerArgumentType.getInteger(context, "radius");
-      cache.setProperty("crystal-radius", Integer.toString(radius));
+      cache.setProperty(Tweaks.END_CRYSTAL_RADIUS.getName(), Integer.toString(radius));
     } catch (Exception ignored) {}
     try {
       lowDistance = IntegerArgumentType.getInteger(context, "lowDistance");
-      cache.setProperty("crystal-lower-limit-distance", Integer.toString(lowDistance));
+      cache.setProperty(Tweaks.END_CRYSTAL_LOWER_LIMIT_DISTANCE.getName(), Integer.toString(lowDistance));
     } catch (Exception ignored) {}
     try {
       name = StringArgumentType.getString(context, "name");
       if (name.equals("-")) {
-        cache.setProperty("crystal-name", "");
+        cache.setProperty(Tweaks.END_CRYSTAL_NAME.getName(), "");
       } else {
-        cache.setProperty("crystal-name", name);
+        cache.setProperty(Tweaks.END_CRYSTAL_NAME.getName(), name);
       }
     } catch (Exception ignored) {}
 

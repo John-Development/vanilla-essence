@@ -55,7 +55,7 @@ public class ScaffoldingBlockMixin extends Block implements Waterloggable {
     ),
     index = 1
   )
-  private int getBlockState(int limit) {
+  private Comparable<Integer> getBlockState(Comparable<Integer> par2) {
     return SCAFF_LIMIT;
   }
 
