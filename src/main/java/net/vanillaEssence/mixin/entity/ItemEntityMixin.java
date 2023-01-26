@@ -1,6 +1,6 @@
 package net.vanillaEssence.mixin.entity;
 
-import net.vanillaEssence.util.Tweaks;
+import net.vanillaEssence.util.TweaksEnum;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -19,7 +19,6 @@ import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
-import net.vanillaEssence.util.PropertiesCache;
 
 @Mixin(ItemEntity.class)
 public abstract class ItemEntityMixin extends Entity {
@@ -43,8 +42,7 @@ public abstract class ItemEntityMixin extends Entity {
   public void tick(
     CallbackInfo cir
   ) {
-    PropertiesCache cache = PropertiesCache.getInstance();
-    if (cache.getBoolProperty(Tweaks.MAGNETIC_LURE.getName())) {
+    if (TweaksEnum.MAGNETIC_LURE.getBoolean()) {
       super.tick();
       this.prevX = this.getX();
       this.prevY = this.getY();

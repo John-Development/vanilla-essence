@@ -1,8 +1,6 @@
 package net.vanillaEssence.mixin.entity;
 
-import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.LivingEntity;
-import net.vanillaEssence.util.PropertiesCache;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -20,17 +18,17 @@ public class LivingEntityMixin {
     //      return input;
     //    }
 
-    PropertiesCache cache = PropertiesCache.getInstance();
-    if (cache.getBoolProperty("riptide-fix-enabled")) {
-      float h = (float) EnchantmentHelper.getDepthStrider((LivingEntity) (Object) this);
-
-      if (h > 3.0F) {
-        h = 3.0F;
-      }
-
-      return this.riptideTicks == 0 ? input : 0.8F + (float) (h * cache.getDoubleProperty("riptide-fix-multiplier") * 0.1);
-    } else {
+//    Tweaks tweaks = Tweaks.getInstance();
+//    if (tweaks.getBoolProperty("riptide-fix-enabled")) {
+//      float h = (float) EnchantmentHelper.getDepthStrider((LivingEntity) (Object) this);
+//
+//      if (h > 3.0F) {
+//        h = 3.0F;
+//      }
+//
+//      return this.riptideTicks == 0 ? input : 0.8F + (float) (h * tweaks.getDoubleProperty("riptide-fix-multiplier") * 0.1);
+//    } else {
       return input;
-    }
+//    }
   }
 }

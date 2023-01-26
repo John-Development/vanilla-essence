@@ -3,8 +3,7 @@ package net.vanillaEssence.mixin.screen;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.*;
-import net.vanillaEssence.util.PropertiesCache;
-import net.vanillaEssence.util.Tweaks;
+import net.vanillaEssence.util.TweaksEnum;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -32,7 +31,7 @@ public abstract class AnvilScreenHandlerMixin extends ForgingScreenHandler {
     at = @At(value = "INVOKE", target = "Lnet/minecraft/screen/Property;get()I", ordinal = 1)
   )
   public void updateResult2Mixin(CallbackInfo ci) {
-    if (PropertiesCache.getInstance().getBoolProperty(Tweaks.ONE_LVL_RENAMING.getName())) {
+    if (TweaksEnum.ONE_LVL_RENAMING.getBoolean()) {
       ItemStack itemStack = this.input.getStack(0);
       ItemStack itemStack3 = this.input.getStack(1);
       if(itemStack3.isEmpty() && !this.newItemName.equals(itemStack.getName().getString())) {
@@ -40,7 +39,7 @@ public abstract class AnvilScreenHandlerMixin extends ForgingScreenHandler {
       }
     }
 
-    if (PropertiesCache.getInstance().getBoolProperty(Tweaks.INFINITE_ENCHANTING.getName())) {
+    if (TweaksEnum.INFINITE_ENCHANTING.getBoolean()) {
       if (this.levelCost.get() >= 40) {
         this.levelCost.set(39);
       }

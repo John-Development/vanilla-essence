@@ -9,8 +9,7 @@ import net.minecraft.world.SpawnHelper;
 import net.minecraft.world.biome.SpawnSettings;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.vanillaEssence.util.PropertiesCache;
-import net.vanillaEssence.util.Tweaks;
+import net.vanillaEssence.util.TweaksEnum;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -35,9 +34,7 @@ public abstract class SpawnHelperMixin {
     double squaredDistance,
     CallbackInfoReturnable<Boolean> cir
   ) {
-    PropertiesCache cache = PropertiesCache.getInstance();
-
-    if (cache.getBoolProperty(Tweaks.DO_END_CRYSTALS_LIMIT_SPAWN.getName())
+    if (TweaksEnum.DO_END_CRYSTALS_LIMIT_SPAWN.getBoolean()
       && group != null
       && group.compareTo(SpawnGroup.MONSTER) == 0
     ) {
@@ -46,8 +43,8 @@ public abstract class SpawnHelperMixin {
       monsterY = blockPos.getY();
       monsterZ = blockPos.getZ();
 
-      int radius = cache.getIntProperty(Tweaks.END_CRYSTAL_RADIUS.getName());
-      int lowerLimitDistance = cache.getIntProperty(Tweaks.END_CRYSTAL_LOWER_LIMIT_DISTANCE.getName());
+      int radius = TweaksEnum.END_CRYSTAL_RADIUS.getInt();
+      int lowerLimitDistance = TweaksEnum.END_CRYSTAL_LOWER_LIMIT_DISTANCE.getInt();
 
       Box box = new Box(
         monsterX + radius - 0.49,
@@ -60,8 +57,8 @@ public abstract class SpawnHelperMixin {
       List<EndCrystalEntity> crystals = world.getEntitiesByClass(
         EndCrystalEntity.class,
         box,
-        crystal -> cache.getProperty(Tweaks.END_CRYSTAL_NAME.getName()).trim().isEmpty()
-          || cache.getProperty(Tweaks.END_CRYSTAL_NAME.getName()).equals(crystal.getName().getString())
+        crystal -> TweaksEnum.END_CRYSTAL_NAME.getString().trim().isEmpty()
+          || TweaksEnum.END_CRYSTAL_NAME.getString().equals(crystal.getName().getString())
       );
 
       if (crystals != null && !crystals.isEmpty()) {

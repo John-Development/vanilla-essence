@@ -4,17 +4,15 @@ import net.fabricmc.api.ModInitializer;
 import net.vanillaEssence.commands.GameRuleCustomCommand;
 import net.vanillaEssence.events.CopperOxidizeEvent;
 import net.vanillaEssence.loot.Sand;
-import net.vanillaEssence.util.PropertiesCache;
+import net.vanillaEssence.util.Tweaks;
 
 public class vanillaEssence implements ModInitializer {
-
-  // 1.19.2 version
   @Override
   public void onInitialize() {
     // Loot table for sand
     Sand.getInstance().init();
     // Props init
-    PropertiesCache.getDefaultInstance().init();
+    Tweaks.getDefaultInstance().init();
     // Init commands
     GameRuleCustomCommand.getInstance().init();
     // Register events

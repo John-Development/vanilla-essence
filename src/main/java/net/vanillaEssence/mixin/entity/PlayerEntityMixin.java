@@ -1,6 +1,6 @@
 package net.vanillaEssence.mixin.entity;
 
-import net.vanillaEssence.util.Tweaks;
+import net.vanillaEssence.util.TweaksEnum;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -13,7 +13,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.vanillaEssence.util.PropertiesCache;
 
 @Mixin(PlayerEntity.class)
 public abstract class PlayerEntityMixin {
@@ -28,15 +27,14 @@ public abstract class PlayerEntityMixin {
     Hand hand,
     CallbackInfoReturnable<ActionResult> cir
   ) {
-    PropertiesCache cache = PropertiesCache.getInstance();
-    if (cache.getBoolProperty(Tweaks.DO_END_CRYSTALS_LIMIT_SPAWN.getName())) {
+    if (TweaksEnum.DO_END_CRYSTALS_LIMIT_SPAWN.getBoolean()) {
       ItemStack itemStack = ((PlayerEntity) (Object) this).getStackInHand(hand);
 
       if (itemStack.getItem().equals(Items.NAME_TAG)
         && itemStack.hasCustomName()
         && entity instanceof EndCrystalEntity
         && !((EndCrystalEntity) entity).shouldShowBottom()
-        && cache.getProperty(Tweaks.END_CRYSTAL_NAME.getName()).equals(itemStack.getName().getString())
+        && TweaksEnum.END_CRYSTAL_NAME.getString().equals(itemStack.getName().getString())
       ) {
         entity.setCustomName(itemStack.getName());
 

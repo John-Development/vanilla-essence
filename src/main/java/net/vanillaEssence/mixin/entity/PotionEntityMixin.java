@@ -12,8 +12,7 @@ import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.vanillaEssence.events.interfaces.CopperOxidizeCallback;
-import net.vanillaEssence.util.PropertiesCache;
-import net.vanillaEssence.util.Tweaks;
+import net.vanillaEssence.util.TweaksEnum;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -36,8 +35,7 @@ public abstract class PotionEntityMixin extends ThrownItemEntity {
     BlockHitResult blockHitResult,
     CallbackInfo ci
   ) {
-    PropertiesCache cache = PropertiesCache.getInstance();
-    if (cache.getBoolProperty(Tweaks.SPLASH_OXIDIZE.getName())) {
+    if (TweaksEnum.SPLASH_OXIDIZE.getBoolean()) {
       if (!this.world.isClient) {
         ItemStack itemStack = this.getStack();
         BlockPos blockPos = blockHitResult.getBlockPos();

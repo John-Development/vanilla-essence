@@ -28,8 +28,7 @@ import net.minecraft.util.math.Box;
 import net.minecraft.world.Heightmap.Type;
 import net.minecraft.world.World;
 import net.vanillaEssence.util.BeamSegment;
-import net.vanillaEssence.util.PropertiesCache;
-import net.vanillaEssence.util.Tweaks;
+import net.vanillaEssence.util.TweaksEnum;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
@@ -88,7 +87,7 @@ public abstract class BeaconBlockEntityMixin extends BlockEntity implements Name
     at = @At("TAIL")
   )
   private void init(BlockPos pos, BlockState state, CallbackInfo cir) {
-    if (PropertiesCache.getInstance().getBoolProperty(Tweaks.BETTER_BEACONS.getName())) {
+    if (TweaksEnum.BETTER_BEACONS.getBoolean()) {
       this.propertyDelegate = new PropertyDelegate() {
         @Override
         public int get(int index) {
@@ -136,7 +135,7 @@ public abstract class BeaconBlockEntityMixin extends BlockEntity implements Name
     at = @At("HEAD")
   )
   public void writeNbt(NbtCompound nbt, CallbackInfo ci) {
-    if (PropertiesCache.getInstance().getBoolProperty(Tweaks.BETTER_BEACONS.getName())) {
+    if (TweaksEnum.BETTER_BEACONS.getBoolean()) {
       nbt.putInt("payment", Item.getRawId(this.payment));
     }
   }
@@ -146,7 +145,7 @@ public abstract class BeaconBlockEntityMixin extends BlockEntity implements Name
     at = @At("HEAD")
   )
   public void readNbt(NbtCompound nbt, CallbackInfo ci) {
-    if (PropertiesCache.getInstance().getBoolProperty(Tweaks.BETTER_BEACONS.getName())) {
+    if (TweaksEnum.BETTER_BEACONS.getBoolean()) {
       this.payment = Item.byRawId(nbt.getInt("payment"));
     }
   }
@@ -280,7 +279,7 @@ public abstract class BeaconBlockEntityMixin extends BlockEntity implements Name
 
       int j = (9 + beaconLevel * 2) * 20;
 
-      if (PropertiesCache.getInstance().getBoolProperty(Tweaks.BETTER_BEACONS.getName())) {
+      if (TweaksEnum.BETTER_BEACONS.getBoolean()) {
         // La formula del nivel: f(x) = f(x-1) + (2x+1)^2
 
         int blocks = totalBlocks(beaconLevel);
@@ -392,7 +391,7 @@ public abstract class BeaconBlockEntityMixin extends BlockEntity implements Name
       internalNetheriteBlocks += counterNetherite;
     }
 
-    if (PropertiesCache.getInstance().getBoolProperty(Tweaks.BETTER_BEACONS.getName())) {
+    if (TweaksEnum.BETTER_BEACONS.getBoolean()) {
       blockEntityMixin.range = internalRange;
       blockEntityMixin.ironBlocks = internalIronBlocks;
       blockEntityMixin.goldBlocks = internalGoldBlocks;

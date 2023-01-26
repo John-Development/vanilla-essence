@@ -1,6 +1,6 @@
 package net.vanillaEssence.mixin.village;
 
-import net.vanillaEssence.util.Tweaks;
+import net.vanillaEssence.util.TweaksEnum;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -9,7 +9,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.village.TradeOffer;
-import net.vanillaEssence.util.PropertiesCache;
 
 // TODO: think if want to use this
 @Mixin(TradeOffer.class)
@@ -26,8 +25,8 @@ public class TradeOfferMixin {
     NbtCompound nbt,
     CallbackInfo cir
   ) {
-    this.demandBonus = PropertiesCache.getInstance().getBoolProperty(Tweaks.MODIFY_VILLAGERS.getName())
-      ? nbt.getInt("demand") - 15 * PropertiesCache.getInstance().getIntProperty(Tweaks.DAILY_VILLAGER_RESTOCKS.getName())
+    this.demandBonus = TweaksEnum.MODIFY_VILLAGERS.getBoolean()
+      ? nbt.getInt("demand") - 15 * TweaksEnum.DAILY_VILLAGER_RESTOCKS.getInt()
       : nbt.getInt("demand");
   }
 }

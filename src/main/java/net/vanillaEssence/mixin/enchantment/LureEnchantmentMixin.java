@@ -1,13 +1,12 @@
 package net.vanillaEssence.mixin.enchantment;
 
-import net.vanillaEssence.util.Tweaks;
+import net.vanillaEssence.util.TweaksEnum;
 import org.spongepowered.asm.mixin.Mixin;
 
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentTarget;
 import net.minecraft.enchantment.LureEnchantment;
 import net.minecraft.entity.EquipmentSlot;
-import net.vanillaEssence.util.PropertiesCache;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
 
@@ -24,8 +23,7 @@ public class LureEnchantmentMixin extends Enchantment {
     index = 1
   )
   private static EnchantmentTarget getType(EnchantmentTarget type) {
-    PropertiesCache cache = PropertiesCache.getInstance();
-    if (cache.getBoolProperty(Tweaks.MAGNETIC_LURE.getName())) {
+    if (TweaksEnum.MAGNETIC_LURE.getBoolean()) {
       // TODO: think which items to accept
       return EnchantmentTarget.BREAKABLE;
     } else {
