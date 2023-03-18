@@ -11,7 +11,6 @@ public enum TweaksEnum {
   DAILY_VILLAGER_RESTOCKS("vill-daily-restocks"),
   TIME_BETWEEN_VILLAGER_RESTOCKS("vill-time-between-restocks"),
   MAGNETIC_LURE("magnetic-lure-enabled"),
-  REDSTONED_JUKEBOXES("redstoned-jukeboxes-enabled"),
   SPLASH_OXIDIZE("oxidation-enabled"),
   ONE_LVL_RENAMING("one-lvl-renaming-enabled"),
   INFINITE_ENCHANTING("infinite-enchanting-enabled");

@@ -39,9 +39,7 @@ public abstract class ItemEntityMixin extends Entity {
     method = "tick",
     at = @At("HEAD")
   )
-  public void tick(
-    CallbackInfo cir
-  ) {
+  public void tick(CallbackInfo cir) {
     if (TweaksEnum.MAGNETIC_LURE.getBoolean()) {
       super.tick();
       this.prevX = this.getX();
@@ -51,20 +49,20 @@ public abstract class ItemEntityMixin extends Entity {
       if (this.isSubmergedIn(FluidTags.WATER)) {
         this.applyWaterMovement();
       } else if (!this.hasNoGravity()) {
-        this.setVelocity(this.getVelocity().add(0.0D, -0.03D, 0.0D));
+        this.setVelocity(this.getVelocity().add(0.0, -0.03, 0.0));
       }
 
       if (this.world.getFluidState(this.getBlockPos()).isIn(FluidTags.LAVA)) {
-        this.setVelocity((this.random.nextFloat() - this.random.nextFloat()) * 0.2F, 0.20000000298023224D, (this.random.nextFloat() - this.random.nextFloat()) * 0.2F);
+        this.setVelocity((this.random.nextFloat() - this.random.nextFloat()) * 0.2F, 0.20000000298023224, (this.random.nextFloat() - this.random.nextFloat()) * 0.2F);
       }
 
       if (!this.world.isSpaceEmpty(this.getBoundingBox())) {
-        this.pushOutOfBlocks(this.getX(), (this.getBoundingBox().minY + this.getBoundingBox().maxY) / 2.0D, this.getZ());
+        this.pushOutOfBlocks(this.getX(), (this.getBoundingBox().minY + this.getBoundingBox().maxY) / 2.0, this.getZ());
       }
 
       if (this.age % 20 == 1) {
-        if (this.target == null || this.target.squaredDistanceTo(this) > 64.0D) {
-          this.target = this.world.getClosestPlayer(this, 8.0D);
+        if (this.target == null || this.target.squaredDistanceTo(this) > 64.0) {
+          this.target = this.world.getClosestPlayer(this, 8.0);
         }
       }
 
@@ -86,21 +84,21 @@ public abstract class ItemEntityMixin extends Entity {
                 int lvl = Integer.parseInt(Character.toString(nbt.toString().split(",")[1].charAt(4)));
 
                 // attracts every item as an xp orb
-                Vec3d vec3d = new Vec3d(this.target.getX() - this.getX(), this.target.getY() + (double)this.target.getStandingEyeHeight() / 2.0D - this.getY(), this.target.getZ() - this.getZ());
+                Vec3d vec3d = new Vec3d(this.target.getX() - this.getX(), this.target.getY() + (double)this.target.getStandingEyeHeight() / 2.0 - this.getY(), this.target.getZ() - this.getZ());
                 double d = vec3d.lengthSquared();
-                if (d < 64.0D) {
-                  double e = 1.0D - Math.sqrt(d) / 8.0D;
-                  this.setVelocity(this.getVelocity().add(vec3d.normalize().multiply(lvl * e * e * 0.1D)));
+                if (d < 64.0) {
+                  double e = 1.0 - Math.sqrt(d) / 8.0;
+                  this.setVelocity(this.getVelocity().add(vec3d.normalize().multiply(lvl * e * e * 0.1)));
                 }
                 this.move(MovementType.SELF, this.getVelocity());
                 float f = 0.98F;
                 if (this.onGround) {
-                  f = this.world.getBlockState(new BlockPos(this.getX(), this.getY() - 1.0D, this.getZ())).getBlock().getSlipperiness() * 0.98F;
+                  f = this.world.getBlockState(BlockPos.ofFloored(this.getX(), this.getY() - 1.0, this.getZ())).getBlock().getSlipperiness() * 0.98F;
                 }
 
-                this.setVelocity(this.getVelocity().multiply(f, 0.98D, f));
+                this.setVelocity(this.getVelocity().multiply(f, 0.98, f));
                 if (this.onGround) {
-                  this.setVelocity(this.getVelocity().multiply(1.0D, -0.9D, 1.0D));
+                  this.setVelocity(this.getVelocity().multiply(1.0, -0.9, 1.0));
                 }
 
                 ++this.orbAge;

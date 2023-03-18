@@ -39,7 +39,6 @@ public class GameRuleCustomCommand {
     doEndCrystalsLimitSpawnInit();
     betterBeaconsInit();
     magneticLureInit();
-    redstonedJukeboxInit();
     oxidizeInit();
     infiniteEnchantingInit();
     oneLvlRenamingInit();
@@ -59,11 +58,6 @@ public class GameRuleCustomCommand {
   // Command example: /gamerule magneticLure <value>
   private void magneticLureInit() {
     genericCommandBuilderInit("magneticLure", TweaksEnum.MAGNETIC_LURE);
-  }
-
-  // Command example: /gamerule redstonedJukeboxes <value>
-  private void redstonedJukeboxInit() {
-    genericCommandBuilderInit("redstonedJukeboxes", TweaksEnum.REDSTONED_JUKEBOXES);
   }
 
   // Command example: /gamerule splashOxidize <value>

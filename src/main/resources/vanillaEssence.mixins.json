@@ -4,9 +4,7 @@
   "package": "net.vanillaEssence.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
-    "block.JukeboxBlockMixin",
     "block.entity.BeaconBlockEntityMixin",
-    "block.entity.JukeboxBlockEntityMixin",
     "enchantment.LureEnchantmentMixin",
     "entity.ItemEntityMixin",
     "entity.PlayerEntityMixin",

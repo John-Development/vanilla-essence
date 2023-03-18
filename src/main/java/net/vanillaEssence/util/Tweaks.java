@@ -140,10 +140,6 @@ public class Tweaks {
       this.setProperty(TweaksEnum.MAGNETIC_LURE, "false");
       hasChanged = true;
     }
-    if (this.getProperty(TweaksEnum.REDSTONED_JUKEBOXES) == null) {
-      this.setProperty(TweaksEnum.REDSTONED_JUKEBOXES, "false");
-      hasChanged = true;
-    }
     if (this.getProperty(TweaksEnum.SPLASH_OXIDIZE) == null) {
       this.setProperty(TweaksEnum.SPLASH_OXIDIZE, "false");
       hasChanged = true;
