@@ -2,6 +2,7 @@ package net.vanillaEssence.mixin.world.level;
 
 import com.mojang.datafixers.DataFixer;
 import com.mojang.serialization.Lifecycle;
+import net.minecraft.entity.boss.dragon.EnderDragonFight;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.border.WorldBorder;
@@ -33,7 +34,7 @@ public class LevelPropertiesMixin {
       "Ljava/util/Set;" +
       "Lnet/minecraft/world/timer/Timer;" +
       "Lnet/minecraft/nbt/NbtCompound;" +
-      "Lnet/minecraft/nbt/NbtCompound;" +
+      "Lnet/minecraft/entity/boss/dragon/EnderDragonFight$Data;" +
       "Lnet/minecraft/world/level/LevelInfo;" +
       "Lnet/minecraft/world/gen/GeneratorOptions;" +
       "Lnet/minecraft/world/level/LevelProperties$SpecialProperty;" +
@@ -41,7 +42,7 @@ public class LevelPropertiesMixin {
     ")V",
     at = @At("TAIL")
   )
-  void initializer(DataFixer dataFixer, int dataVersion, NbtCompound playerData, boolean modded, int spawnX, int spawnY, int spawnZ, float spawnAngle, long time, long timeOfDay, int version, int clearWeatherTime, int rainTime, boolean raining, int thunderTime, boolean thundering, boolean initialized, boolean difficultyLocked, WorldBorder.Properties worldBorder, int wanderingTraderSpawnDelay, int wanderingTraderSpawnChance, UUID wanderingTraderId, Set<String> serverBrands, Set<String> removedFeatures, Timer<MinecraftServer> scheduledEvents, NbtCompound customBossEvents, NbtCompound dragonFight, LevelInfo levelInfo, GeneratorOptions generatorOptions, LevelProperties.SpecialProperty specialProperty, Lifecycle lifecycle, CallbackInfo ci) {
+  void initializer(DataFixer dataFixer, int dataVersion, NbtCompound playerData, boolean modded, int spawnX, int spawnY, int spawnZ, float spawnAngle, long time, long timeOfDay, int version, int clearWeatherTime, int rainTime, boolean raining, int thunderTime, boolean thundering, boolean initialized, boolean difficultyLocked, WorldBorder.Properties worldBorder, int wanderingTraderSpawnDelay, int wanderingTraderSpawnChance, UUID wanderingTraderId, Set<String> serverBrands, Set<String> removedFeatures, Timer<MinecraftServer> scheduledEvents, NbtCompound customBossEvents, EnderDragonFight.Data dragonFight, LevelInfo levelInfo, GeneratorOptions generatorOptions, LevelProperties.SpecialProperty specialProperty, Lifecycle lifecycle, CallbackInfo ci) {
     Tweaks.setLevelName(levelInfo.getLevelName());
   }
 }

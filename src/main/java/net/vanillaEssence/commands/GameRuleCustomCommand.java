@@ -330,7 +330,7 @@ public class GameRuleCustomCommand {
   // Utils
   private static int printValue(CommandContext<ServerCommandSource> context, Tweaks tweaks, TweaksEnum property) {
     ServerCommandSource serverCommandSource = context.getSource();
-    serverCommandSource.sendFeedback(Text.literal(property.getString(tweaks)), true);
+    serverCommandSource.sendFeedback(() -> Text.literal(property.getString(tweaks)), true);
 
     return 1;
   }
@@ -339,7 +339,7 @@ public class GameRuleCustomCommand {
     ServerCommandSource serverCommandSource = context.getSource();
     MinecraftServer minecraftServer = serverCommandSource.getServer();
     Collection<String> collection = getResourcePacks(minecraftServer);
-    serverCommandSource.sendFeedback(Text.translatable("commands.custom.reload.success"), true);
+    serverCommandSource.sendFeedback(() -> Text.translatable("commands.custom.reload.success"), true);
     ReloadCommand.tryReloadDataPacks(collection, serverCommandSource);
 
     return 1;
