@@ -2,6 +2,7 @@ package net.vanillaEssence.mixin.entity;
 
 import net.vanillaEssence.util.TweaksEnum;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -27,9 +28,12 @@ public abstract class ItemEntityMixin extends Entity {
     super(type, world);
   }
 
+  @Unique
   public int orbAge;
+  @Unique
   private PlayerEntity target;
 
+  @Unique
   private void applyWaterMovement() {
     Vec3d vec3d = this.getVelocity();
     this.setVelocity(vec3d.x * 0.9900000095367432D, Math.min(vec3d.y + 5.000000237487257E-4D, 0.05999999865889549D), vec3d.z * 0.9900000095367432D);
@@ -52,17 +56,17 @@ public abstract class ItemEntityMixin extends Entity {
         this.setVelocity(this.getVelocity().add(0.0, -0.03, 0.0));
       }
 
-      if (this.world.getFluidState(this.getBlockPos()).isIn(FluidTags.LAVA)) {
+      if (this.getWorld().getFluidState(this.getBlockPos()).isIn(FluidTags.LAVA)) {
         this.setVelocity((this.random.nextFloat() - this.random.nextFloat()) * 0.2F, 0.20000000298023224, (this.random.nextFloat() - this.random.nextFloat()) * 0.2F);
       }
 
-      if (!this.world.isSpaceEmpty(this.getBoundingBox())) {
+      if (!this.getWorld().isSpaceEmpty(this.getBoundingBox())) {
         this.pushOutOfBlocks(this.getX(), (this.getBoundingBox().minY + this.getBoundingBox().maxY) / 2.0, this.getZ());
       }
 
       if (this.age % 20 == 1) {
         if (this.target == null || this.target.squaredDistanceTo(this) > 64.0) {
-          this.target = this.world.getClosestPlayer(this, 8.0);
+          this.target = this.getWorld().getClosestPlayer(this, 8.0);
         }
       }
 
@@ -92,12 +96,12 @@ public abstract class ItemEntityMixin extends Entity {
                 }
                 this.move(MovementType.SELF, this.getVelocity());
                 float f = 0.98F;
-                if (this.onGround) {
-                  f = this.world.getBlockState(BlockPos.ofFloored(this.getX(), this.getY() - 1.0, this.getZ())).getBlock().getSlipperiness() * 0.98F;
+                if (this.isOnGround()) {
+                  f = this.getWorld().getBlockState(BlockPos.ofFloored(this.getX(), this.getY() - 1.0, this.getZ())).getBlock().getSlipperiness() * 0.98F;
                 }
 
                 this.setVelocity(this.getVelocity().multiply(f, 0.98, f));
-                if (this.onGround) {
+                if (this.isOnGround()) {
                   this.setVelocity(this.getVelocity().multiply(1.0, -0.9, 1.0));
                 }
 

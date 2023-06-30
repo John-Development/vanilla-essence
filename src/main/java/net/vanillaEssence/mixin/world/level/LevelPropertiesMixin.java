@@ -30,6 +30,7 @@ public class LevelPropertiesMixin {
       "II" +
       "Ljava/util/UUID;" +
       "Ljava/util/Set;" +
+      "Ljava/util/Set;" +
       "Lnet/minecraft/world/timer/Timer;" +
       "Lnet/minecraft/nbt/NbtCompound;" +
       "Lnet/minecraft/nbt/NbtCompound;" +
@@ -40,7 +41,7 @@ public class LevelPropertiesMixin {
     ")V",
     at = @At("TAIL")
   )
-  void initializer(DataFixer dataFixer, int dataVersion, NbtCompound playerData, boolean modded, int spawnX, int spawnY, int spawnZ, float spawnAngle, long time, long timeOfDay, int version, int clearWeatherTime, int rainTime, boolean raining, int thunderTime, boolean thundering, boolean initialized, boolean difficultyLocked, WorldBorder.Properties worldBorder, int wanderingTraderSpawnDelay, int wanderingTraderSpawnChance, UUID wanderingTraderId, Set<String> serverBrands, Timer<MinecraftServer> scheduledEvents, NbtCompound customBossEvents, NbtCompound dragonFight, LevelInfo levelInfo, GeneratorOptions generatorOptions, LevelProperties.SpecialProperty specialProperty, Lifecycle lifecycle, CallbackInfo ci) {
+  void initializer(DataFixer dataFixer, int dataVersion, NbtCompound playerData, boolean modded, int spawnX, int spawnY, int spawnZ, float spawnAngle, long time, long timeOfDay, int version, int clearWeatherTime, int rainTime, boolean raining, int thunderTime, boolean thundering, boolean initialized, boolean difficultyLocked, WorldBorder.Properties worldBorder, int wanderingTraderSpawnDelay, int wanderingTraderSpawnChance, UUID wanderingTraderId, Set<String> serverBrands, Set<String> removedFeatures, Timer<MinecraftServer> scheduledEvents, NbtCompound customBossEvents, NbtCompound dragonFight, LevelInfo levelInfo, GeneratorOptions generatorOptions, LevelProperties.SpecialProperty specialProperty, Lifecycle lifecycle, CallbackInfo ci) {
     Tweaks.setLevelName(levelInfo.getLevelName());
   }
 }

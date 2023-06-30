@@ -41,7 +41,7 @@ public abstract class PlayerEntityMixin {
         itemStack.decrement(1);
         entity.setCustomNameVisible(true);
 
-        cir.setReturnValue(ActionResult.success(((PlayerEntity) (Object) this).world.isClient));
+        cir.setReturnValue(ActionResult.success(((PlayerEntity) (Object) this).getWorld().isClient));
       }
     }
   }

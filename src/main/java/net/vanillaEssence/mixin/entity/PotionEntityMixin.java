@@ -36,13 +36,13 @@ public abstract class PotionEntityMixin extends ThrownItemEntity {
     CallbackInfo ci
   ) {
     if (TweaksEnum.SPLASH_OXIDIZE.getBoolean()) {
-      if (!this.world.isClient) {
+      if (!this.getWorld().isClient) {
         ItemStack itemStack = this.getStack();
         BlockPos blockPos = blockHitResult.getBlockPos();
         Potion potion = PotionUtil.getPotion(itemStack);
         List<StatusEffectInstance> list = PotionUtil.getPotionEffects(itemStack);
         if (potion == Potions.WATER && list.isEmpty()) {
-          CopperOxidizeCallback.EVENT.invoker().oxidize(blockPos, this.world);
+          CopperOxidizeCallback.EVENT.invoker().oxidize(blockPos, this.getWorld());
         }
       }
     }

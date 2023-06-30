@@ -31,13 +31,13 @@ public abstract class VillagerEntityMixin {
       long cooldown = TweaksEnum.TIME_BETWEEN_VILLAGER_RESTOCKS.getLong();
 
       if (restocks == 0) {
-        cir.setReturnValue(this.restocksToday == 0 || ((VillagerEntity) (Object) this).world.getTime() > (this.lastRestockTime + cooldown));
+        cir.setReturnValue(this.restocksToday == 0 || ((VillagerEntity) (Object) this).getWorld().getTime() > (this.lastRestockTime + cooldown));
       }
       else {
         cir.setReturnValue(
           this.restocksToday == 0
             || this.restocksToday < restocks
-            && ((VillagerEntity) (Object) this).world.getTime() > this.lastRestockTime + cooldown
+            && ((VillagerEntity) (Object) this).getWorld().getTime() > this.lastRestockTime + cooldown
         );
       }
     }
